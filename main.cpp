@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "video_processor.hpp"
 
 int main(int argc, char **argv) {
