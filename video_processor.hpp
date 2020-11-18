@@ -13,13 +13,17 @@ public:
     // Processes video from path `filename`.
     void process(const std::string &filename) {
         cv::VideoCapture video;
-        
+
+        body_detector detector;
+
         // Try to open video.
-        if (!video.open(filename))
+        if (!video.open(filename)){
+            cv::Mat im = cv::imread(filename);
+            detector.detect(im);
             return;
+        }
 
         cv::Mat frame;
-        body_detector detector;
 
         // Video is opened, processing begins.
         for (;;) {
