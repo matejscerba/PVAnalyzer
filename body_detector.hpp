@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cmath>
 
 class body_detector {
 
@@ -24,11 +25,26 @@ class body_detector {
     cv::dnn::Net net;
     bool validPerson = false;
     cv::Rect lastPerson;
+    cv::Point center;
+
+    // Comparator for rectangles by distance from `center`.
+    bool distanceCompare(const cv::Rect &lhs, const cv::Rect &rhs) const {
+        cv::Point l(lhs.x + lhs.width / 2, lhs.y + lhs.height / 2);
+        cv::Point r(rhs.x + rhs.width / 2, rhs.y + rhs.height / 2);
+        double lhsDist = std::sqrt((l.x - center.x) * (l.x - center.x) + (l.y - center.y) * (l.y - center.y));
+        double rhsDist = std::sqrt((r.x - center.x) * (r.x - center.x) + (r.y - center.y) * (r.y - center.y));
+        return lhsDist < rhsDist;
+    }
 
     // Updates `lastPerson` rectangle if possible and returns it.
-    cv::Rect selectRectangle(const std::vector<cv::Rect> &detections) {
+    cv::Rect selectRectangle(std::vector<cv::Rect> &detections, const cv::Mat &frame) {
         if (detections.size()) {
             validPerson = true;
+            center = cv::Point(2 * frame.cols / 3, frame.rows / 2);
+            std::sort(
+                detections.begin(), detections.end(),
+                [this](const cv::Rect &a, const cv::Rect &b) { return distanceCompare(a, b); }
+            );
             lastPerson = detections[0];
         }
         // Returns last rectangle where person was.
@@ -48,10 +64,10 @@ public:
 
         // Detect person rectangle in frame.
         std::vector<cv::Rect> detections;
-        hog.detectMultiScale(frame, detections, 0, cv::Size(8, 8), cv::Size(), 1.05, 2, true);
+        hog.detectMultiScale(frame, detections, 0, cv::Size(8, 8), cv::Size(), 1.02, 2, true);
 
         // Select valid rectangle.
-        cv::Rect person = selectRectangle(detections);
+        cv::Rect person = selectRectangle(detections, frame);
 
         if (!validPerson) return;
         
@@ -60,9 +76,13 @@ public:
         cv::Mat blob = cv::dnn::blobFromImage(personFrame, 1.0 / 255, cv::Size(368, 368), cv::Scalar(0, 0, 0), false, false);
         net.setInput(blob);
         cv::Mat output = net.forward();
+        // cv::Mat output;
 
         // Draw person into frame.
         drawFrame(frame, person, output);
+        // for (auto &det : detections) {
+            // drawFrame(frame, det, output);
+        // }
 
         cv::imshow("frame", frame);
         cv::waitKey();
