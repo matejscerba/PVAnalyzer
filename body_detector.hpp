@@ -64,7 +64,7 @@ public:
 
         // Detect person rectangle in frame.
         std::vector<cv::Rect> detections;
-        hog.detectMultiScale(frame, detections, 0, cv::Size(8, 8), cv::Size(), 1.02, 2, true);
+        hog.detectMultiScale(frame, detections, 0, cv::Size(4, 4), cv::Size(), 1.05, 2, true);
 
         // Select valid rectangle.
         cv::Rect person = selectRectangle(detections, frame);
@@ -73,16 +73,16 @@ public:
         
         // Get person's points.
         cv::Mat personFrame(frame, person);
-        cv::Mat blob = cv::dnn::blobFromImage(personFrame, 1.0 / 255, cv::Size(368, 368), cv::Scalar(0, 0, 0), false, false);
-        net.setInput(blob);
-        cv::Mat output = net.forward();
-        // cv::Mat output;
+        // cv::Mat blob = cv::dnn::blobFromImage(personFrame, 1.0 / 255, cv::Size(368, 368), cv::Scalar(0, 0, 0), false, false);
+        // net.setInput(blob);
+        // cv::Mat output = net.forward();
+        cv::Mat output;
 
         // Draw person into frame.
-        drawFrame(frame, person, output);
-        // for (auto &det : detections) {
-            // drawFrame(frame, det, output);
-        // }
+        // drawFrame(frame, person, output);
+        for (auto &det : detections) {
+            drawFrame(frame, det, output);
+        }
 
         cv::imshow("frame", frame);
         cv::waitKey();
