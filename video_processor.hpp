@@ -37,7 +37,7 @@ public:
             detector.detect(frame);
         }
 
-        detector.write("tracked.avi");
+        // detector.write("tracked.avi");
 
         // Free resources.
         video.release();
