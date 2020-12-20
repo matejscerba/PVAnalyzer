@@ -1,6 +1,7 @@
 #pragma once
 
 #include <opencv2/opencv.hpp>
+#include <opencv2/tracking/tracker.hpp>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -23,78 +24,85 @@ class body_detector {
 
     cv::HOGDescriptor hog;
     cv::dnn::Net net;
-    bool validPerson = false;
-    cv::Rect lastPerson;
-    cv::Point center;
+    cv::Ptr<cv::Tracker> tracker;
 
-    // Comparator for rectangles by distance from `center`.
-    bool distanceCompare(const cv::Rect &lhs, const cv::Rect &rhs) const {
+    bool valid_person = false;
+    bool tracker_isInit = false;
+    std::size_t current_frame = 0;
+    std::size_t person_frame;
+    const cv::Point person_position;
+    std::vector<cv::Rect2d> people;
+
+    std::vector<cv::Mat> frames;
+
+    // Comparator for rectangles by distance from `person_position`.
+    bool distance_compare(const cv::Rect &lhs, const cv::Rect &rhs) const {
         cv::Point l(lhs.x + lhs.width / 2, lhs.y + lhs.height / 2);
         cv::Point r(rhs.x + rhs.width / 2, rhs.y + rhs.height / 2);
-        double lhsDist = std::sqrt((l.x - center.x) * (l.x - center.x) + (l.y - center.y) * (l.y - center.y));
-        double rhsDist = std::sqrt((r.x - center.x) * (r.x - center.x) + (r.y - center.y) * (r.y - center.y));
+        double lhsDist = std::sqrt(
+            (l.x - person_position.x) * (l.x - person_position.x) +
+            (l.y - person_position.y) * (l.y - person_position.y)
+        );
+        double rhsDist = std::sqrt(
+            (r.x - person_position.x) * (r.x - person_position.x) +
+            (r.y - person_position.y) * (r.y - person_position.y)
+        );
         return lhsDist < rhsDist;
     }
 
-    // Updates `lastPerson` rectangle if possible and returns it.
-    cv::Rect selectRectangle(std::vector<cv::Rect> &detections, const cv::Mat &frame) {
+    // Updates `people` with rectangle from detections closest to `person_position`.
+    void select_rectangle(std::vector<cv::Rect> &detections, const cv::Mat &frame) {
         if (detections.size()) {
-            validPerson = true;
-            center = cv::Point(2 * frame.cols / 3, frame.rows / 2);
+            valid_person = true;
             std::sort(
                 detections.begin(), detections.end(),
-                [this](const cv::Rect &a, const cv::Rect &b) { return distanceCompare(a, b); }
+                [this](const cv::Rect &a, const cv::Rect &b) { return distance_compare(a, b); }
             );
-            lastPerson = detections[0];
+            cv::Rect r = detections.front();
+            people.emplace_back(r.x, r.y, r.width, r.height);
         }
-        // Returns last rectangle where person was.
-        return lastPerson;
     }
 
-public:
-
-    body_detector() {
-        hog = cv::HOGDescriptor(cv::Size(48, 96), cv::Size(16, 16), cv::Size(8, 8), cv::Size(8, 8), 9);
-        hog.setSVMDetector(cv::HOGDescriptor::getDaimlerPeopleDetector());
-        net = cv::dnn::readNet(protofile, caffemodel);
-    }
-
-    // Detects athlete in frame.
-    void detect(cv::Mat &frame) {
-
+    void detect_current(cv::Mat &frame) {
         // Detect person rectangle in frame.
         std::vector<cv::Rect> detections;
         hog.detectMultiScale(frame, detections, 0, cv::Size(4, 4), cv::Size(), 1.05, 2, true);
 
         // Select valid rectangle.
-        cv::Rect person = selectRectangle(detections, frame);
+        select_rectangle(detections, frame);
 
-        if (!validPerson) return;
-        
         // Get person's points.
-        cv::Mat personFrame(frame, person);
+        // cv::Mat personFrame(frame, person);
         // cv::Mat blob = cv::dnn::blobFromImage(personFrame, 1.0 / 255, cv::Size(368, 368), cv::Scalar(0, 0, 0), false, false);
         // net.setInput(blob);
         // cv::Mat output = net.forward();
-        cv::Mat output;
-
-        // Draw person into frame.
-        // drawFrame(frame, person, output);
-        for (auto &det : detections) {
-            drawFrame(frame, det, output);
-        }
-
-        cv::imshow("frame", frame);
-        cv::waitKey();
+        // cv::Mat output;
     }
 
-    // Draw person in image `frame` based on `output`, it should be in rectangle `rect`.
-    void drawFrame(cv::Mat &frame, const cv::Rect &rect, cv::Mat &output) const {
+    // Tracks `last_person` object in current frame.
+    bool track_current(cv::Mat &frame) {
+        cv::Rect2d last = people.back();
+
+        // Initialize tracker.
+        if (!tracker_isInit) {
+            tracker->init(frame, last);
+            tracker_isInit = true;
+        }
+
+        // Update tracker.
+        if (tracker->update(frame, last)) {
+            people.push_back(last);
+            return true;
+        }
+        return false;
+    }
+
+    // Draw person in image `frame` based on `output`, it is in rectangle `people.back()`.
+    void draw(cv::Mat &frame, cv::Mat &output) const {
         int h = output.size[2];
         int w = output.size[3];
 
-        // Draw rectangle where person is supposed to be.
-        cv::rectangle(frame, rect.tl(), rect.br(), cv::Scalar(0, 255, 0), 2);
+        cv::Rect last_person = people.back();
 
         std::vector<cv::Point> points(npoints);
         
@@ -116,8 +124,8 @@ public:
         }
 
         // Scale factors.
-        float sx = (float)rect.width / w;
-        float sy = (float)rect.height / h;
+        float sx = (float)last_person.width / w;
+        float sy = (float)last_person.height / h;
 
         // Draw pairs of points and connect them with lines.
         for (int n = 0; n < npairs; n++) {
@@ -129,16 +137,65 @@ public:
                 continue;
 
             // Scale points so they are in correct position.
-            a.x *= sx; a.x += rect.x;
-            a.y *= sy; a.y += rect.y;
-            b.x *= sx; b.x += rect.x;
-            b.y *= sy; b.y += rect.y;
+            a.x *= sx; a.x += last_person.x;
+            a.y *= sy; a.y += last_person.y;
+            b.x *= sx; b.x += last_person.x;
+            b.y *= sy; b.y += last_person.y;
 
             // Draw points representing joints and connect them with lines.
             cv::line(frame, a, b, cv::Scalar(0, 255, 255), 2);
             cv::circle(frame, a, 2, cv::Scalar(0, 0, 255), -1);
             cv::circle(frame, b, 2, cv::Scalar(0, 0, 255), -1);
         }
+    }
+
+    // Draw rectangle `people.back()` in `frame`.
+    void draw(cv::Mat &frame) const {
+        cv::rectangle(frame, people.back().tl(), people.back().br(), cv::Scalar(0, 255, 0), 2);
+    }
+
+public:
+
+    body_detector(std::size_t frame, const cv::Point &&position) :
+        hog(cv::Size(48, 96), cv::Size(16, 16), cv::Size(8, 8), cv::Size(8, 8), 9), person_position(position) {
+            person_frame = frame;
+            hog.setSVMDetector(cv::HOGDescriptor::getDaimlerPeopleDetector());
+            net = cv::dnn::readNet(protofile, caffemodel);
+            tracker = cv::TrackerCSRT::create();
+    }
+
+    // Detects athlete in frame.
+    void detect(cv::Mat &frame) {
+        if (current_frame == person_frame) {
+            detect_current(frame);
+        }
+        else if (current_frame > person_frame)
+            if (!track_current(frame))
+                std::cout << "tracking failed" << std::endl;
+
+        // Update frame counter.
+        current_frame++;
+
+        // Check if `last_person` is correctly assigned.
+        if (!valid_person) return;
+
+        // TODO: detect body parts.
+
+        // Draw person into frame.
+        draw(frame);
+        // TODO: Wrap person's info into some struct/class.
+
+        frames.push_back(frame.clone());
+        // Display current person in frame.
+        // cv::imshow("frame", frame);
+        // cv::waitKey();
+    }
+
+    void write(const std::string &&filename) {
+        cv::VideoWriter writer(filename, cv::VideoWriter::fourcc('D','I','V','X'), 30, cv::Size(frames.back().cols, frames.back().rows));
+        for (auto &f : frames)
+            writer.write(f);
+        writer.release();
     }
 
 };

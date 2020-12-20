@@ -14,7 +14,7 @@ public:
     void process(const std::string &filename) {
         cv::VideoCapture video;
 
-        body_detector detector;
+        body_detector detector(0, cv::Point(805, 385));
 
         // Try to open video.
         if (!video.open(filename)){
@@ -36,6 +36,8 @@ public:
             // Detect body.
             detector.detect(frame);
         }
+
+        detector.write("tracked.avi");
 
         // Free resources.
         video.release();
