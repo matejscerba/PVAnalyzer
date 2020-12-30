@@ -9,6 +9,8 @@
 
 class body_detector {
 
+    enum direction { up, down, none };
+
     const int max_size = 256;
     const int npoints = 16;
     const int npairs = 14;
@@ -32,6 +34,12 @@ class body_detector {
     std::size_t person_frame;
     const cv::Point person_position;
     std::vector<cv::Rect2d> people;
+
+    direction person_direction = none;
+    std::vector<double> position_offsets;
+    double position_delta = 0;
+    cv::Rect2d position_rect;
+    cv::Ptr<cv::Tracker> position_tracker;
 
     std::vector<cv::Mat> frames;
 
@@ -89,12 +97,32 @@ class body_detector {
             tracker_isInit = true;
         }
 
+        update_position_rect(frame, last);
+
         // Update tracker.
         if (tracker->update(frame, last)) {
             people.push_back(last);
+            if (position_tracker->update(frame, position_rect))
+                position_offsets.push_back(get_offset(last));
             return true;
         }
         return false;
+    }
+
+    void update_position_rect(cv::Mat &frame, cv::Rect2d last) {
+        if ((position_rect.x <= 0) || (position_rect.y <= 0) ||
+            (position_rect.x + position_rect.width >= (double)frame.cols) ||
+            (position_rect.y + position_rect.height >= (double)frame.rows)) {
+                position_rect = last + cv::Point2d(last.width, 0);
+                position_tracker = cv::TrackerCSRT::create();
+                position_tracker->init(frame, position_rect);
+                if (position_offsets.size())
+                    position_delta = position_offsets.back();
+        }
+    }
+
+    double get_offset(cv::Rect2d person_rect) {
+        return position_delta + (person_rect.y + person_rect.height / 2) - (position_rect.y + position_rect.height / 2);
     }
 
     // Draw person in image `frame` based on `output`, it is in rectangle `people.back()`.
@@ -152,6 +180,9 @@ class body_detector {
     // Draw rectangle `people.back()` in `frame`.
     void draw(cv::Mat &frame) const {
         cv::rectangle(frame, people.back().tl(), people.back().br(), cv::Scalar(0, 255, 0), 2);
+        cv::rectangle(frame, position_rect.tl(), position_rect.br(), cv::Scalar(255, 0, 0), 2);
+        if (position_offsets.size())
+            std::cout << position_offsets.back() << std::endl;
     }
 
 public:
@@ -187,8 +218,8 @@ public:
 
         frames.push_back(frame.clone());
         // Display current person in frame.
-        // cv::imshow("frame", frame);
-        // cv::waitKey();
+        cv::imshow("frame", frame);
+        cv::waitKey();
     }
 
     void write(const std::string &&filename) {
