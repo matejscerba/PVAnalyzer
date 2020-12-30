@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <iterator>
 
 class body_detector {
 
@@ -41,6 +42,9 @@ class body_detector {
     cv::Rect2d position_rect;
     cv::Ptr<cv::Tracker> position_tracker;
 
+    bool vault_began = false;
+    const std::size_t vault_check_frames = 6;
+    const double vault_threshold = -0.55;
     std::vector<cv::Mat> frames;
 
     // Comparator for rectangles by distance from `person_position`.
@@ -99,12 +103,26 @@ class body_detector {
 
         update_position_rect(frame, last);
 
-        // Update tracker.
-        if (tracker->update(frame, last)) {
-            people.push_back(last);
-            if (position_tracker->update(frame, position_rect))
-                position_offsets.push_back(get_offset(last));
-            return true;
+        if (vault_began) {
+            // TODO: Process vault differently.
+            if (tracker->update(frame, last)) {
+                people.push_back(last);
+                if (position_tracker->update(frame, position_rect)) {
+                    position_offsets.push_back(get_offset(last));
+                    check_vault_beginning((double)frame.rows);
+                }
+                return true;
+            }
+        } else {
+            // Update tracker.
+            if (tracker->update(frame, last)) {
+                people.push_back(last);
+                if (position_tracker->update(frame, position_rect)) {
+                    position_offsets.push_back(get_offset(last));
+                    check_vault_beginning((double)frame.rows);
+                }
+                return true;
+            }
         }
         return false;
     }
@@ -125,6 +143,37 @@ class body_detector {
     // Calculate verical offset of initial `position_rect`.
     double get_offset(cv::Rect2d person_rect) {
         return position_delta + (person_rect.y + person_rect.height / 2) - (position_rect.y + position_rect.height / 2);
+    }
+
+    // Check if vault is beginning.
+    void check_vault_beginning(double height) {
+        if ((!vault_began) && (position_offsets.size() > vault_check_frames)) {
+            double size = people.back().height / height;
+            double runup_mean_delta = count_mean_delta(position_offsets.begin(), position_offsets.end() - vault_check_frames);
+            double vault_mean_delta = count_mean_delta(position_offsets.end() - vault_check_frames, position_offsets.end());
+
+            if ((vault_mean_delta - runup_mean_delta) * size < vault_threshold)
+                vault_began = true;
+
+            // std::cout << "size: " << size << std::endl;
+            // std::cout << "runup:" << runup_mean_delta << std::endl;
+            // std::cout << "vault:" << vault_mean_delta << std::endl << std::endl;
+        }
+    }
+
+    // Count mean of differences of consecutives values given by iterators.
+    double count_mean_delta(std::vector<double>::const_iterator begin, std::vector<double>::const_iterator end) {
+        double sum = 0;
+        std::ptrdiff_t n = end - begin;
+        double last = *begin;
+        begin++;
+        for (; begin != end; begin++) {
+            sum += (*begin - last);
+            last = *begin;
+        }
+        if (sum)
+            return sum / (n - 1);
+        return 0;
     }
 
     // Draw person in image `frame` based on `output`, it is in rectangle `people.back()`.
@@ -181,15 +230,16 @@ class body_detector {
 
     // Draw rectangle `people.back()` in `frame`.
     void draw(cv::Mat &frame) const {
-        cv::rectangle(frame, people.back().tl(), people.back().br(), cv::Scalar(0, 255, 0), 2);
-        cv::rectangle(frame, position_rect.tl(), position_rect.br(), cv::Scalar(255, 0, 0), 2);
-        if (position_offsets.size())
-            std::cout << position_offsets.back() << std::endl;
+        cv::Scalar color(0, 0, 255);
+        if (vault_began)
+            color = cv::Scalar(0, 255, 0);
+        cv::rectangle(frame, people.back().tl(), people.back().br(), color, 2);
+        // cv::rectangle(frame, position_rect.tl(), position_rect.br(), cv::Scalar(255, 0, 0), 2);
     }
 
 public:
 
-    body_detector(std::size_t frame, const cv::Point &&position) :
+    body_detector(std::size_t frame, const cv::Point &position) :
         hog(cv::Size(48, 96), cv::Size(16, 16), cv::Size(8, 8), cv::Size(8, 8), 9), person_position(position) {
             person_frame = frame;
             hog.setSVMDetector(cv::HOGDescriptor::getDaimlerPeopleDetector());

@@ -14,7 +14,12 @@ public:
     void process(const std::string &filename) {
         cv::VideoCapture video;
 
-        body_detector detector(0, cv::Point(805, 385));
+        cv::Point start;
+        if (filename.find("kolin2.MOV") != std::string::npos) {
+            start = cv::Point(805, 385);
+        }
+
+        body_detector detector(0, start);
 
         // Try to open video.
         if (!video.open(filename)){
