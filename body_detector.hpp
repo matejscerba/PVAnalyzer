@@ -109,6 +109,7 @@ class body_detector {
         return false;
     }
 
+    // Check if `position_rect` is inside frame, create new one if neccessary.
     void update_position_rect(cv::Mat &frame, cv::Rect2d last) {
         if ((position_rect.x <= 0) || (position_rect.y <= 0) ||
             (position_rect.x + position_rect.width >= (double)frame.cols) ||
@@ -121,6 +122,7 @@ class body_detector {
         }
     }
 
+    // Calculate verical offset of initial `position_rect`.
     double get_offset(cv::Rect2d person_rect) {
         return position_delta + (person_rect.y + person_rect.height / 2) - (position_rect.y + position_rect.height / 2);
     }
