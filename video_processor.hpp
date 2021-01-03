@@ -14,14 +14,19 @@ public:
     void process(const std::string &filename) {
         cv::VideoCapture video;
 
+        std::size_t frame_start = 0;
         cv::Point start;
         if (filename.find("kolin2.MOV") != std::string::npos) {
+            frame_start = 0;
             start = cv::Point(805, 385);
+        } else if (filename.find("kolin.mp4") != std::string::npos) {
+            frame_start = 96;
+            start = cv::Point(85, 275);
         }
 
-        body_detector detector(0, start);
+        body_detector detector(frame_start, start);
 
-        // Try to open video.
+        // Video could not be opened, try photo.
         if (!video.open(filename)){
             cv::Mat im = cv::imread(filename);
             detector.detect(im);
@@ -29,6 +34,7 @@ public:
         }
 
         cv::Mat frame;
+        std::size_t c = 0;
 
         // Video is opened, processing begins.
         for (;;) {
@@ -37,6 +43,9 @@ public:
             // Video ended.
             if (frame.empty())
                 break;
+
+            std::cout << frame.cols << " " << frame.rows << " " << c << std::endl;
+            c++;
 
             // Detect body.
             detector.detect(frame);

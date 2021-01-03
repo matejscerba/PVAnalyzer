@@ -7,6 +7,7 @@
 #include <vector>
 #include <cmath>
 #include <iterator>
+#include <algorithm>
 
 class body_detector {
 
@@ -44,8 +45,10 @@ class body_detector {
 
     bool vault_began = false;
     const std::size_t vault_check_frames = 6;
-    const double vault_threshold = -0.55;
+    const double vault_threshold = -0.55 / 720;
     std::vector<cv::Mat> frames;
+
+    double dir = -1;
 
     // Comparator for rectangles by distance from `person_position`.
     bool distance_compare(const cv::Rect &lhs, const cv::Rect &rhs) const {
@@ -66,12 +69,13 @@ class body_detector {
     void select_rectangle(std::vector<cv::Rect> &detections, const cv::Mat &frame) {
         if (detections.size()) {
             valid_person = true;
-            std::sort(
+            cv::Rect r = *std::min_element(
                 detections.begin(), detections.end(),
                 [this](const cv::Rect &a, const cv::Rect &b) { return distance_compare(a, b); }
             );
-            cv::Rect r = detections.front();
             people.emplace_back(r.x, r.y, r.width, r.height);
+            if (r.x + r.width / 2 > frame.cols / 2)
+                dir = 1;
         }
     }
 
@@ -132,7 +136,7 @@ class body_detector {
         if ((position_rect.x <= 0) || (position_rect.y <= 0) ||
             (position_rect.x + position_rect.width >= (double)frame.cols) ||
             (position_rect.y + position_rect.height >= (double)frame.rows)) {
-                position_rect = last + cv::Point2d(last.width, 0);
+                position_rect = last + cv::Point2d(dir * last.width, 0);
                 position_tracker = cv::TrackerCSRT::create();
                 position_tracker->init(frame, position_rect);
                 if (position_offsets.size())
@@ -152,7 +156,7 @@ class body_detector {
             double runup_mean_delta = count_mean_delta(position_offsets.begin(), position_offsets.end() - vault_check_frames);
             double vault_mean_delta = count_mean_delta(position_offsets.end() - vault_check_frames, position_offsets.end());
 
-            if ((vault_mean_delta - runup_mean_delta) * size < vault_threshold)
+            if ((vault_mean_delta - runup_mean_delta) * size / height < vault_threshold)
                 vault_began = true;
 
             // std::cout << "size: " << size << std::endl;
@@ -161,19 +165,14 @@ class body_detector {
         }
     }
 
-    // Count mean of differences of consecutives values given by iterators.
+    // Count mean of difference of consecutives values given by iterators.
     double count_mean_delta(std::vector<double>::const_iterator begin, std::vector<double>::const_iterator end) {
-        double sum = 0;
+        double sum = *(--end) - *begin;
         std::ptrdiff_t n = end - begin;
-        double last = *begin;
-        begin++;
-        for (; begin != end; begin++) {
-            sum += (*begin - last);
-            last = *begin;
-        }
-        if (sum)
-            return sum / (n - 1);
+        if (n)
+            return sum / n;
         return 0;
+        // TODO: Check...
     }
 
     // Draw person in image `frame` based on `output`, it is in rectangle `people.back()`.
@@ -234,7 +233,7 @@ class body_detector {
         if (vault_began)
             color = cv::Scalar(0, 255, 0);
         cv::rectangle(frame, people.back().tl(), people.back().br(), color, 2);
-        // cv::rectangle(frame, position_rect.tl(), position_rect.br(), cv::Scalar(255, 0, 0), 2);
+        cv::rectangle(frame, position_rect.tl(), position_rect.br(), cv::Scalar(255, 0, 0), 2);
     }
 
 public:
