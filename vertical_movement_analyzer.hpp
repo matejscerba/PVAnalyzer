@@ -92,7 +92,7 @@ public:
     }
 
     void draw(cv::Mat &frame) const {
-        // cv::rectangle(frame, background.tl(), background.br(), cv::Scalar(255, 0, 0), 2);
+        cv::rectangle(frame, background.tl(), background.br(), cv::Scalar(255, 0, 0), 2);
     }
 
 };

@@ -74,7 +74,7 @@ public:
             cv::waitKey();
         }
 
-        // write("tracked_rotation2.avi");
+        // write("tracked_rotation.avi");
 
         // Free resources.
         video.release();
