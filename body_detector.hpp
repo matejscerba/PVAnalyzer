@@ -6,11 +6,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <cmath>
-#include <iterator>
 #include <algorithm>
 
 #include "vertical_movement_analyzer.hpp"
+#include "vault_body_detector.hpp"
 
 class body_detector {
 
@@ -31,14 +30,16 @@ class body_detector {
     cv::dnn::Net net;
     cv::Ptr<cv::Tracker> tracker;
 
-    std::size_t fps;
     std::size_t current_frame = 0;
     std::size_t person_frame;
     const cv::Point person_position;
 
     std::vector<cv::Rect2d> people;
 
+    double direction;
+
     vertical_movement_analyzer vm_analyzer;
+    vault_body_detector vb_detector;
 
     // Comparator for rectangles by distance from `person_position`.
     bool distance_compare(const cv::Rect &lhs, const cv::Rect &rhs) const {
@@ -65,13 +66,15 @@ class body_detector {
             people.emplace_back(r.x, r.y, r.width, r.height);
             
             // Update `vm_analyzer` direction.
-            vm_analyzer.change_direction(r.x + r.width / 2 > frame.cols / 2 ? 1 : -1);
+            direction = r.x + r.width / 2 > frame.cols / 2 ? 1 : -1;
+            vm_analyzer.change_direction(direction);
+            vb_detector.change_direction(direction);
         }
         return detections.size();
     }
 
+    // Detect person's bounding rectangle in frame.
     bool detect_current(cv::Mat &frame) {
-        // Detect person rectangle in frame.
         std::vector<cv::Rect> detections;
         hog.detectMultiScale(frame, detections, 0, cv::Size(4, 4), cv::Size(), 1.05, 2, true);
 
@@ -90,11 +93,8 @@ class body_detector {
         cv::Rect2d person = people.back();
 
         if (vm_analyzer.vault_began()) {
-            // TODO: Process vault differently.
-            if (tracker->update(frame, person)) {
-                people.push_back(person);
-                return vm_analyzer.update(frame, person);
-            }
+            people.push_back(vb_detector.update(frame, person, tracker));
+            return true;
         } else {
             // Update tracker.
             if (tracker->update(frame, person)) {
@@ -171,9 +171,9 @@ public:
     enum result { skip, ok, error };
 
     body_detector(std::size_t frame, const cv::Point &position, std::size_t fps) :
-        hog(cv::Size(48, 96), cv::Size(16, 16), cv::Size(8, 8), cv::Size(8, 8), 9), person_position(position), vm_analyzer(1) {
+        hog(cv::Size(48, 96), cv::Size(16, 16), cv::Size(8, 8), cv::Size(8, 8), 9),
+        person_position(position), vm_analyzer(1), vb_detector(fps, 1) {
             person_frame = frame;
-            this->fps = fps;
             hog.setSVMDetector(cv::HOGDescriptor::getDaimlerPeopleDetector());
             net = cv::dnn::readNet(protofile, caffemodel);
             tracker = cv::TrackerCSRT::create();

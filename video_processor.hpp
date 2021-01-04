@@ -28,7 +28,7 @@ public:
         std::size_t frame_start = 0;
         cv::Point position;
         if (filename.find("kolin2.MOV") != std::string::npos) {
-            fps = 60;
+            fps = 120;
             frame_start = 0;
             position = cv::Point(805, 385);
         } else if (filename.find("kolin.mp4") != std::string::npos) {
@@ -74,7 +74,7 @@ public:
             cv::waitKey();
         }
 
-        // write("tracked.avi");
+        // write("tracked_rotation2.avi");
 
         // Free resources.
         video.release();
