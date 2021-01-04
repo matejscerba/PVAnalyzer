@@ -2,6 +2,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/tracking/tracker.hpp>
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -9,9 +10,9 @@
 #include <iterator>
 #include <algorithm>
 
-class body_detector {
+#include "vertical_movement_analyzer.hpp"
 
-    enum direction { up, down, none };
+class body_detector {
 
     const int max_size = 256;
     const int npoints = 16;
@@ -30,25 +31,14 @@ class body_detector {
     cv::dnn::Net net;
     cv::Ptr<cv::Tracker> tracker;
 
-    bool valid_person = false;
-    bool tracker_isInit = false;
+    std::size_t fps;
     std::size_t current_frame = 0;
     std::size_t person_frame;
     const cv::Point person_position;
+
     std::vector<cv::Rect2d> people;
 
-    direction person_direction = none;
-    std::vector<double> position_offsets;
-    double position_delta = 0;
-    cv::Rect2d position_rect;
-    cv::Ptr<cv::Tracker> position_tracker;
-
-    bool vault_began = false;
-    const std::size_t vault_check_frames = 6;
-    const double vault_threshold = -0.55 / 720;
-    std::vector<cv::Mat> frames;
-
-    double dir = -1;
+    vertical_movement_analyzer vm_analyzer;
 
     // Comparator for rectangles by distance from `person_position`.
     bool distance_compare(const cv::Rect &lhs, const cv::Rect &rhs) const {
@@ -66,113 +56,53 @@ class body_detector {
     }
 
     // Updates `people` with rectangle from detections closest to `person_position`.
-    void select_rectangle(std::vector<cv::Rect> &detections, const cv::Mat &frame) {
+    bool select_rectangle(std::vector<cv::Rect> &detections, const cv::Mat &frame) {
         if (detections.size()) {
-            valid_person = true;
             cv::Rect r = *std::min_element(
                 detections.begin(), detections.end(),
                 [this](const cv::Rect &a, const cv::Rect &b) { return distance_compare(a, b); }
             );
             people.emplace_back(r.x, r.y, r.width, r.height);
-            if (r.x + r.width / 2 > frame.cols / 2)
-                dir = 1;
+            
+            // Update `vm_analyzer` direction.
+            vm_analyzer.change_direction(r.x + r.width / 2 > frame.cols / 2 ? 1 : -1);
         }
+        return detections.size();
     }
 
-    void detect_current(cv::Mat &frame) {
+    bool detect_current(cv::Mat &frame) {
         // Detect person rectangle in frame.
         std::vector<cv::Rect> detections;
         hog.detectMultiScale(frame, detections, 0, cv::Size(4, 4), cv::Size(), 1.05, 2, true);
 
         // Select valid rectangle.
-        select_rectangle(detections, frame);
-
-        // Get person's points.
-        // cv::Mat personFrame(frame, person);
-        // cv::Mat blob = cv::dnn::blobFromImage(personFrame, 1.0 / 255, cv::Size(368, 368), cv::Scalar(0, 0, 0), false, false);
-        // net.setInput(blob);
-        // cv::Mat output = net.forward();
-        // cv::Mat output;
-    }
-
-    // Tracks `last_person` object in current frame.
-    bool track_current(cv::Mat &frame) {
-        cv::Rect2d last = people.back();
-
-        // Initialize tracker.
-        if (!tracker_isInit) {
-            tracker->init(frame, last);
-            tracker_isInit = true;
+        if (select_rectangle(detections, frame)) {
+            // Valid rectangle selected, initialize tracker.
+            tracker->init(frame, people.back());
+            return true;
         }
 
-        update_position_rect(frame, last);
-
-        if (vault_began) {
-            // TODO: Process vault differently.
-            if (tracker->update(frame, last)) {
-                people.push_back(last);
-                if (position_tracker->update(frame, position_rect)) {
-                    position_offsets.push_back(get_offset(last));
-                    check_vault_beginning((double)frame.rows);
-                }
-                return true;
-            }
-        } else {
-            // Update tracker.
-            if (tracker->update(frame, last)) {
-                people.push_back(last);
-                if (position_tracker->update(frame, position_rect)) {
-                    position_offsets.push_back(get_offset(last));
-                    check_vault_beginning((double)frame.rows);
-                }
-                return true;
-            }
-        }
         return false;
     }
 
-    // Check if `position_rect` is inside frame, create new one if neccessary.
-    void update_position_rect(cv::Mat &frame, cv::Rect2d last) {
-        if ((position_rect.x <= 0) || (position_rect.y <= 0) ||
-            (position_rect.x + position_rect.width >= (double)frame.cols) ||
-            (position_rect.y + position_rect.height >= (double)frame.rows)) {
-                position_rect = last + cv::Point2d(dir * last.width, 0);
-                position_tracker = cv::TrackerCSRT::create();
-                position_tracker->init(frame, position_rect);
-                if (position_offsets.size())
-                    position_delta = position_offsets.back();
+    // Tracks athlete in current frame.
+    bool track_current(cv::Mat &frame) {
+        cv::Rect2d person = people.back();
+
+        if (vm_analyzer.vault_began()) {
+            // TODO: Process vault differently.
+            if (tracker->update(frame, person)) {
+                people.push_back(person);
+                return vm_analyzer.update(frame, person);
+            }
+        } else {
+            // Update tracker.
+            if (tracker->update(frame, person)) {
+                people.push_back(person);
+                return vm_analyzer.update(frame, person);
+            }
         }
-    }
-
-    // Calculate verical offset of initial `position_rect`.
-    double get_offset(cv::Rect2d person_rect) {
-        return position_delta + (person_rect.y + person_rect.height / 2) - (position_rect.y + position_rect.height / 2);
-    }
-
-    // Check if vault is beginning.
-    void check_vault_beginning(double height) {
-        if ((!vault_began) && (position_offsets.size() > vault_check_frames)) {
-            double size = people.back().height / height;
-            double runup_mean_delta = count_mean_delta(position_offsets.begin(), position_offsets.end() - vault_check_frames);
-            double vault_mean_delta = count_mean_delta(position_offsets.end() - vault_check_frames, position_offsets.end());
-
-            if ((vault_mean_delta - runup_mean_delta) * size / height < vault_threshold)
-                vault_began = true;
-
-            // std::cout << "size: " << size << std::endl;
-            // std::cout << "runup:" << runup_mean_delta << std::endl;
-            // std::cout << "vault:" << vault_mean_delta << std::endl << std::endl;
-        }
-    }
-
-    // Count mean of difference of consecutives values given by iterators.
-    double count_mean_delta(std::vector<double>::const_iterator begin, std::vector<double>::const_iterator end) {
-        double sum = *(--end) - *begin;
-        std::ptrdiff_t n = end - begin;
-        if (n)
-            return sum / n;
-        return 0;
-        // TODO: Check...
+        return false;
     }
 
     // Draw person in image `frame` based on `output`, it is in rectangle `people.back()`.
@@ -230,54 +160,49 @@ class body_detector {
     // Draw rectangle `people.back()` in `frame`.
     void draw(cv::Mat &frame) const {
         cv::Scalar color(0, 0, 255);
-        if (vault_began)
+        if (vm_analyzer.vault_began())
             color = cv::Scalar(0, 255, 0);
         cv::rectangle(frame, people.back().tl(), people.back().br(), color, 2);
-        cv::rectangle(frame, position_rect.tl(), position_rect.br(), cv::Scalar(255, 0, 0), 2);
+        vm_analyzer.draw(frame);
     }
 
 public:
 
-    body_detector(std::size_t frame, const cv::Point &position) :
-        hog(cv::Size(48, 96), cv::Size(16, 16), cv::Size(8, 8), cv::Size(8, 8), 9), person_position(position) {
+    enum result { skip, ok, error };
+
+    body_detector(std::size_t frame, const cv::Point &position, std::size_t fps) :
+        hog(cv::Size(48, 96), cv::Size(16, 16), cv::Size(8, 8), cv::Size(8, 8), 9), person_position(position), vm_analyzer(1) {
             person_frame = frame;
+            this->fps = fps;
             hog.setSVMDetector(cv::HOGDescriptor::getDaimlerPeopleDetector());
             net = cv::dnn::readNet(protofile, caffemodel);
             tracker = cv::TrackerCSRT::create();
     }
 
     // Detects athlete in frame.
-    void detect(cv::Mat &frame) {
-        if (current_frame == person_frame) {
-            detect_current(frame);
-        }
-        else if (current_frame > person_frame)
-            if (!track_current(frame))
+    result detect(cv::Mat &frame) {
+        if (current_frame < person_frame) {
+            current_frame++;
+            return skip;
+        } else if (current_frame == person_frame) {
+            if (!detect_current(frame)) {
+                std::cout << "detection failed" << std::endl;
+                return error;
+            }
+        } else if (current_frame > person_frame) {
+            if (!track_current(frame)) {
                 std::cout << "tracking failed" << std::endl;
+                return error;
+            }
+        }
 
         // Update frame counter.
         current_frame++;
 
-        // Check if `last_person` is correctly assigned.
-        if (!valid_person) return;
-
-        // TODO: detect body parts.
-
         // Draw person into frame.
         draw(frame);
-        // TODO: Wrap person's info into some struct/class.
 
-        frames.push_back(frame.clone());
-        // Display current person in frame.
-        cv::imshow("frame", frame);
-        cv::waitKey();
-    }
-
-    void write(const std::string &&filename) {
-        cv::VideoWriter writer(filename, cv::VideoWriter::fourcc('D','I','V','X'), 30, cv::Size(frames.back().cols, frames.back().rows));
-        for (auto &f : frames)
-            writer.write(f);
-        writer.release();
+        return ok;
     }
 
 };

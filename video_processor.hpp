@@ -1,6 +1,7 @@
 #pragma once
 
 #include <opencv2/opencv.hpp>
+
 #include <string>
 #include <iostream>
 
@@ -8,23 +9,34 @@
 
 class video_processor {
 
+    std::vector<cv::Mat> frames;
+
+    void write(const std::string &&filename) {
+        cv::VideoWriter writer(filename, cv::VideoWriter::fourcc('D','I','V','X'), 30, cv::Size(frames.back().cols, frames.back().rows));
+        for (auto &f : frames)
+            writer.write(f);
+        writer.release();
+    }
+
 public:
 
     // Processes video from path `filename`.
     void process(const std::string &filename) {
         cv::VideoCapture video;
 
+        std::size_t fps = 30;
         std::size_t frame_start = 0;
-        cv::Point start;
+        cv::Point position;
         if (filename.find("kolin2.MOV") != std::string::npos) {
+            fps = 60;
             frame_start = 0;
-            start = cv::Point(805, 385);
+            position = cv::Point(805, 385);
         } else if (filename.find("kolin.mp4") != std::string::npos) {
             frame_start = 96;
-            start = cv::Point(85, 275);
+            position = cv::Point(85, 275);
         }
 
-        body_detector detector(frame_start, start);
+        body_detector detector(frame_start, position, fps);
 
         // Video could not be opened, try photo.
         if (!video.open(filename)){
@@ -48,10 +60,21 @@ public:
             c++;
 
             // Detect body.
-            detector.detect(frame);
+            body_detector::result res = detector.detect(frame);
+            if (res == body_detector::result::error)
+                break;
+            else if (res == body_detector::result::skip)
+                continue;
+            
+
+            frames.push_back(frame.clone());
+
+            // Display current person in frame.
+            cv::imshow("frame", frame);
+            cv::waitKey();
         }
 
-        // detector.write("tracked.avi");
+        // write("tracked.avi");
 
         // Free resources.
         video.release();
