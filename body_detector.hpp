@@ -67,7 +67,7 @@ class body_detector {
     }
 
     // Detect person's bounding rectangle in frame.
-    bool detect_current(cv::Mat &frame) {
+    bool detect_current(cv::Mat &frame, cv::Mat &person_mat) {
         std::vector<cv::Rect> detections;
         hog.detectMultiScale(frame, detections, 0, cv::Size(4, 4), cv::Size(), 1.05, 2, true);
 
@@ -75,6 +75,7 @@ class body_detector {
         if (select_rectangle(detections, frame)) {
             // Valid rectangle selected, initialize tracker.
             tracker->init(frame, people.back());
+            person_mat = frame(people.back()).clone();
             return true;
         }
 
@@ -82,12 +83,13 @@ class body_detector {
     }
 
     // Tracks athlete in current frame.
-    bool track_current(cv::Mat &frame) {
+    bool track_current(cv::Mat &frame, cv::Mat &person_mat) {
         cv::Rect2d person = people.back();
 
+        bool res = false;
         if (move_analyzer.vault_began()) {
-            people.push_back(vb_detector.update(frame, person, tracker));
-            return true;
+            people.push_back(vb_detector.update(frame, person, tracker, person_mat));
+            res = true;
         } else {
             // Update runup direction.
             vb_detector.change_direction(move_analyzer.get_direction());
@@ -95,10 +97,25 @@ class body_detector {
             // Update tracker.
             if (tracker->update(frame, person)) {
                 people.push_back(person);
-                return move_analyzer.update(frame, person);
+                res = move_analyzer.update(frame, person);
+                person_mat = frame(person).clone();
             }
         }
-        return false;
+        return res;
+    }
+
+    // Detects person's points and finds their correct position in frame.
+    void detect_points(cv::Mat &frame, cv::Mat &person) {
+        cv::Mat blob = cv::dnn::blobFromImage(person, 1.0 / 255, cv::Size(), cv::Scalar(), false, false, CV_32F);
+        net.setInput(blob);
+        cv::Mat output = net.forward();
+
+        // TODO: Compute correct positions in frame, save to vector.
+
+        std::cout << person.cols << "x" << person.rows << std::endl;
+
+        // TODO: Change so that points are taken from saved values.
+        draw(frame, output);
     }
 
     // Draw person in image `frame` based on `output`, it is in rectangle `people.back()`.
@@ -177,26 +194,30 @@ public:
 
     // Detects athlete in frame.
     result detect(cv::Mat &frame) {
+        cv::Mat person;
         if (current_frame < person_frame) {
             current_frame++;
             return skip;
         } else if (current_frame == person_frame) {
-            if (!detect_current(frame)) {
+            if (!detect_current(frame, person)) {
                 std::cout << "detection failed" << std::endl;
                 return error;
             }
         } else if (current_frame > person_frame) {
-            if (!track_current(frame)) {
+            if (!track_current(frame, person)) {
                 std::cout << "tracking failed" << std::endl;
                 return error;
             }
         }
 
+        // Detect person's points.
+        detect_points(frame, person);
+
         // Update frame counter.
         current_frame++;
 
         // Draw person into frame.
-        draw(frame);
+        // draw(frame);
 
         return ok;
     }

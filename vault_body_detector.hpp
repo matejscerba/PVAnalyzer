@@ -65,7 +65,7 @@ public:
         this->dir = dir;
     }
 
-    cv::Rect2d update(cv::Mat &frame, cv::Rect2d person, cv::Ptr<cv::Tracker> tracker) {
+    cv::Rect2d update(cv::Mat &frame, cv::Rect2d person, cv::Ptr<cv::Tracker> tracker, cv::Mat &tracked) {
         cv::Rect2d prev = person;
         if (people.size())
             prev = people.back();
@@ -73,16 +73,16 @@ public:
         update_rotation_mat(center);
 
         // Rotate frame.
-        cv::Mat res;
-        cv::warpAffine(frame, res, rotation, frame.size());
+        cv::Mat rotated;
+        cv::warpAffine(frame, rotated, rotation, frame.size());
 
         // Track athlete.
-        tracker->update(res, prev);
+        tracker->update(rotated, prev);
         people.push_back(prev);
+        tracked = rotated(prev).clone();
 
         // Draw rectangle.
-        cv::rectangle(res, prev.tl(), prev.br(), cv::Scalar(0, 255, 0), 2);
-        cv::imshow("rot", res);
+        cv::rectangle(rotated, prev.tl(), prev.br(), cv::Scalar(0, 255, 0), 2);
 
         // Compute position before rotation.
         cv::Rect2d transformed = transform_back(prev);
