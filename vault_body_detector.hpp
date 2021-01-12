@@ -7,13 +7,15 @@
 #include <iostream>
 #include <algorithm>
 
+#include "movement_analyzer.hpp"
+
 class vault_body_detector {
 
     const double vault_duration = 0.8;
 
     std::size_t fps;
     std::size_t current_frame = 0;
-    double direction;
+    int dir;
 
     cv::Mat rotation;
     cv::Mat rotation_back;
@@ -44,7 +46,7 @@ class vault_body_detector {
     void update_rotation_mat(cv::Point2f center) {
         double old = alpha;
         if ((double)current_frame / (double)fps <= vault_duration) {
-            alpha = direction * 180.0 * (double)current_frame / (double)fps / vault_duration;
+            alpha = dir * 180.0 * (double)current_frame / (double)fps / vault_duration;
         }
         // Update rotation matrices if processing first frame or if rotation angle changes.
         if (!current_frame || (old != alpha)) {
@@ -55,12 +57,12 @@ class vault_body_detector {
 
 public:
 
-    vault_body_detector(std::size_t fps, double dir) : direction(dir) {
+    vault_body_detector(std::size_t fps, int dir) : dir(dir) {
         this->fps = fps;
     }
 
-    void change_direction(double dir) {
-        direction = dir;
+    void change_direction(int dir) {
+        this->dir = dir;
     }
 
     cv::Rect2d update(cv::Mat &frame, cv::Rect2d person, cv::Ptr<cv::Tracker> tracker) {

@@ -8,7 +8,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "vertical_movement_analyzer.hpp"
+#include "movement_analyzer.hpp"
 #include "vault_body_detector.hpp"
 
 class body_detector {
@@ -36,9 +36,7 @@ class body_detector {
 
     std::vector<cv::Rect2d> people;
 
-    double direction;
-
-    vertical_movement_analyzer vm_analyzer;
+    movement_analyzer move_analyzer;
     vault_body_detector vb_detector;
 
     // Comparator for rectangles by distance from `person_position`.
@@ -64,11 +62,6 @@ class body_detector {
                 [this](const cv::Rect &a, const cv::Rect &b) { return distance_compare(a, b); }
             );
             people.emplace_back(r.x, r.y, r.width, r.height);
-            
-            // Update `vm_analyzer` direction.
-            direction = r.x + r.width / 2 > frame.cols / 2 ? 1 : -1;
-            vm_analyzer.change_direction(direction);
-            vb_detector.change_direction(direction);
         }
         return detections.size();
     }
@@ -92,14 +85,17 @@ class body_detector {
     bool track_current(cv::Mat &frame) {
         cv::Rect2d person = people.back();
 
-        if (vm_analyzer.vault_began()) {
+        if (move_analyzer.vault_began()) {
             people.push_back(vb_detector.update(frame, person, tracker));
             return true;
         } else {
+            // Update runup direction.
+            vb_detector.change_direction(move_analyzer.get_direction());
+
             // Update tracker.
             if (tracker->update(frame, person)) {
                 people.push_back(person);
-                return vm_analyzer.update(frame, person);
+                return move_analyzer.update(frame, person);
             }
         }
         return false;
@@ -160,10 +156,10 @@ class body_detector {
     // Draw rectangle `people.back()` in `frame`.
     void draw(cv::Mat &frame) const {
         cv::Scalar color(0, 0, 255);
-        if (vm_analyzer.vault_began())
+        if (move_analyzer.vault_began())
             color = cv::Scalar(0, 255, 0);
         cv::rectangle(frame, people.back().tl(), people.back().br(), color, 2);
-        vm_analyzer.draw(frame);
+        move_analyzer.draw(frame);
     }
 
 public:
@@ -172,7 +168,7 @@ public:
 
     body_detector(std::size_t frame, const cv::Point &position, std::size_t fps) :
         hog(cv::Size(48, 96), cv::Size(16, 16), cv::Size(8, 8), cv::Size(8, 8), 9),
-        person_position(position), vm_analyzer(1), vb_detector(fps, 1) {
+        person_position(position), vb_detector(fps, movement_analyzer::direction::unknown) {
             person_frame = frame;
             hog.setSVMDetector(cv::HOGDescriptor::getDaimlerPeopleDetector());
             net = cv::dnn::readNet(protofile, caffemodel);

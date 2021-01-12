@@ -1,0 +1,35 @@
+Popis programu (11.1.2021):
+
+Program dostane na vstupu seznam cest k souborům s obrázky nebo videi, která chce uživatel analyzovat. Soubory se analyzují postupně.
+
+Instance třídy "video_processor" se pokusí otevřít příslušný soubor (jako obrázek nebo video), pro testovací účely podle cesty souboru nastaví parametry fps,
+číslo snímku, ve kterém začne hledat atleta a pozici středu těla atleta. Pokud je soubor obrázek, předá tento jediný obrázek instanci třídy "body_detector"
+ke zpracování ve funkci "detect". Pokud je soubor video, prochází jeho snímky postupně a předává je stejně jako v případě obrázku, dokud nezpracuje všechny
+snímky nebo dokud nedojde k chybě.
+
+Instance třídy "body_detector" inicializuje pro každý soubor (video nebo obrázek) zvlášť. Funkce "detect" dostane na vstupu snímek, zkontroluje, jestli je počet
+již zpracovaných snímků menší než parametr určující začátek detekce atleta, v takovémto případě snímek zahodí. Pokud právě zpracovává snímek, ve kterém má detekce
+atleta začít, použije funkci cv::HOGDescriptor::detectMultiScale pro nalezení postav ve snímku. Podle parametru pozice atleta vybere příslušnou postavu a použije ji
+při inicializaci trackeru cv::TrackerCSRT.
+Pokud se zpracovává pozdější snímek, trasuje se objekt, který program inicializoval dříve.
+
+Fáze rozběhu a fáze skoku se zpracovává mírně odlišně.
+
+Ze začátku se snímek nachází ve fázi rozběhu, program použije funkci cv::TrackerCSRT::update, která aktualizuje pozici obdélníku ohraňučíjícího postavu atleta. Tento obdélník
+si uložím. Program v této fázi pracuje s instancí třídy "movement_analyzer", která zkoumá pohyb středu obdélníku ohraňučíjícího postavu atleta vůči pozadí videa (vertikální i
+horizontální). Funkce movement_analyzer::update zajišťuje, že trasuji část pozadí videa, která se celá nachází uvnitř právě zpracovávaného snímku, v případě, že se část
+pozadí dostala mimo záběr, vybere se nová tak, že se posune těsně za atleta a nastaví se jí velikost atletova obdélníku (tedy při pohledu ze strany se posune nalevo od atleta,
+běží-li atlet doprava), navíc se zaktualizuje vzdálenost středu nové části pozadí od původní části (úplně první, kterou program inicializoval). Část pozadí trasuje tracker
+cv::TrackerCSRT, při zpracování každého snímku se tedy zavolá funkce cv::TrackerCSRT::update. Program spočítá vertikální a horizontální vzdálenost atleta od původní části
+pozadí (za pomoci současné polohy trasované části pozadí). Použije se vzorec `new_offset = delta + athlete_position - background_position`, kde delta je vzdálenost součsné
+polohy atleta od původní části pozadí. new_offset si uložím. "movement_analyzer" ještě zkoumá, zda nezačal skok. Zkoumá průměrný vertikální rozdíl po sobě jdoucích hodnot
+`new_offset`. Všech n doposud spočítaných hodnot se rozdělí na dvě části, prvních n-6 a posledních 6. Pro každou se spočítá průměrná vertikální změna dvou po sobě jdoucích
+hodnot `(last - first) / (k - 1)`, kde last je hodnota posledního prvku, first prvního a k počet prvků dané části. Nyní se kontroluje, jestli je rozdíl
+`(last_part_offset - first_part_offset) * (person_height / frame_height) / frame_height` menší než hodnota `alpha`, kde alpha je pevná konstanta. Nerovnost reprezentuje to,
+že se v posledních šesti snímcích atlet začíná pohybovat vzhůru vůči směru rozběhu, v potaz bere relativnívelikost atleta na snímku a rozlišení snímku. Pokud se nerovnost
+splní, program předpokládá, že začal skok a následující snímky bude zpracovávat jinak.
+
+Od začátku fáze skoku se snímek používaný pro trasování atleta postupně otáčí po dobu 0.8 sekundy o 180 stupňů. Úhel, o který se má i-tý snímek skoku otočit se počítá ve stupních jako
+`180 * current_frame / fps / 0.8`, tento úhel se ještě vynásobí hodnotou -1, pokud atlet na videu směrem doprava, tím se snímek otočí po směru hodinových ručiček. Cílem tohoto otáčení
+je přesnější detekce atleta ve fázi skoku, program se snaží atleta trasovat tak, aby jeho nohy byly na snímku vždy níž než hlava.
+
