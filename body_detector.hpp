@@ -10,31 +10,21 @@
 
 #include "movement_analyzer.hpp"
 #include "vault_body_detector.hpp"
+#include "person.hpp"
 
 class body_detector {
 
-    const int max_size = 256;
-    const int npoints = 16;
-    const int npairs = 14;
-    const int pairs[14][2] = {
-        {0,1}, {1,2}, {2,3},
-        {3,4}, {1,5}, {5,6},
-        {6,7}, {1,14}, {14,8}, {8,9},
-        {9,10}, {14,11}, {11,12}, {12,13}
-    };
-    const std::string protofile = "pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt";
-    const std::string caffemodel = "pose/mpi/pose_iter_160000.caffemodel";
-    const float probThreshold = 0.1;
-
     cv::HOGDescriptor hog;
     cv::dnn::Net net;
+    const std::string protofile = "pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt";
+    const std::string caffemodel = "pose/mpi/pose_iter_160000.caffemodel";
     cv::Ptr<cv::Tracker> tracker;
 
     std::size_t current_frame = 0;
     std::size_t person_frame;
     const cv::Point person_position;
 
-    std::vector<cv::Rect2d> people;
+    std::vector<person> people;
 
     movement_analyzer move_analyzer;
     vault_body_detector vb_detector;
@@ -61,7 +51,7 @@ class body_detector {
                 detections.begin(), detections.end(),
                 [this](const cv::Rect &a, const cv::Rect &b) { return distance_compare(a, b); }
             );
-            people.emplace_back(r.x, r.y, r.width, r.height);
+            people.emplace_back(current_frame, r, net);
         }
         return detections.size();
     }
@@ -71,11 +61,15 @@ class body_detector {
         std::vector<cv::Rect> detections;
         hog.detectMultiScale(frame, detections, 0, cv::Size(4, 4), cv::Size(), 1.05, 2, true);
 
+        for (auto &d : detections) {
+            cv::rectangle(frame, d.tl(), d.br(), cv::Scalar(0, 255, 0), 2);
+        }
+
         // Select valid rectangle.
         if (select_rectangle(detections, frame)) {
             // Valid rectangle selected, initialize tracker.
-            tracker->init(frame, people.back());
-            person_mat = frame(people.back()).clone();
+            tracker->init(frame, people.back().bbox());
+            person_mat = frame(people.back().bbox()).clone();
             return true;
         }
 
@@ -84,99 +78,34 @@ class body_detector {
 
     // Tracks athlete in current frame.
     bool track_current(cv::Mat &frame, cv::Mat &person_mat) {
-        cv::Rect2d person = people.back();
+        cv::Rect2d bbox = people.back().bbox();
 
         bool res = false;
         if (move_analyzer.vault_began()) {
-            people.push_back(vb_detector.update(frame, person, tracker, person_mat));
+            people.emplace_back(current_frame, vb_detector.update(frame, bbox, tracker, person_mat), net);
             res = true;
         } else {
             // Update runup direction.
-            vb_detector.change_direction(move_analyzer.get_direction());
+            vb_detector.update_direction(move_analyzer.get_direction());
 
             // Update tracker.
-            if (tracker->update(frame, person)) {
-                people.push_back(person);
-                res = move_analyzer.update(frame, person);
-                person_mat = frame(person).clone();
+            if (tracker->update(frame, bbox)) {
+                people.emplace_back(current_frame, bbox, net);
+                res = move_analyzer.update(frame, bbox);
+                person_mat = frame(bbox).clone();
             }
+
+            draw(frame);
         }
         return res;
     }
 
-    // Detects person's points and finds their correct position in frame.
-    void detect_points(cv::Mat &frame, cv::Mat &person) {
-        cv::Mat blob = cv::dnn::blobFromImage(person, 1.0 / 255, cv::Size(), cv::Scalar(), false, false, CV_32F);
-        net.setInput(blob);
-        cv::Mat output = net.forward();
-
-        // TODO: Compute correct positions in frame, save to vector.
-
-        std::cout << person.cols << "x" << person.rows << std::endl;
-
-        // TODO: Change so that points are taken from saved values.
-        draw(frame, output);
-    }
-
-    // Draw person in image `frame` based on `output`, it is in rectangle `people.back()`.
-    void draw(cv::Mat &frame, cv::Mat &output) const {
-        int h = output.size[2];
-        int w = output.size[3];
-
-        cv::Rect last_person = people.back();
-
-        std::vector<cv::Point> points(npoints);
-        
-        // Get points from output.
-        for (int n = 0; n < npoints; n++) {
-            cv::Mat probMat(h, w, CV_32F, output.ptr(0, n));
-
-            // Get point in output with maximum probability of "being point `n`".
-            cv::Point p(-1, -1), max;
-            double prob;
-            cv::minMaxLoc(probMat, 0, &prob, 0, &max);
-
-            // Check point probability against a threshold
-            if (prob > probThreshold) {
-                p = max;
-            }
-
-            points[n] = p;
-        }
-
-        // Scale factors.
-        float sx = (float)last_person.width / w;
-        float sy = (float)last_person.height / h;
-
-        // Draw pairs of points and connect them with lines.
-        for (int n = 0; n < npairs; n++) {
-            cv::Point2f a = points[pairs[n][0]];
-            cv::Point2f b = points[pairs[n][1]];
-
-            // Check if points `a` and `b` are valid.
-            if (a.x <= 0 || a.y <= 0 || b.x <= 0 || b.y <= 0)
-                continue;
-
-            // Scale points so they are in correct position.
-            a.x *= sx; a.x += last_person.x;
-            a.y *= sy; a.y += last_person.y;
-            b.x *= sx; b.x += last_person.x;
-            b.y *= sy; b.y += last_person.y;
-
-            // Draw points representing joints and connect them with lines.
-            cv::line(frame, a, b, cv::Scalar(0, 255, 255), 2);
-            cv::circle(frame, a, 2, cv::Scalar(0, 0, 255), -1);
-            cv::circle(frame, b, 2, cv::Scalar(0, 0, 255), -1);
-        }
-    }
-
-    // Draw rectangle `people.back()` in `frame`.
+    // Draw rectangle `people.back().bbox()` in `frame`.
     void draw(cv::Mat &frame) const {
         cv::Scalar color(0, 0, 255);
         if (move_analyzer.vault_began())
             color = cv::Scalar(0, 255, 0);
-        cv::rectangle(frame, people.back().tl(), people.back().br(), color, 2);
-        move_analyzer.draw(frame);
+        cv::rectangle(frame, people.back().bbox().tl(), people.back().bbox().br(), color, 2);
     }
 
 public:
@@ -194,24 +123,24 @@ public:
 
     // Detects athlete in frame.
     result detect(cv::Mat &frame) {
-        cv::Mat person;
+        cv::Mat person_mat;
         if (current_frame < person_frame) {
             current_frame++;
             return skip;
         } else if (current_frame == person_frame) {
-            if (!detect_current(frame, person)) {
+            if (!detect_current(frame, person_mat)) {
                 std::cout << "detection failed" << std::endl;
                 return error;
             }
         } else if (current_frame > person_frame) {
-            if (!track_current(frame, person)) {
+            if (!track_current(frame, person_mat)) {
                 std::cout << "tracking failed" << std::endl;
                 return error;
             }
         }
 
-        // Detect person's points.
-        detect_points(frame, person);
+        people.back().detect(person_mat);
+        people.back().draw(frame);
 
         // Update frame counter.
         current_frame++;

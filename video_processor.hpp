@@ -28,7 +28,7 @@ public:
         std::size_t frame_start = 0;
         cv::Point position;
         if (filename.find("kolin2.MOV") != std::string::npos) {
-            fps = 120;
+            fps = 30;
             frame_start = 0;
             position = cv::Point(805, 385);
         } else if (filename.find("kolin.mp4") != std::string::npos) {
@@ -72,9 +72,14 @@ public:
             // Display current person in frame.
             cv::imshow("frame", frame);
             cv::waitKey();
+
+            if (filename.find("kolin2.MOV") != std::string::npos) {
+                video >> frame; video >> frame; video >> frame;
+            }
+
         }
 
-        // write("tracked_rotation.avi");
+        // write("deep_tracked_rotation.avi");
 
         // Free resources.
         video.release();

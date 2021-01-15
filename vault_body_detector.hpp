@@ -21,25 +21,18 @@ class vault_body_detector {
     cv::Mat rotation_back;
     double alpha;
 
-    std::vector<cv::Rect2d> people;
+    std::vector<cv::Rect2d> bboxes;
 
-    // Computes position of person in frame before rotation.
-    cv::Rect2d transform_back(cv::Rect2d person) {
-        std::vector<cv::Point2f> src {
-            cv::Point2f(person.tl()),
-            cv::Point2f(person.br().x, person.tl().y),
-            cv::Point2f(person.tl().x, person.br().y),
-            cv::Point2f(person.br())
+    // Computes position of person in frame before rotation, returns vector of corner points.
+    std::vector<cv::Point2d> transform_back(cv::Rect2d person) {
+        std::vector<cv::Point2d> src {
+            person.tl(), cv::Point2d(person.br().x, person.tl().y),
+            cv::Point2d(person.tl().x, person.br().y), person.br()
         };
-        std::vector<cv::Point2f> res;
+        std::vector<cv::Point2d> res;
         cv::transform(src, res, rotation_back);
 
-        // Make sure person in rotated frame fits inside rectangle which I want to return.
-        float x_min = std::min_element(res.begin(), res.end(), [](cv::Point2f a, cv::Point2f b) { return a.x < b.x; })->x;
-        float y_min = std::min_element(res.begin(), res.end(), [](cv::Point2f a, cv::Point2f b) { return a.y < b.y; })->y;
-        float x_max = std::max_element(res.begin(), res.end(), [](cv::Point2f a, cv::Point2f b) { return a.x < b.x; })->x;
-        float y_max = std::max_element(res.begin(), res.end(), [](cv::Point2f a, cv::Point2f b) { return a.y < b.y; })->y;
-        return cv::Rect2d(x_min, y_min, x_max - x_min, y_max - y_min);
+        return res;
     }
 
     // Updates rotation matrix used for transformation based on approximate position during vault.
@@ -61,14 +54,14 @@ public:
         this->fps = fps;
     }
 
-    void change_direction(int dir) {
+    void update_direction(int dir) {
         this->dir = dir;
     }
 
-    cv::Rect2d update(cv::Mat &frame, cv::Rect2d person, cv::Ptr<cv::Tracker> tracker, cv::Mat &tracked) {
+    std::vector<cv::Point2d> update(cv::Mat &frame, cv::Rect2d person, cv::Ptr<cv::Tracker> tracker, cv::Mat &tracked) {
         cv::Rect2d prev = person;
-        if (people.size())
-            prev = people.back();
+        if (bboxes.size())
+            prev = bboxes.back();
         cv::Point2f center(frame.cols / 2, frame.rows / 2);
         update_rotation_mat(center);
 
@@ -78,17 +71,16 @@ public:
 
         // Track athlete.
         tracker->update(rotated, prev);
-        people.push_back(prev);
+        bboxes.push_back(prev);
         tracked = rotated(prev).clone();
 
         // Draw rectangle.
         cv::rectangle(rotated, prev.tl(), prev.br(), cv::Scalar(0, 255, 0), 2);
+        cv::warpAffine(rotated, frame, rotation_back, frame.size());
 
-        // Compute position before rotation.
-        cv::Rect2d transformed = transform_back(prev);
         current_frame++;
         
-        return transformed;
+        return transform_back(prev);
     }
 
 };
