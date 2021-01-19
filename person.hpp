@@ -41,7 +41,8 @@ class person {
             cv::Mat probMat(h, w, CV_32F, output.ptr(0, n));
 
             // Get point in output with maximum probability of "being point `n`".
-            cv::Point p(-1, -1), max;
+            cv::Point2d p(-1, -1);
+            cv::Point max;
             double prob;
             cv::minMaxLoc(probMat, 0, &prob, 0, &max);
 
@@ -49,17 +50,15 @@ class person {
             if (prob > probThreshold) {
                 p = max;
                 p.x *= sx; p.y *= sy; // Scale point so it fits original frame.
+
+                // Move point `p` so it is in correct position in frame.
+                p = corners[corner::tl]
+                    + p.x * (corners[corner::tr] - corners[corner::tl]) / width()
+                    + p.y * (corners[corner::bl] - corners[corner::tl]) / height();
             }
 
             points[n] = p;
         }
-    }
-
-    
-    void transform(cv::Point2d &p) const {
-        p = corners[corner::tl]
-            + p.x * (corners[corner::tr] - corners[corner::tl]) / width()
-            + p.y * (corners[corner::bl] - corners[corner::tl]) / height();
     }
 
 public:
@@ -111,9 +110,6 @@ public:
             // Check if points `a` and `b` are valid.
             if (a.x <= 0 || a.y <= 0 || b.x <= 0 || b.y <= 0)
                 continue;
-
-            // Move points `a` and `b` so they are in correct position in `frame`.
-            transform(a); transform(b);
 
             // Draw points representing joints and connect them with lines.
             cv::line(frame, a, b, cv::Scalar(0, 255, 255), 2);
