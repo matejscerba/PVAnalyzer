@@ -92,19 +92,16 @@ class movement_analyzer {
 
             if ((vault_mean_delta - runup_mean_delta) * size / height < vault_threshold)
                 _vault_began = true;
-
-            // std::cout << "size: " << size << std::endl;
-            // std::cout << "runup:" << runup_mean_delta << std::endl;
-            // std::cout << "vault:" << vault_mean_delta << std::endl << std::endl;
         }
     }
 
     // Count mean of difference of consecutives values given by iterators.
     cv::Point2d count_mean_delta(std::vector<cv::Point2d>::const_iterator begin, std::vector<cv::Point2d>::const_iterator end) const {
-        cv::Point2d sum = *(--end) - *begin;
-        double n = end - begin;
-        if (n)
+        double n = end - begin - 1;
+        if (n) {
+            cv::Point2d sum = *(--end) - *begin;
             return sum / n;
+        }
         return cv::Point2d();
     }
 
@@ -119,6 +116,7 @@ public:
         if (left_tracker->update(frame, left_background)) {
             left_offsets.push_back(get_offset(person, left_delta, left_background));
         } else {
+            // Tracker on left side failed - looks like right is valid.
             if (dir == unknown) dir = left;
             res = false;
         }

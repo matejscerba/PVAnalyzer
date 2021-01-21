@@ -79,7 +79,7 @@ public:
 
         }
 
-        // write("deep_tracked_rotation.avi");
+        // write("scaling-2.avi");
 
         // Free resources.
         video.release();
