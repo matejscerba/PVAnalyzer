@@ -1,7 +1,7 @@
 #pragma once
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/tracking/tracker.hpp>
+#include <opencv2/tracking/tracking.hpp>
 
 #include <vector>
 #include <algorithm>
@@ -12,8 +12,8 @@ class movement_analyzer {
     cv::Point2d right_delta;
     std::vector<cv::Point2d> left_offsets;
     std::vector<cv::Point2d> right_offsets;
-    cv::Rect2d left_background;
-    cv::Rect2d right_background;
+    cv::Rect left_background;
+    cv::Rect right_background;
     cv::Ptr<cv::Tracker> left_tracker;
     cv::Ptr<cv::Tracker> right_tracker;
 

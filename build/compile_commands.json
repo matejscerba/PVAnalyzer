@@ -1,7 +1,7 @@
 [
 {
   "directory": "/Users/matejscerba/Developer/cpp/rp/build",
-  "command": "/usr/bin/clang++   -isystem /usr/local/Cellar/opencv/4.5.0_3/include/opencv4  -g   -std=gnu++11 -o CMakeFiles/rp.dir/main.cpp.o -c /Users/matejscerba/Developer/cpp/rp/main.cpp",
+  "command": "/usr/bin/clang++  -DCERES_FOUND -isystem /usr/local/Cellar/opencv/4.5.1_2/include/opencv4  -g   -std=gnu++11 -o CMakeFiles/rp.dir/main.cpp.o -c /Users/matejscerba/Developer/cpp/rp/main.cpp",
   "file": "/Users/matejscerba/Developer/cpp/rp/main.cpp"
 }
 ]

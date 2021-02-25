@@ -1,7 +1,7 @@
 #pragma once
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/tracking/tracker.hpp>
+#include <opencv2/tracking/tracking.hpp>
 
 #include <iostream>
 #include <string>
@@ -36,7 +36,7 @@ class person {
     vault_body_detector vb_detector;
     movement_analyzer move_analyzer;
 
-    std::vector<cv::Point2d> get_corners(cv::Rect2d &rect) const {
+    std::vector<cv::Point2d> get_corners(cv::Rect &rect) const {
         return {
             rect.tl(), cv::Point2d(rect.br().x, rect.tl().y),
             cv::Point2d(rect.tl().x, rect.br().y), rect.br()
@@ -81,13 +81,13 @@ class person {
         }
     }
 
-    cv::Mat get_person_frame(cv::Rect2d &box, cv::Mat &frame) {
+    cv::Mat get_person_frame(cv::Rect &box, cv::Mat &frame) {
         return frame(vb_detector.scale(box, frame, scale_factor));
     }
 
 public:
 
-    person(std::size_t frame_no, cv::Mat &frame, std::size_t fps, cv::Rect2d box, cv::dnn::Net &net) :
+    person(std::size_t frame_no, cv::Mat &frame, std::size_t fps, cv::Rect box, cv::dnn::Net &net) :
         vb_detector(fps, movement_analyzer::direction::unknown) {
             first_frame_no = frame_no;
             current_frame_no = frame_no;
@@ -99,10 +99,10 @@ public:
             detect(person_frame);
     }
 
-    cv::Rect2d bbox() const {
-        return cv::Rect2d(
-            cv::Point2d(corners.back()[corner::tl]),
-            cv::Point2d(corners.back()[corner::br])
+    cv::Rect bbox() const {
+        return cv::Rect(
+            cv::Point(corners.back()[corner::tl]),
+            cv::Point(corners.back()[corner::br])
         );
     }
 
@@ -117,7 +117,7 @@ public:
     // Tracks person in `frame`.
     bool track(cv::Mat &frame) {
         current_frame_no++;
-        cv::Rect2d box = bbox();
+        cv::Rect box = bbox();
         cv::Mat person_frame;
 
         bool res = false;

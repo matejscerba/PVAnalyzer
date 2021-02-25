@@ -1,7 +1,7 @@
 #pragma once
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/tracking/tracker.hpp>
+#include <opencv2/tracking/tracking.hpp>
 
 #include <vector>
 #include <iostream>
@@ -57,7 +57,7 @@ public:
     }
 
     std::vector<cv::Point2d> update(cv::Mat &frame, cv::Ptr<cv::Tracker> &tracker, bool &res, cv::Mat &person_frame, double scale_factor) {
-        cv::Rect2d person;
+        cv::Rect person;
         cv::Point2f center(frame.cols / 2, frame.rows / 2);
         update_rotation_mat(center);
 
@@ -82,16 +82,16 @@ public:
     }
 
     // Scale rectange `rect`'s size by `scale_factor`, keep center on the same position.
-    cv::Rect2d scale(cv::Rect2d &rect, cv::Mat &frame, double scale_factor) {
-        cv::Point2d center(rect.x + rect.width / 2, rect.y + rect.height / 2);
-        cv::Point2d diag = center - rect.tl();
-        cv::Point2d tl = center - scale_factor * diag;
-        cv::Point2d br = center + scale_factor * diag;
+    cv::Rect scale(cv::Rect &rect, cv::Mat &frame, double scale_factor) {
+        cv::Point center(rect.x + rect.width / 2, rect.y + rect.height / 2);
+        cv::Point diag = center - rect.tl();
+        cv::Point tl = center - scale_factor * diag;
+        cv::Point br = center + scale_factor * diag;
 
         if (tl.x >= 0 && tl.y >= 0 && br.x <= frame.cols && br.y <= frame.rows) {
             // Make sure it fits inside frame.
             scaling_performed = true; // Remember if scaling was performed.
-            return cv::Rect2d(tl, br);
+            return cv::Rect(tl, br);
         } else {
             scaling_performed = false;
             return rect;

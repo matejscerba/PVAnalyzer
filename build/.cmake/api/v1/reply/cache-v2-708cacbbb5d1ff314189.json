@@ -1611,7 +1611,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "[/usr/local/Cellar/opencv/4.5.0_3][v4.5.0()]"
+			"value" : "[/usr/local/Cellar/opencv/4.5.1_2][v4.5.1()]"
 		},
 		{
 			"name" : "GITCOMMAND",
