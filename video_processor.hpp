@@ -22,8 +22,14 @@ public:
 
     // Processes video from path `filename`.
     void process(const std::string &filename) {
+        // Try to open video.
         cv::VideoCapture video;
+        if (!video.open(filename)) {
+            std::cout << "Error opening video " << filename << std::endl;
+            return;
+        }
 
+        // Set default parameters.
         std::size_t fps = 30;
         std::size_t frame_start = 0;
         cv::Point position;
@@ -36,18 +42,10 @@ public:
             position = cv::Point(85, 275);
         }
 
+        // Prepare body detector.
         body_detector detector(frame_start, position, fps);
 
-        // Video could not be opened, try photo.
-        if (!video.open(filename)){
-            cv::Mat im = cv::imread(filename);
-            detector.detect(im);
-            return;
-        }
-
         cv::Mat frame;
-        std::size_t c = 0;
-
         // Video is opened, processing begins.
         for (;;) {
             video >> frame;
@@ -56,27 +54,22 @@ public:
             if (frame.empty())
                 break;
 
-            std::cout << frame.cols << " " << frame.rows << " " << c << std::endl;
-            c++;
-
             // Detect body.
             body_detector::result res = detector.detect(frame);
             if (res == body_detector::result::error)
-                break;
+                break; // Error has occured while detecting body.
             else if (res == body_detector::result::skip)
-                continue;
+                continue; // This frame is supposed to be skipped.
             
-
             frames.push_back(frame.clone());
 
-            // Display current person in frame.
+            // Display current frame.
             cv::imshow("frame", frame);
             cv::waitKey();
 
             if (filename.find("kolin2.MOV") != std::string::npos) {
                 video >> frame; video >> frame; video >> frame;
             }
-
         }
 
         // write("scaling-2.avi");

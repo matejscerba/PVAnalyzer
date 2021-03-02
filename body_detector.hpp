@@ -24,7 +24,7 @@ class body_detector {
 
     std::list<person> people;
 
-    // Comparator for rectangles by distance from `person_position`.
+    // Comparator for rectangles by distance of their center to `person_position`.
     bool distance_compare(const cv::Rect &lhs, const cv::Rect &rhs) const {
         cv::Point l(lhs.x + lhs.width / 2, lhs.y + lhs.height / 2);
         cv::Point r(rhs.x + rhs.width / 2, rhs.y + rhs.height / 2);
@@ -40,6 +40,7 @@ class body_detector {
     }
 
     // Updates `people` with rectangle from detections closest to `person_position`.
+    // Returns `true` if some detections were valid.
     bool select_rectangle(std::vector<cv::Rect> &detections, cv::Mat &frame) {
         if (detections.size()) {
             cv::Rect r = *std::min_element(
@@ -52,13 +53,10 @@ class body_detector {
     }
 
     // Detect person's bounding rectangle in frame.
+    // Returns `true` if some detections were valid.
     bool detect_current(cv::Mat &frame) {
         std::vector<cv::Rect> detections;
         hog.detectMultiScale(frame, detections, 0, cv::Size(4, 4), cv::Size(), 1.05, 2, true);
-
-        // for (auto &d : detections) {
-        //     cv::rectangle(frame, d.tl(), d.br(), cv::Scalar(0, 255, 0), 2);
-        // }
 
         // Select valid rectangle.
         return select_rectangle(detections, frame);
@@ -78,21 +76,24 @@ public:
     }
 
     // Detects athlete in frame.
+    // Returns current frame's detection result.
     result detect(cv::Mat &frame) {
+        result res = ok;
         if (current_frame < person_frame) {
-            current_frame++;
-            return skip;
+            res = skip;
         } else if (current_frame == person_frame) {
+            // Detect person in frame.
             if (!detect_current(frame)) {
                 std::cout << "detection failed" << std::endl;
-                return error;
+                res = error;
             }
         } else {
             // Try to track every person in frame, if it fails, remove such person from `people`.
             people.remove_if([&frame](person &p){ return !p.track(frame); });
-            if (people.empty()) return error;
+            if (people.empty()) res = error;
         }
 
+        // Draw every person in frame.
         for (auto &p : people) {
             p.draw(frame);
         }
@@ -100,7 +101,7 @@ public:
         // Update frame counter.
         current_frame++;
 
-        return ok;
+        return res;
     }
 
 };

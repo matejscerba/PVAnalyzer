@@ -81,6 +81,7 @@ class person {
         }
     }
 
+
     cv::Mat get_person_frame(cv::Rect &box, cv::Mat &frame) {
         return frame(vb_detector.scale(box, frame, scale_factor));
     }
@@ -118,10 +119,11 @@ public:
     bool track(cv::Mat &frame) {
         current_frame_no++;
         cv::Rect box = bbox();
-        cv::Mat person_frame;
+        cv::Mat person_frame; // Scaled person's frame.
 
         bool res = false;
         if (move_analyzer.vault_began()) {
+            // Append person's bounding box corners, assuming vault has began.
             corners.push_back(vb_detector.update(frame, tracker, res, person_frame, scale_factor));
         } else {
             // Update runup direction.
@@ -129,12 +131,14 @@ public:
 
             // Update tracker.
             if (tracker->update(frame, box)) {
+                // Append person's bounding box corners.
                 corners.push_back(get_corners(box));
                 res = move_analyzer.update(frame, box);
                 person_frame = get_person_frame(box, frame);
             }
         }
 
+        // Detect person's body parts.
         if (res) detect(person_frame);
 
         return res;
