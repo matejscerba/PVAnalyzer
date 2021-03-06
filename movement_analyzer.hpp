@@ -6,24 +6,60 @@
 #include <vector>
 #include <algorithm>
 
+/**
+ * @brief Handles movement of person's bounding box.
+ * 
+ * Tracks parts of background on both sides of person and determines which direction
+ * is that person moving. Determines whether a vault has begun.
+ */
 class movement_analyzer {
 
+    /// @brief Position of current `left_background` compared to initial `left_background`.
     cv::Point2d left_delta;
+
+    /// @brief Position of current `right_background` compared to initial `right_background`.
     cv::Point2d right_delta;
+
+    /// @brief Vector of positions of person's bounding rectangles compared to initial `left_background`.
     std::vector<cv::Point2d> left_offsets;
+
+    /// @brief Vector of positions of person's bounding rectangles compared to initial `right_background`.
     std::vector<cv::Point2d> right_offsets;
+
+    /// @brief Bounding box of current tracked background to the left of person.
     cv::Rect left_background;
+
+    /// @brief Bounding box of current tracked background to the right of person.
     cv::Rect right_background;
+
+    /// @brief Tracker used for tracking background to the left of person. 
     cv::Ptr<cv::Tracker> left_tracker;
+
+    /// @brief Tracker used for tracking background to the right of person. 
     cv::Ptr<cv::Tracker> right_tracker;
 
+    /// @brief Holds information, whether vault bagan.
     bool _vault_began = false;
+
+    /// @brief How many frames to check to determine if vault began.
     const std::size_t vault_check_frames = 6;
+
+    /// @brief How much the person's coordinates must change in order to set `_vault_began` to true.
     const double vault_threshold = -0.55 / 720;
 
+    /// @brief Horizontal direction of person's movement.
     int dir = unknown;
 
-    // Check if `background` is inside frame, create new one if neccessary.
+    /**
+     * @brief Update parts of background to be tracked in order to fit inside frame.
+     * 
+     * @param frame Frame, inside which the background parts must fit.
+     * @param person Person's bounding box, so that left background is initialized to the
+     *     left of person, right to the right.
+     * 
+     * @note Background position is changed only if the old one is outside `frame`,
+     *     updated `left_delta`/`right_delta` if new background part should be tracked.
+    */
     void update_position_rect(cv::Mat &frame, cv::Rect2d person) {
         if ((left_background.x <= 0) || (left_background.y <= 0) ||
             (left_background.x + left_background.width >= (double)frame.cols) ||
@@ -59,8 +95,18 @@ class movement_analyzer {
         }
     }
 
-    // Checks if athlete is running away from left or right part of background.
-    void check_direction(cv::Rect2d person) {
+    /**
+     * @brief Check person's movement direction.
+     * 
+     * If person is moving away from `left_background`, its movement's direction should be left.
+     * If person is moving away from `right_background`, its movement's direction should be right.
+     * Direction is set only once and if there is enough data to determine its value.
+     * 
+     * @param person Person, whose direction should be checked.
+     * 
+     * @note Person must move at least @f$2 * person.width@f$ pixels horizontally to determine its direction.
+    */
+    void check_direction(const cv::Rect2d &person) {
         if ((dir == unknown) && left_offsets.size() && right_offsets.size()) {
             if (left_offsets.back().x > 2 * person.width)
                 dir = right;
@@ -69,18 +115,43 @@ class movement_analyzer {
         }
     }
 
-    // Calculate offset of initial `background`.
-    cv::Point2d get_offset(cv::Rect2d person, cv::Point2d delta, cv::Rect2d background) const {
+    /**
+     * @brief Calculate person's offset of initial background.
+     * 
+     * Calculate offset of `person` and initial background, which is determined from `delta` and `background`.
+     * `delta` determines offset of `background` and initial background.
+     * 
+     * @param person Bounding box, whose offset should be calculated.
+     * @param delta Offset of `background` and initial background (typically `left_delta` or `right_delta`).
+     * @param background Bounding box of part background (typically `left_background` or `right_background`).
+     * 
+     * @note This method returns coordinates of person's center so that initial background's center is at
+     *     coordinates (0,0).
+    */
+    cv::Point2d get_offset(const cv::Rect2d &person, const cv::Point2d &delta, const cv::Rect2d &background) const {
         return delta + get_center(person) - get_center(background);
     }
 
-    // Calculate center of given rectangle.
-    cv::Point2d get_center(cv::Rect2d rect) const {
+    /// @brief Calculate center of given rectangle.
+    cv::Point2d get_center(const cv::Rect2d &rect) const {
         return cv::Point2d(rect.x + rect.width / 2, rect.y + rect.height / 2);
     }
 
-    // Check if vault is beginning.
-    void check_vault_beginning(double height, cv::Rect2d person) {
+    /**
+     * @brief Check if vault is beginning.
+     * 
+     * Takes offsets of person and initial background and computes how much offsets changed
+     * in the last `vault_check_frames`. If the change surpasses `vault_threshold`, it is
+     * considered that the person took of and `_vault_began` is set to true.
+     * 
+     * @param height Height of currently processed frame.
+     * @param person Bounding box of person.
+     * 
+     * @see vault_check_frames
+     * @see vault_threshold
+     * @see _vault_began
+    */
+    void check_vault_beginning(double height, const cv::Rect2d &person) {
         std::vector<cv::Point2d> offsets;
         if (dir == right) offsets = left_offsets;
         else if (dir == left) offsets = right_offsets;
@@ -95,7 +166,13 @@ class movement_analyzer {
         }
     }
 
-    // Count mean of difference of consecutives values given by iterators.
+    /**
+     * @brief Count mean of offset of given consecutive values in vector.
+     * 
+     * @param begin Iterator specifying beginning of values to be processed.
+     * @param end Iterator specifying end of values to be processed.
+     * @returns mean of offsets of given consecutive values.
+    */
     cv::Point2d count_mean_delta(std::vector<cv::Point2d>::const_iterator begin, std::vector<cv::Point2d>::const_iterator end) const {
         double n = end - begin - 1;
         if (n) {
@@ -107,16 +184,33 @@ class movement_analyzer {
 
 public:
 
-    enum direction : int { right = -1, unknown = 0, left = 1 };
+    /**
+     * @brief Supported horizontal movement directions and their corresponding values.
+    */
+    enum direction : int {
+        right = -1,
+        unknown = 0,
+        left = 1
+    };
 
-    bool update(cv::Mat &frame, cv::Rect2d person) {
+    /**
+     * @brief Process next frame.
+     * 
+     * Update valid trackers, check direction and whether vault began.
+     * 
+     * @param frame Frame to be processed.
+     * @param person Person's bounding box in given frame.
+     * @returns false if both trackers failed (unable to determine person's movement direction),
+     *     true if tracking of at least one background part is OK.
+    */
+    bool update(cv::Mat &frame, const cv::Rect2d &person) {
         update_position_rect(frame, person);
         check_direction(person);
         bool res = true;
         if (left_tracker->update(frame, left_background)) {
             left_offsets.push_back(get_offset(person, left_delta, left_background));
         } else {
-            // Tracker on left side failed - looks like right is valid.
+            // Tracker on left side failed - looks like right is valid, person is moving to the left.
             if (dir == unknown) dir = left;
             res = false;
         }
@@ -130,14 +224,21 @@ public:
         return true;
     }
 
+    /// @brief Get detected direction.
     int get_direction() const {
         return dir;
     }
 
+    /// @brief Get information whether vault has begun.
     bool vault_began() const {
         return _vault_began;
     }
 
+    /**
+     * @brief Draw bounding boxes of currently tracked background parts.
+     * 
+     * @param frame Frame in which bounding boxes should be drawn.
+    */
     void draw(cv::Mat &frame) const {
         cv::rectangle(frame, left_background.tl(), left_background.br(), cv::Scalar(255, 0, 0), 2);
         cv::rectangle(frame, right_background.tl(), right_background.br(), cv::Scalar(255, 0, 0), 2);

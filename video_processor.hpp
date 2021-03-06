@@ -7,20 +7,37 @@
 
 #include "body_detector.hpp"
 
+
+/**
+ * @brief Wrapper of whole program's functionality.
+ * 
+ * This class is intented to be used for default functionality. It processes
+ * the video and passes individual frames to other parts of the program.
+ */
 class video_processor {
 
+    /// @brief Holds frames modified by processor.
     std::vector<cv::Mat> frames;
 
-    void write(const std::string &&filename) {
+    /**
+     * @brief Write modified frames as a video to given file.
+     * 
+     * @param filename Path to file, where modified video should be saved.
+     */
+    void write(const std::string &&filename) const {
         cv::VideoWriter writer(filename, cv::VideoWriter::fourcc('D','I','V','X'), 30, cv::Size(frames.back().cols, frames.back().rows));
-        for (auto &f : frames)
+        for (const auto &f : frames)
             writer.write(f);
         writer.release();
     }
 
 public:
 
-    // Processes video from path `filename`.
+    /**
+     * @brief Process video at certain path frame by frame.
+     * 
+     * @param filename Path to video file to be processed.
+     */
     void process(const std::string &filename) {
         // Try to open video.
         cv::VideoCapture video;
@@ -46,7 +63,7 @@ public:
         body_detector detector(frame_start, position, fps);
 
         cv::Mat frame;
-        // Video is opened, processing begins.
+        // Video is opened, processing frame by frame begins.
         for (;;) {
             video >> frame;
 
