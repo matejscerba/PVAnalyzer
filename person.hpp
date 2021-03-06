@@ -181,7 +181,7 @@ public:
      * @param box Bounding box of this person in `frame`.
      * @param net Deep neural network used for detecting person's body parts.
     */
-    person(std::size_t frame_no, cv::Mat &frame, std::size_t fps, cv::Rect box, cv::dnn::Net &net) :
+    person(std::size_t frame_no, const cv::Mat &frame, std::size_t fps, const cv::Rect &box, cv::dnn::Net &net) :
         vb_detector(fps, movement_analyzer::direction::unknown) {
             first_frame_no = frame_no;
             current_frame_no = frame_no;
@@ -220,7 +220,7 @@ public:
      * @returns true if detection was OK, false if an error occured.
      * @note If vault has begun, `vb_detector` takes care of person's tracking.
     */
-    bool track(cv::Mat &frame) {
+    bool track(const cv::Mat &frame) {
         current_frame_no++;
         cv::Rect box = bbox();
         cv::Mat person_frame; // Scaled person's frame.
@@ -321,6 +321,9 @@ public:
             cv::circle(frame, a, 2, cv::Scalar(0, 0, 255), -1);
             cv::circle(frame, b, 2, cv::Scalar(0, 0, 255), -1);
         }
+
+        // Movement analyzer.
+        move_analyzer.draw(frame);
     }
 
 };

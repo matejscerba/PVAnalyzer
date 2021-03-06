@@ -66,7 +66,7 @@ class vault_body_detector {
      * @returns vector of points representing position of corners of given bounding box
      *     in unrotated frame.
     */
-    std::vector<cv::Point2d> transform_back(cv::Rect2d person) {
+    std::vector<cv::Point2d> transform_back(const cv::Rect2d &person) {
         std::vector<cv::Point2d> src {
             person.tl(), cv::Point2d(person.br().x, person.tl().y),
             cv::Point2d(person.tl().x, person.br().y), person.br()
@@ -85,7 +85,7 @@ class vault_body_detector {
      * 
      * @param center Center of rotation.
     */
-    void update_rotation_mat(cv::Point2f center) {
+    void update_rotation_mat(const cv::Point2f &center) {
         double old = alpha;
         if ((double)current_frame / (double)fps <= vault_duration) {
             alpha = dir * 180.0 * (double)current_frame / (double)fps / vault_duration;
@@ -128,7 +128,7 @@ public:
      * @returns vector of points representing position of corners of athlete's tracked bounding box
      *     in unrotated frame.
     */
-    std::vector<cv::Point2d> update(cv::Mat &frame, cv::Ptr<cv::Tracker> &tracker, bool &res, cv::Mat &person_frame, double scale_factor) {
+    std::vector<cv::Point2d> update(const cv::Mat &frame, cv::Ptr<cv::Tracker> &tracker, bool &res, cv::Mat &person_frame, double scale_factor) {
         cv::Rect person;
         cv::Point2f center(frame.cols / 2, frame.rows / 2);
         update_rotation_mat(center);

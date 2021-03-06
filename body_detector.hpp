@@ -101,7 +101,7 @@ class body_detector {
      * @param frame Frame in which athlete should be detected.
      * @returns false if no person in frame was found, true otherwise.
     */
-    bool detect_current(cv::Mat &frame) {
+    bool detect_current(const cv::Mat &frame) {
         std::vector<cv::Rect> detections;
         hog.detectMultiScale(frame, detections, 0, cv::Size(4, 4), cv::Size(), 1.05, 2, true);
 
@@ -149,7 +149,7 @@ public:
      * @param frame Frame, in which athlete should be detected.
      * @returns result of detection, whether frame was skipped, detected correctly or an error occured.
      */
-    result detect(cv::Mat &frame) {
+    result detect(const cv::Mat &frame) {
         result res = result::ok;
         if (current_frame < person_frame) {
             res = result::skip;
@@ -165,15 +165,21 @@ public:
             if (people.empty()) res = result::error;
         }
 
-        // Draw every person in frame.
-        for (auto &p : people) {
-            p.draw(frame);
-        }
-
         // Update frame counter.
         current_frame++;
 
         return res;
+    }
+
+    /**
+     * @brief Draw each person in frame.
+     * 
+     * @param frame Frame where to draw people.
+     */
+    void draw(cv::Mat &frame) const {
+        for (auto &p : people) {
+            p.draw(frame);
+        }
     }
 
 };

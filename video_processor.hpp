@@ -77,6 +77,9 @@ public:
                 break; // Error has occured while detecting body.
             else if (res == body_detector::result::skip)
                 continue; // This frame is supposed to be skipped.
+
+            // Draw.
+            detector.draw(frame);
             
             frames.push_back(frame.clone());
 

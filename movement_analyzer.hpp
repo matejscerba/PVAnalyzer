@@ -60,7 +60,7 @@ class movement_analyzer {
      * @note Background position is changed only if the old one is outside `frame`,
      *     updated `left_delta`/`right_delta` if new background part should be tracked.
     */
-    void update_position_rect(cv::Mat &frame, cv::Rect2d person) {
+    void update_position_rect(const cv::Mat &frame, cv::Rect2d person) {
         if ((left_background.x <= 0) || (left_background.y <= 0) ||
             (left_background.x + left_background.width >= (double)frame.cols) ||
             (left_background.y + left_background.height >= (double)frame.rows)) {
@@ -96,17 +96,17 @@ class movement_analyzer {
     }
 
     /**
-     * @brief Check person's movement direction.
+     * @brief Update person's movement direction.
      * 
      * If person is moving away from `left_background`, its movement's direction should be left.
      * If person is moving away from `right_background`, its movement's direction should be right.
      * Direction is set only once and if there is enough data to determine its value.
      * 
-     * @param person Person, whose direction should be checked.
+     * @param person Person, whose direction should be updated.
      * 
      * @note Person must move at least @f$2 * person.width@f$ pixels horizontally to determine its direction.
     */
-    void check_direction(const cv::Rect2d &person) {
+    void update_direction(const cv::Rect2d &person) {
         if ((dir == unknown) && left_offsets.size() && right_offsets.size()) {
             if (left_offsets.back().x > 2 * person.width)
                 dir = right;
@@ -203,9 +203,9 @@ public:
      * @returns false if both trackers failed (unable to determine person's movement direction),
      *     true if tracking of at least one background part is OK.
     */
-    bool update(cv::Mat &frame, const cv::Rect2d &person) {
+    bool update(const cv::Mat &frame, const cv::Rect2d &person) {
         update_position_rect(frame, person);
-        check_direction(person);
+        update_direction(person);
         bool res = true;
         if (left_tracker->update(frame, left_background)) {
             left_offsets.push_back(get_offset(person, left_delta, left_background));
