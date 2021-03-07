@@ -54,16 +54,6 @@ class person {
     /// @brief Tracker used to track person in frames.
     cv::Ptr<cv::Tracker> tracker;
 
-    /**
-     * @brief Determines size of bounding box where to detect body parts.
-     * 
-     * Ratio of size of bounding box used to detect body parts and size of
-     * bounding box tracked by `tracker`.
-     * 
-     * @note Measures size linearly, not bounding box's surface.
-     */
-    const double scale_factor = 1.8;
-
     /// @brief Number of first frame in which person is detected.
     std::size_t first_frame_no;
 
@@ -127,7 +117,7 @@ class person {
         int w = output.size[3];
 
         // Scale by `scaling_factor` if last rectangle was scaled.
-        double factor = vb_detector.was_scaling_performed() ? scale_factor : 1;
+        double factor = vb_detector.was_scaling_performed() ? vb_detector.scale_factor : 1;
         double sx = factor * width() / (double)w;
         double sy = factor * height() / (double)h;
 
@@ -148,7 +138,7 @@ class person {
 
                 // Move point `p` so it is in correct position in frame.
                 p = corners.back()[corner::tl]
-                    + (1.0 - scale_factor) * 0.5 * (corners.back()[corner::br] - corners.back()[corner::tl])
+                    + (1.0 - vb_detector.scale_factor) * 0.5 * (corners.back()[corner::br] - corners.back()[corner::tl])
                     + p.x * (corners.back()[corner::tr] - corners.back()[corner::tl]) / width()
                     + p.y * (corners.back()[corner::bl] - corners.back()[corner::tl]) / height();
             }
@@ -165,15 +155,13 @@ class person {
      * @returns part of `frame`, that contains whole person.
     */
     cv::Mat get_person_frame(const cv::Rect &box, const cv::Mat &frame) {
-        return frame(vb_detector.scale(box, frame, scale_factor));
+        return frame(vb_detector.scale(box, frame));
     }
 
 public:
 
     /**
      * @brief Default constructor.
-     * 
-     * Detect body parts of this person in `frame` as well.
      * 
      * @param frame_no Number of frame, in which this person was detected for the first time.
      * @param frame Current frame, this person was already detected here.
@@ -189,15 +177,22 @@ public:
             this->net = net;
             tracker = cv::TrackerCSRT::create();
             tracker->init(frame, box);
-            cv::Mat person_frame = get_person_frame(box, frame);
-            detect(person_frame);
     }
 
-    /// @returns bounding box of this person in current frame.
-    cv::Rect bbox() const {
+    /**
+     * @param frame_no Number of frame where to get bounding box.
+     * @returns bounding box of this person in current frame.
+     */
+    cv::Rect bbox(std::size_t frame_no) const {
+        // Check whether person exists in given frame.
+        if (frame_no < first_frame_no) {
+            std::cout << "Unable to extract bounding box from frame no. " << frame_no << std::endl;
+            return cv::Rect();
+        }
+        std::size_t idx = frame_no - first_frame_no;
         return cv::Rect(
-            cv::Point(corners.back()[corner::tl]),
-            cv::Point(corners.back()[corner::br])
+            cv::Point(corners[idx][corner::tl]),
+            cv::Point(corners[idx][corner::br])
         );
     }
 
@@ -214,21 +209,24 @@ public:
     /**
      * @brief Track person in next frame.
      * 
-     * Detect body parts of this person in next frame as well.
-     * 
      * @param frame Next frame in which person should be tracked.
+     * @param frame_no Number of given frame.
      * @returns true if detection was OK, false if an error occured.
      * @note If vault has begun, `vb_detector` takes care of person's tracking.
     */
-    bool track(const cv::Mat &frame) {
-        current_frame_no++;
-        cv::Rect box = bbox();
-        cv::Mat person_frame; // Scaled person's frame.
+    bool track(const cv::Mat &frame, std::size_t frame_no) {
+        // Check whether person can be tracked in given frame
+        // (person must exist at least one frame before the currently processed one).
+        if (frame_no < first_frame_no + 1) {
+            std::cout << "Unable to extract bounding box from frame before frame no. " << frame_no << std::endl;
+            return false;
+        }
+        cv::Rect box = bbox(frame_no - 1);
 
         bool res = false;
-        if (move_analyzer.vault_began()) {
+        if (move_analyzer.vault_began(frame_no)) {
             // Append person's bounding box corners, assuming vault has began.
-            corners.push_back(vb_detector.update(frame, tracker, res, person_frame, scale_factor));
+            corners.push_back(vb_detector.update(frame, tracker, res));
         } else {
             // Update runup direction.
             vb_detector.update_direction(move_analyzer.get_direction());
@@ -237,33 +235,42 @@ public:
             if (tracker->update(frame, box)) {
                 // Append person's bounding box corners.
                 corners.push_back(get_corners(box));
-                res = move_analyzer.update(frame, box);
-                person_frame = get_person_frame(box, frame);
+                res = move_analyzer.update(frame, box, frame_no);
             }
         }
-
-        // Detect person's body parts.
-        if (res) detect(person_frame);
 
         return res;
     }
 
-    // Detects person's points iside `bbox` and saves them in `points`.
     /**
-     * @brief Detect body parts of this person.
+     * @brief Detect body parts of this person inside given frame.
      * 
-     * Use deep neural network to detect body parts of this person inside `bbox`.
+     * Use deep neural network to detect body parts of this person inside frame,
+     * crop frame to smaller input for speed optimization.
      * 
-     * @param input Image in which body parts of this person should be detected.
+     * @param frame Frame which to crop and detect body parts on.
+     * @param frame_no Number of given frame.
     */
-    void detect(const cv::Mat &input) {
+    void detect(const cv::Mat &frame, std::size_t frame_no) {
+        // Check whether person exists in given frame.
+        if (frame_no < first_frame_no) {
+            std::cout << "Unable to detect body parts in frame no. " << frame_no << std::endl;
+            return;
+        }
+        // Crop person from frame.
+        cv::Mat input;
+        if (move_analyzer.vault_began(frame_no)) {
+            input = vb_detector.get_person_frame(corners[frame_no - first_frame_no], frame);
+        } else {
+            input = get_person_frame(bbox(frame_no), frame);
+        }
+        // Process cropped frame.
         cv::Mat blob = cv::dnn::blobFromImage(input, 1.0 / 255, cv::Size(), cv::Scalar(), false, false, CV_32F);
         net.setInput(blob);
         cv::Mat output = net.forward();
         extract_points(output);
     }
 
-    // Draws person in image `frame`.
     /**
      * @brief Draw this person in `frame`.
      * 
@@ -271,55 +278,67 @@ public:
      * and connected body parts forming a "stickman" in `frame`.
      * 
      * @param frame Frame in which this person should be drawn.
+     * @param frame_no Number of given frame.
     */
-    void draw(cv::Mat &frame) const {
+    void draw(cv::Mat &frame, std::size_t frame_no) const {
+        // Check whether person exists in given frame.
+        if (frame_no < first_frame_no) {
+            std::cout << "Unable to draw frame no. " << frame_no << std::endl;
+            return;
+        }
+        std::size_t idx = frame_no - first_frame_no;
+        
+        if (corners.size() > idx) {
         // Rectangle which is tracked.
-        cv::Point2d tl = corners.back()[corner::tl];
-        cv::Point2d tr = corners.back()[corner::tr];
-        cv::Point2d bl = corners.back()[corner::bl];
-        cv::Point2d br = corners.back()[corner::br];
+            cv::Point2d tl = corners[idx][corner::tl];
+            cv::Point2d tr = corners[idx][corner::tr];
+            cv::Point2d bl = corners[idx][corner::bl];
+            cv::Point2d br = corners[idx][corner::br];
 
-        cv::Scalar color(0, 0, 255);
-        if (move_analyzer.vault_began())
-            color = cv::Scalar(0, 255, 0);
+            cv::Scalar color(0, 0, 255);
+            if (move_analyzer.vault_began(frame_no))
+                color = cv::Scalar(0, 255, 0);
 
-        cv::line(frame, tl, tr, color, 1);
-        cv::line(frame, tr, br, color, 1);
-        cv::line(frame, br, bl, color, 1);
-        cv::line(frame, bl, tl, color, 1);
+            cv::line(frame, tl, tr, color, 1);
+            cv::line(frame, tr, br, color, 1);
+            cv::line(frame, br, bl, color, 1);
+            cv::line(frame, bl, tl, color, 1);
 
-        // Scaled rectangle.
-        tl = corners.back()[corner::tl]
-            + (1.0 - scale_factor) * 0.5 * (corners.back()[corner::br] - corners.back()[corner::tl]);
-        tr = corners.back()[corner::tr]
-            + (1.0 - scale_factor) * 0.5 * (corners.back()[corner::bl] - corners.back()[corner::tr]);
-        bl = corners.back()[corner::bl]
-            - (1.0 - scale_factor) * 0.5 * (corners.back()[corner::bl] - corners.back()[corner::tr]);
-        br = corners.back()[corner::br]
-            - (1.0 - scale_factor) * 0.5 * (corners.back()[corner::br] - corners.back()[corner::tl]);
+            // Scaled rectangle.
+            tl = corners[idx][corner::tl]
+                + (1.0 - vb_detector.scale_factor) * 0.5 * (corners[idx][corner::br] - corners[idx][corner::tl]);
+            tr = corners[idx][corner::tr]
+                + (1.0 - vb_detector.scale_factor) * 0.5 * (corners[idx][corner::bl] - corners[idx][corner::tr]);
+            bl = corners[idx][corner::bl]
+                - (1.0 - vb_detector.scale_factor) * 0.5 * (corners[idx][corner::bl] - corners[idx][corner::tr]);
+            br = corners[idx][corner::br]
+                - (1.0 - vb_detector.scale_factor) * 0.5 * (corners[idx][corner::br] - corners[idx][corner::tl]);
 
-        color = cv::Scalar(0, 0, 127);
-        if (move_analyzer.vault_began())
-            color = cv::Scalar(0, 127, 0);
+            color = cv::Scalar(0, 0, 127);
+            if (move_analyzer.vault_began(frame_no))
+                color = cv::Scalar(0, 127, 0);
 
-        cv::line(frame, tl, tr, color, 1);
-        cv::line(frame, tr, br, color, 1);
-        cv::line(frame, br, bl, color, 1);
-        cv::line(frame, bl, tl, color, 1);
+            cv::line(frame, tl, tr, color, 1);
+            cv::line(frame, tr, br, color, 1);
+            cv::line(frame, br, bl, color, 1);
+            cv::line(frame, bl, tl, color, 1);
+        }
 
-        // Body parts.
-        for (int n = 0; n < npairs; n++) {
-            cv::Point2d a = points.back()[pairs[n][0]];
-            cv::Point2d b = points.back()[pairs[n][1]];
+        // Body parts if they were detected.
+        if (points.size() > idx) {
+            for (int n = 0; n < npairs; n++) {
+                cv::Point2d a = points[idx][pairs[n][0]];
+                cv::Point2d b = points[idx][pairs[n][1]];
 
-            // Check if points `a` and `b` are valid.
-            if (a.x <= 0 || a.y <= 0 || b.x <= 0 || b.y <= 0)
-                continue;
+                // Check if points `a` and `b` are valid.
+                if (a.x <= 0 || a.y <= 0 || b.x <= 0 || b.y <= 0)
+                    continue;
 
-            // Draw points representing joints and connect them with lines.
-            cv::line(frame, a, b, cv::Scalar(0, 255, 255), 2);
-            cv::circle(frame, a, 2, cv::Scalar(0, 0, 255), -1);
-            cv::circle(frame, b, 2, cv::Scalar(0, 0, 255), -1);
+                // Draw points representing joints and connect them with lines.
+                cv::line(frame, a, b, cv::Scalar(0, 255, 255), 2);
+                cv::circle(frame, a, 2, cv::Scalar(0, 0, 255), -1);
+                cv::circle(frame, b, 2, cv::Scalar(0, 0, 255), -1);
+            }
         }
 
         // Movement analyzer.

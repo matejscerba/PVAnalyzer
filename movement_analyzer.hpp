@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <optional>
 
 /**
  * @brief Handles movement of person's bounding box.
@@ -27,10 +28,10 @@ class movement_analyzer {
     std::vector<cv::Point2d> right_offsets;
 
     /// @brief Bounding box of current tracked background to the left of person.
-    cv::Rect left_background;
+    cv::Rect left_background = cv::Rect();
 
     /// @brief Bounding box of current tracked background to the right of person.
-    cv::Rect right_background;
+    cv::Rect right_background = cv::Rect();
 
     /// @brief Tracker used for tracking background to the left of person. 
     cv::Ptr<cv::Tracker> left_tracker;
@@ -38,8 +39,8 @@ class movement_analyzer {
     /// @brief Tracker used for tracking background to the right of person. 
     cv::Ptr<cv::Tracker> right_tracker;
 
-    /// @brief Holds information, whether vault bagan.
-    bool _vault_began = false;
+    /// @brief In which frame the vault began (contains value if it was set).
+    std::optional<std::size_t> _vault_began;
 
     /// @brief How many frames to check to determine if vault began.
     const std::size_t vault_check_frames = 6;
@@ -142,16 +143,19 @@ class movement_analyzer {
      * 
      * Takes offsets of person and initial background and computes how much offsets changed
      * in the last `vault_check_frames`. If the change surpasses `vault_threshold`, it is
-     * considered that the person took of and `_vault_began` is set to true.
+     * considered that the person took of and `_vault_began` is set to frame_no.
      * 
      * @param height Height of currently processed frame.
      * @param person Bounding box of person.
+     * @param frame_no Number of processed frame.
+     * 
+     * @note `_vault_began` is set only once.
      * 
      * @see vault_check_frames
      * @see vault_threshold
      * @see _vault_began
     */
-    void check_vault_beginning(double height, const cv::Rect2d &person) {
+    void check_vault_beginning(double height, const cv::Rect2d &person, std::size_t frame_no) {
         std::vector<cv::Point2d> offsets;
         if (dir == right) offsets = left_offsets;
         else if (dir == left) offsets = right_offsets;
@@ -162,7 +166,7 @@ class movement_analyzer {
             double vault_mean_delta = count_mean_delta(offsets.end() - vault_check_frames, offsets.end()).y;
 
             if ((vault_mean_delta - runup_mean_delta) * size / height < vault_threshold)
-                _vault_began = true;
+                _vault_began = frame_no;
         }
     }
 
@@ -194,18 +198,18 @@ public:
     };
 
     /**
-     * @brief Process next frame.
+     * @brief Process given frame.
      * 
      * Update valid trackers, check direction and whether vault began.
      * 
      * @param frame Frame to be processed.
      * @param person Person's bounding box in given frame.
+     * @param frame_no Number of processed frame.
      * @returns false if both trackers failed (unable to determine person's movement direction),
      *     true if tracking of at least one background part is OK.
     */
-    bool update(const cv::Mat &frame, const cv::Rect2d &person) {
+    bool update(const cv::Mat &frame, const cv::Rect2d &person, std::size_t frame_no) {
         update_position_rect(frame, person);
-        update_direction(person);
         bool res = true;
         if (left_tracker->update(frame, left_background)) {
             left_offsets.push_back(get_offset(person, left_delta, left_background));
@@ -220,7 +224,8 @@ public:
             if (dir == unknown) dir = right;
             if (!res) return false; // Both trackers failed
         }
-        check_vault_beginning((double)frame.rows, person);
+        update_direction(person);
+        check_vault_beginning((double)frame.rows, person, frame_no);
         return true;
     }
 
@@ -229,9 +234,9 @@ public:
         return dir;
     }
 
-    /// @brief Get information whether vault has begun.
-    bool vault_began() const {
-        return _vault_began;
+    /// @brief Get information whether vault has begun before frame `frame_no`.
+    bool vault_began(std::size_t frame_no) const {
+        return _vault_began && (frame_no > _vault_began);
     }
 
     /**

@@ -64,7 +64,7 @@ public:
 
         cv::Mat frame;
         // Video is opened, processing frame by frame begins.
-        for (;;) {
+        for (std::size_t frame_no = 0; ; frame_no++) {
             video >> frame;
 
             // Video ended.
@@ -72,23 +72,28 @@ public:
                 break;
 
             // Detect body.
-            body_detector::result res = detector.detect(frame);
-            if (res == body_detector::result::error)
-                break; // Error has occured while detecting body.
-            else if (res == body_detector::result::skip)
-                continue; // This frame is supposed to be skipped.
+            body_detector::result res = detector.detect(frame, frame_no);
+            if (res == body_detector::result::ok) {
+                // Detection on given frame was valid.
+                
+                // Draw.
+                detector.draw(frame, frame_no);
+                
+                frames.push_back(frame.clone());
 
-            // Draw.
-            detector.draw(frame);
-            
-            frames.push_back(frame.clone());
+                // Display current frame.
+                cv::imshow("frame", frame);
+                cv::waitKey();
 
-            // Display current frame.
-            cv::imshow("frame", frame);
-            cv::waitKey();
-
-            if (filename.find("kolin2.MOV") != std::string::npos) {
-                video >> frame; video >> frame; video >> frame;
+                if (filename.find("kolin2.MOV") != std::string::npos) {
+                    video >> frame; video >> frame; video >> frame;
+                }
+            } else if (res == body_detector::result::error) {
+                // Error has occured while detecting body.
+                break;
+            } else if (res == body_detector::result::skip) {
+                // This frame is supposed to be skipped.
+                continue;
             }
         }
 

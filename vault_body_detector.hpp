@@ -60,20 +60,29 @@ class vault_body_detector {
     bool scaling_performed = true;
 
     /**
-     * @brief Computes position of given person's unscaled bounding box in frame before rotation.
+     * @brief Extract corners from rectangle.
      * 
-     * @param person Bounding box of person.
-     * @returns vector of points representing position of corners of given bounding box
-     *     in unrotated frame.
+     * @param rect Rectangle to extract corners from.
+     * @returns vector of points representing corners so that indices
+     *     correspond to `enum corner`.
     */
-    std::vector<cv::Point2d> transform_back(const cv::Rect2d &person) {
-        std::vector<cv::Point2d> src {
-            person.tl(), cv::Point2d(person.br().x, person.tl().y),
-            cv::Point2d(person.tl().x, person.br().y), person.br()
+    std::vector<cv::Point2d> get_corners(const cv::Rect2d &rect) const {
+        return {
+            rect.tl(), cv::Point2d(rect.br().x, rect.tl().y),
+            cv::Point2d(rect.tl().x, rect.br().y), rect.br()
         };
-        std::vector<cv::Point2d> res;
-        cv::transform(src, res, rotation_back);
+    }
 
+    /**
+     * @brief Computes position of given points after transformation.
+     * 
+     * @param src Vector of given points.
+     * @param rotation_mat Matrix defining given rotation.
+     * @returns vector of points after rotation specified by `rotation_mat`.
+    */
+    std::vector<cv::Point2d> transform(const std::vector<cv::Point2d> &src, const cv::Mat &rotation_mat) const {
+        std::vector<cv::Point2d> res;
+        cv::transform(src, res, rotation_mat);
         return res;
     }
 
@@ -97,7 +106,29 @@ class vault_body_detector {
         }
     }
 
+    /**
+     * @brief Rotate frame as specified by `rotation` matrix.
+     * 
+     * @param frame Frame to be rotated.
+     * @returns rotated frame.
+     */
+    cv::Mat rotate(const cv::Mat &frame) const {
+        cv::Mat rotated;
+        cv::warpAffine(frame, rotated, rotation, frame.size());
+        return rotated;
+    }
+
 public:
+
+    /**
+     * @brief Determines size of bounding box where to detect body parts.
+     * 
+     * Ratio of size of bounding box used to detect body parts and size of
+     * bounding box tracked by `tracker`.
+     * 
+     * @note Measures size linearly, not bounding box's surface.
+     */
+    const double scale_factor = 1.8;
 
     /**
      * @brief Default constructor.
@@ -123,32 +154,42 @@ public:
      * @param tracker Tracker used to track athlete.
      * @param[out] res Result of tracking athlete in given frame (true if everything is OK,
      *     false if tracking failed).
-     * @param[out] person_frame Cropped part of frame containing athlete's body.
-     * @param scale_factor Determines size of bounding box used to crop `person_frame`.
      * @returns vector of points representing position of corners of athlete's tracked bounding box
      *     in unrotated frame.
     */
-    std::vector<cv::Point2d> update(const cv::Mat &frame, cv::Ptr<cv::Tracker> &tracker, bool &res, cv::Mat &person_frame, double scale_factor) {
+    std::vector<cv::Point2d> update(const cv::Mat &frame, cv::Ptr<cv::Tracker> &tracker, bool &res) {
         cv::Rect person;
         cv::Point2f center(frame.cols / 2, frame.rows / 2);
         update_rotation_mat(center);
 
-        // Rotate frame.
-        cv::Mat rotated;
-        cv::warpAffine(frame, rotated, rotation, frame.size());
+        cv::Mat rotated = rotate(frame);
 
-        // Track athlete.
-        if (tracker->update(rotated, person)) {
-            cv::Rect2d scaled = scale(person, frame, scale_factor);
-            person_frame = rotated(scaled).clone();
-            res = true;
-        } else {
-            res = false;
-        }
+        // Track person.
+        res = tracker->update(rotated, person);
 
         current_frame++;
         
-        return transform_back(person);
+        return transform(get_corners(person), rotation_back);
+    }
+
+    /**
+     * @brief Crop frame so that it contains its whole body.
+     * 
+     * Frame must be rotated so that person's bounding box is not rotated and can
+     * be cropped from frame.
+     * 
+     * @param corners Corners of person's unscaled bounding box in unrotated frame.
+     * @param frame Frame that is supposed to be cropped.
+     * @returns part of `frame`, that contains whole person.
+    */
+    cv::Mat get_person_frame(const std::vector<cv::Point2d> &corners, const cv::Mat &frame) {
+        cv::Mat rotated = rotate(frame);
+        std::vector<cv::Point2d> transformed = transform(corners, rotation);
+        cv::Rect bbox(
+            transformed[0], transformed[3]
+        );
+        cv::Rect2d scaled = scale(bbox, frame);
+        return rotated(scaled).clone();
     }
 
     /// @brief Returns information if scaling was performed on last frame processed.
@@ -156,18 +197,16 @@ public:
         return scaling_performed;
     }
 
-    // Scale rectange `rect`'s size by `scale_factor`, keep center on the same position.
     /**
      * @brief Scale rectangle by given factor if it fits inside frame.
      * 
      * @param rect Given rectangle to be scaled.
      * @param frame Frame in which scaled rectangle must fit.
-     * @param scale_factor Size ratio of scaled rectangle and unscaled rectangle.
      * @returns scaled rectangle if it fits inside frame, `rect` otherwise.
      * 
      * @note If scaled rectangle does not fit inside frame, scaling is not performed.
     */
-    cv::Rect scale(const cv::Rect &rect, const cv::Mat &frame, double scale_factor) {
+    cv::Rect scale(const cv::Rect &rect, const cv::Mat &frame) {
         cv::Point center(rect.x + rect.width / 2, rect.y + rect.height / 2);
         cv::Point diag = center - rect.tl();
         cv::Point tl = center - scale_factor * diag;

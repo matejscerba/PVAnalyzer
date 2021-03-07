@@ -31,9 +31,6 @@ class body_detector {
     /// @brief Path to caffe model to be used for deep neural network intialization.
     const std::string caffemodel = "pose/mpi/pose_iter_160000.caffemodel";
 
-    /// @brief Holds number of currently processed frame.
-    std::size_t current_frame = 0;
-
     /// @brief Number of frame, where person is supposed to be detected for the first time.
     std::size_t person_frame;
 
@@ -99,15 +96,16 @@ class body_detector {
      * person representing athlete.
      * 
      * @param frame Frame in which athlete should be detected.
+     * @param frame_no Number of given frame.
      * @returns false if no person in frame was found, true otherwise.
     */
-    bool detect_current(const cv::Mat &frame) {
+    bool detect_current(const cv::Mat &frame, std::size_t frame_no) {
         std::vector<cv::Rect> detections;
         hog.detectMultiScale(frame, detections, 0, cv::Size(4, 4), cv::Size(), 1.05, 2, true);
 
         cv::Rect bbox;
         if (select_rectangle(detections, bbox)) {
-            people.push_back(person(current_frame, frame, fps, bbox, net));
+            people.push_back(person(frame_no, frame, fps, bbox, net));
             return true;
         } else {
             return false;
@@ -147,26 +145,31 @@ public:
      * @brief Detect athlete in given frame or track it if it was detected earlier.
      * 
      * @param frame Frame, in which athlete should be detected.
+     * @param frame_no Number of given frame.
      * @returns result of detection, whether frame was skipped, detected correctly or an error occured.
      */
-    result detect(const cv::Mat &frame) {
+    result detect(const cv::Mat &frame, std::size_t frame_no) {
         result res = result::ok;
-        if (current_frame < person_frame) {
+        if (frame_no < person_frame) {
             res = result::skip;
-        } else if (current_frame == person_frame) {
+        } else if (frame_no == person_frame) {
             // Detect person in frame.
-            if (!detect_current(frame)) {
+            if (!detect_current(frame, frame_no)) {
                 std::cout << "detection failed" << std::endl;
                 res = result::error;
             }
-        } else {
+        } else if (frame_no > person_frame) {
             // Try to track every person in frame, if it fails, remove such person from `people`.
-            people.remove_if([&frame](person &p){ return !p.track(frame); });
+            people.remove_if([&frame, frame_no](person &p){ return !p.track(frame, frame_no); });
             if (people.empty()) res = result::error;
         }
 
-        // Update frame counter.
-        current_frame++;
+        // Detect body parts of all people in frame.
+        if (frame_no >= person_frame) {
+            for (auto &p : people) {
+                p.detect(frame, frame_no);
+            }
+        }
 
         return res;
     }
@@ -175,10 +178,11 @@ public:
      * @brief Draw each person in frame.
      * 
      * @param frame Frame where to draw people.
+     * @param frame_no Number of given frame.
      */
-    void draw(cv::Mat &frame) const {
+    void draw(cv::Mat &frame, std::size_t frame_no) const {
         for (auto &p : people) {
-            p.draw(frame);
+            p.draw(frame, frame_no);
         }
     }
 

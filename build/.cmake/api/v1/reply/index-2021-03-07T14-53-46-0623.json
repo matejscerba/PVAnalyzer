@@ -3,38 +3,39 @@
 	{
 		"generator" : 
 		{
+			"multiConfig" : false,
 			"name" : "Ninja"
 		},
 		"paths" : 
 		{
-			"cmake" : "/opt/local/bin/cmake",
-			"cpack" : "/opt/local/bin/cpack",
-			"ctest" : "/opt/local/bin/ctest",
-			"root" : "/opt/local/share/cmake-3.16"
+			"cmake" : "/Applications/CMake.app/Contents/bin/cmake",
+			"cpack" : "/Applications/CMake.app/Contents/bin/cpack",
+			"ctest" : "/Applications/CMake.app/Contents/bin/ctest",
+			"root" : "/Applications/CMake.app/Contents/share/cmake-3.20"
 		},
 		"version" : 
 		{
 			"isDirty" : false,
 			"major" : 3,
-			"minor" : 16,
-			"patch" : 4,
-			"string" : "3.16.4",
-			"suffix" : ""
+			"minor" : 20,
+			"patch" : 0,
+			"string" : "3.20.0-rc1",
+			"suffix" : "rc1"
 		}
 	},
 	"objects" : 
 	[
 		{
-			"jsonFile" : "codemodel-v2-314512a1f5d73e1798d4.json",
+			"jsonFile" : "codemodel-v2-8310d0c0ccedeac4bd13.json",
 			"kind" : "codemodel",
 			"version" : 
 			{
 				"major" : 2,
-				"minor" : 0
+				"minor" : 2
 			}
 		},
 		{
-			"jsonFile" : "cache-v2-708cacbbb5d1ff314189.json",
+			"jsonFile" : "cache-v2-fadba8a8fed083f160cd.json",
 			"kind" : "cache",
 			"version" : 
 			{
@@ -63,7 +64,7 @@
 				"responses" : 
 				[
 					{
-						"jsonFile" : "cache-v2-708cacbbb5d1ff314189.json",
+						"jsonFile" : "cache-v2-fadba8a8fed083f160cd.json",
 						"kind" : "cache",
 						"version" : 
 						{
@@ -72,12 +73,12 @@
 						}
 					},
 					{
-						"jsonFile" : "codemodel-v2-314512a1f5d73e1798d4.json",
+						"jsonFile" : "codemodel-v2-8310d0c0ccedeac4bd13.json",
 						"kind" : "codemodel",
 						"version" : 
 						{
 							"major" : 2,
-							"minor" : 0
+							"minor" : 2
 						}
 					}
 				]
