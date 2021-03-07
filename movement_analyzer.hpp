@@ -236,7 +236,23 @@ public:
 
     /// @brief Get information whether vault has begun before frame `frame_no`.
     bool vault_began(std::size_t frame_no) const {
-        return _vault_began && (frame_no > _vault_began);
+        return _vault_began && (frame_no > _vault_began.value());
+    }
+
+    /**
+     * @brief Computes how many frames passed from beginning of vault.
+     * 
+     * @param frame_no Number of frame used for comparison to beginning of vault.
+     * @returns number of frames after beginning of vault up to `frame_no`.
+     * 
+     * @note Returns 0 if vault has not begun yet.
+     */
+    std::size_t vault_frames(std::size_t frame_no) const {
+        if (_vault_began && (frame_no > _vault_began.value())) {
+            return frame_no - _vault_began.value();
+        } else {
+            return 0;
+        }
     }
 
     /**
