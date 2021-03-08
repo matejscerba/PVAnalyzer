@@ -1,0 +1,162 @@
+\hypertarget{classperson}{}\doxysection{person Class Reference}
+\label{classperson}\index{person@{person}}
+
+
+Represents person through whole video.  
+
+
+
+
+{\ttfamily \#include $<$person.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classperson_ab30381ce17a818621097ea6bf6418df4}{person}} (std\+::size\+\_\+t frame\+\_\+no, const cv\+::\+Mat \&frame, std\+::size\+\_\+t fps, const cv\+::\+Rect \&box, cv\+::dnn\+::\+Net \&net)
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+cv\+::\+Rect \mbox{\hyperlink{classperson_aa7911b119262c3ebe2d5878653ca6d53}{bbox}} (std\+::size\+\_\+t frame\+\_\+no) const
+\item 
+double \mbox{\hyperlink{classperson_ac03253d245f83f8d18f71f011869e6be}{width}} (std\+::size\+\_\+t frame\+\_\+no) const
+\item 
+double \mbox{\hyperlink{classperson_a9822e8678e2639defc9fc9884177ff42}{height}} (std\+::size\+\_\+t frame\+\_\+no) const
+\item 
+bool \mbox{\hyperlink{classperson_abc972b7df689b7e8fee4fd7e98e5652a}{track}} (const cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no)
+\begin{DoxyCompactList}\small\item\em Track person in next frame. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classperson_af730fd6a8f0e0b4e44e45f57034f94c7}{detect}} (const cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no)
+\begin{DoxyCompactList}\small\item\em Detect body parts of this person inside given frame. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classperson_a182bac96f3bc629e5dc91e55d8baea64}\label{classperson_a182bac96f3bc629e5dc91e55d8baea64}} 
+std\+::vector$<$ cv\+::\+Point2d $>$ \mbox{\hyperlink{classperson_a182bac96f3bc629e5dc91e55d8baea64}{get\+\_\+centers\+\_\+of\+\_\+gravity}} () const
+\begin{DoxyCompactList}\small\item\em Returns centers of gravity of person in each frame. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classperson_a8c31a2752c61d64c4afdbf8c2480e4bc}{draw}} (cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no) const
+\begin{DoxyCompactList}\small\item\em Draw this person in {\ttfamily frame}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Represents person through whole video. 
+
+Holds information about a person through whole video (or its part when certain person is in frame). Handles transitions between frames. Handles rotations during vault as well. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classperson_ab30381ce17a818621097ea6bf6418df4}\label{classperson_ab30381ce17a818621097ea6bf6418df4}} 
+\index{person@{person}!person@{person}}
+\index{person@{person}!person@{person}}
+\doxysubsubsection{\texorpdfstring{person()}{person()}}
+{\footnotesize\ttfamily person\+::person (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no,  }\item[{const cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{fps,  }\item[{const cv\+::\+Rect \&}]{box,  }\item[{cv\+::dnn\+::\+Net \&}]{net }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Default constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame\+\_\+no} & Number of frame, in which this person was detected for the first time. \\
+\hline
+{\em frame} & Current frame, this person was already detected here. \\
+\hline
+{\em fps} & Frame rate of processed video. \\
+\hline
+{\em box} & Bounding box of this person in {\ttfamily frame}. \\
+\hline
+{\em net} & Deep neural network used for detecting person\textquotesingle{}s body parts. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classperson_aa7911b119262c3ebe2d5878653ca6d53}\label{classperson_aa7911b119262c3ebe2d5878653ca6d53}} 
+\index{person@{person}!bbox@{bbox}}
+\index{bbox@{bbox}!person@{person}}
+\doxysubsubsection{\texorpdfstring{bbox()}{bbox()}}
+{\footnotesize\ttfamily cv\+::\+Rect person\+::bbox (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame\+\_\+no} & Number of frame where to get bounding box. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+bounding box of this person in current frame. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classperson_af730fd6a8f0e0b4e44e45f57034f94c7}\label{classperson_af730fd6a8f0e0b4e44e45f57034f94c7}} 
+\index{person@{person}!detect@{detect}}
+\index{detect@{detect}!person@{person}}
+\doxysubsubsection{\texorpdfstring{detect()}{detect()}}
+{\footnotesize\ttfamily void person\+::detect (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Detect body parts of this person inside given frame. 
+
+Use deep neural network to detect body parts of this person inside frame, crop frame to smaller input for speed optimization.
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame} & Frame which to crop and detect body parts on. \\
+\hline
+{\em frame\+\_\+no} & Number of given frame. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classperson_a8c31a2752c61d64c4afdbf8c2480e4bc}\label{classperson_a8c31a2752c61d64c4afdbf8c2480e4bc}} 
+\index{person@{person}!draw@{draw}}
+\index{draw@{draw}!person@{person}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily void person\+::draw (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Draw this person in {\ttfamily frame}. 
+
+Draw this person\textquotesingle{}s unscaled bounding box, scaled bounidng box and connected body parts forming a \char`\"{}stickman\char`\"{} in {\ttfamily frame}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame} & Frame in which this person should be drawn. \\
+\hline
+{\em frame\+\_\+no} & Number of given frame. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classperson_a9822e8678e2639defc9fc9884177ff42}\label{classperson_a9822e8678e2639defc9fc9884177ff42}} 
+\index{person@{person}!height@{height}}
+\index{height@{height}!person@{person}}
+\doxysubsubsection{\texorpdfstring{height()}{height()}}
+{\footnotesize\ttfamily double person\+::height (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+height of this person\textquotesingle{}s bounding box in given frame. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classperson_abc972b7df689b7e8fee4fd7e98e5652a}\label{classperson_abc972b7df689b7e8fee4fd7e98e5652a}} 
+\index{person@{person}!track@{track}}
+\index{track@{track}!person@{person}}
+\doxysubsubsection{\texorpdfstring{track()}{track()}}
+{\footnotesize\ttfamily bool person\+::track (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Track person in next frame. 
+
+Rotates frame so that person\textquotesingle{}s angle of rotation is as low as possible.
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame} & Next frame in which person should be tracked. \\
+\hline
+{\em frame\+\_\+no} & Number of given frame. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if detection was OK, false if an error occured. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classperson_ac03253d245f83f8d18f71f011869e6be}\label{classperson_ac03253d245f83f8d18f71f011869e6be}} 
+\index{person@{person}!width@{width}}
+\index{width@{width}!person@{person}}
+\doxysubsubsection{\texorpdfstring{width()}{width()}}
+{\footnotesize\ttfamily double person\+::width (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\begin{DoxyReturn}{Returns}
+width of this person\textquotesingle{}s bounding box in given frame. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+person.\+hpp\end{DoxyCompactItemize}

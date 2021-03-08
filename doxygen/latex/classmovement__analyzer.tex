@@ -1,0 +1,108 @@
+\hypertarget{classmovement__analyzer}{}\doxysection{movement\+\_\+analyzer Class Reference}
+\label{classmovement__analyzer}\index{movement\_analyzer@{movement\_analyzer}}
+
+
+Handles movement of person\textquotesingle{}s bounding box.  
+
+
+
+
+{\ttfamily \#include $<$movement\+\_\+analyzer.\+hpp$>$}
+
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classmovement__analyzer_aadd7b5127a011d8a78f962932500ccb4}\label{classmovement__analyzer_aadd7b5127a011d8a78f962932500ccb4}} 
+enum \mbox{\hyperlink{classmovement__analyzer_aadd7b5127a011d8a78f962932500ccb4}{direction}} \+: int \{ {\bfseries right} = -\/1
+, {\bfseries unknown} = 0
+, {\bfseries left} = 1
+ \}
+\begin{DoxyCompactList}\small\item\em Supported horizontal movement directions and their corresponding values. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{classmovement__analyzer_ade3e1e4b63e378b994c90e21dd8ed09c}{update}} (const cv\+::\+Mat \&frame, const cv\+::\+Rect2d \&\mbox{\hyperlink{classperson}{person}}, std\+::size\+\_\+t frame\+\_\+no)
+\begin{DoxyCompactList}\small\item\em Process given frame. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classmovement__analyzer_af7f4b59b97b4039ea82927a106fe0109}\label{classmovement__analyzer_af7f4b59b97b4039ea82927a106fe0109}} 
+int \mbox{\hyperlink{classmovement__analyzer_af7f4b59b97b4039ea82927a106fe0109}{get\+\_\+direction}} () const
+\begin{DoxyCompactList}\small\item\em Get detected direction. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classmovement__analyzer_afb81d329a27cae86a6f096fbe6238c5c}\label{classmovement__analyzer_afb81d329a27cae86a6f096fbe6238c5c}} 
+bool \mbox{\hyperlink{classmovement__analyzer_afb81d329a27cae86a6f096fbe6238c5c}{vault\+\_\+began}} (std\+::size\+\_\+t frame\+\_\+no) const
+\begin{DoxyCompactList}\small\item\em Get information whether vault has begun before frame {\ttfamily frame\+\_\+no}. \end{DoxyCompactList}\item 
+std\+::size\+\_\+t \mbox{\hyperlink{classmovement__analyzer_ad9259735d066b1e15892b2e9bbbc220a}{vault\+\_\+frames}} (std\+::size\+\_\+t frame\+\_\+no) const
+\begin{DoxyCompactList}\small\item\em Computes how many frames passed from beginning of vault. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classmovement__analyzer_af32d55d2aae66b07dafb1e9b6810b7bf}{draw}} (cv\+::\+Mat \&frame) const
+\begin{DoxyCompactList}\small\item\em Draw bounding boxes of currently tracked background parts. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Handles movement of person\textquotesingle{}s bounding box. 
+
+Tracks parts of background on both sides of person and determines which direction is that person moving. Determines whether a vault has begun. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classmovement__analyzer_af32d55d2aae66b07dafb1e9b6810b7bf}\label{classmovement__analyzer_af32d55d2aae66b07dafb1e9b6810b7bf}} 
+\index{movement\_analyzer@{movement\_analyzer}!draw@{draw}}
+\index{draw@{draw}!movement\_analyzer@{movement\_analyzer}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily void movement\+\_\+analyzer\+::draw (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{frame }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Draw bounding boxes of currently tracked background parts. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame} & Frame in which bounding boxes should be drawn. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classmovement__analyzer_ade3e1e4b63e378b994c90e21dd8ed09c}\label{classmovement__analyzer_ade3e1e4b63e378b994c90e21dd8ed09c}} 
+\index{movement\_analyzer@{movement\_analyzer}!update@{update}}
+\index{update@{update}!movement\_analyzer@{movement\_analyzer}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily bool movement\+\_\+analyzer\+::update (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{frame,  }\item[{const cv\+::\+Rect2d \&}]{person,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Process given frame. 
+
+Update valid trackers, check direction and whether vault began.
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame} & Frame to be processed. \\
+\hline
+{\em person} & Person\textquotesingle{}s bounding box in given frame. \\
+\hline
+{\em frame\+\_\+no} & Number of processed frame. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+false if both trackers failed (unable to determine person\textquotesingle{}s movement direction), true if tracking of at least one background part is OK. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classmovement__analyzer_ad9259735d066b1e15892b2e9bbbc220a}\label{classmovement__analyzer_ad9259735d066b1e15892b2e9bbbc220a}} 
+\index{movement\_analyzer@{movement\_analyzer}!vault\_frames@{vault\_frames}}
+\index{vault\_frames@{vault\_frames}!movement\_analyzer@{movement\_analyzer}}
+\doxysubsubsection{\texorpdfstring{vault\_frames()}{vault\_frames()}}
+{\footnotesize\ttfamily std\+::size\+\_\+t movement\+\_\+analyzer\+::vault\+\_\+frames (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Computes how many frames passed from beginning of vault. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame\+\_\+no} & Number of frame used for comparison to beginning of vault. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+number of frames after beginning of vault up to {\ttfamily frame\+\_\+no}.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+Returns 0 if vault has not begun yet. 
+\end{DoxyNote}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+movement\+\_\+analyzer.\+hpp\end{DoxyCompactItemize}
