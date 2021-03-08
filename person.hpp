@@ -56,7 +56,13 @@ class person {
     /// @brief Number of pairs of body parts (joined by line to form a stickman).
     const int npairs = 14;
 
-    /// @brief Body parts pairs specified by indices.
+    /**
+     * @brief Body parts pairs specified by indices.
+     * 
+     * Head – 0, Neck – 1, Right Shoulder – 2, Right Elbow – 3, Right Wrist – 4, Left Shoulder – 5,
+     * Left Elbow – 6, Left Wrist – 7, Right Hip – 8, Right Knee – 9, Right Ankle – 10, Left Hip – 11,
+     * Left Knee – 12, Left Ankle – 13, Chest – 14, Background – 15.
+     */
     const int pairs[14][2] = {
         {0,1}, {1,2}, {2,3},
         {3,4}, {1,5}, {5,6},
@@ -125,8 +131,9 @@ class person {
      * 
      * @param output Result given by `net.forward()` applied on scaled bounding
      *     box of this person in current frame.
+     * @param frame_no Number of frame in which to process `output`.
     */
-    void extract_points(cv::Mat &output) {
+    void extract_points(cv::Mat &output, std::size_t frame_no) {
         points.push_back(std::vector<cv::Point2d>(npoints));
         
         int h = output.size[2];
@@ -134,8 +141,8 @@ class person {
 
         // Scale by `scaling_factor` if last rectangle was scaled.
         double factor = scaling_performed ? scale_factor : 1;
-        double sx = factor * width() / (double)w;
-        double sy = factor * height() / (double)h;
+        double sx = factor * width(frame_no) / (double)w;
+        double sy = factor * height(frame_no) / (double)h;
 
         // Get points from output.
         for (int n = 0; n < npoints; n++) {
@@ -153,13 +160,13 @@ class person {
                 p.x *= sx; p.y *= sy; // Scale point so it fits original frame.
 
                 // Move point `p` so it is in correct position in frame.
-                p = corners.back()[corner::tl]
-                    + (1.0 - scale_factor) * 0.5 * (corners.back()[corner::br] - corners.back()[corner::tl])
-                    + p.x * (corners.back()[corner::tr] - corners.back()[corner::tl]) / width()
-                    + p.y * (corners.back()[corner::bl] - corners.back()[corner::tl]) / height();
+                p = corners[frame_no - first_frame_no][corner::tl]
+                    + (1.0 - scale_factor) * 0.5 * (corners[frame_no - first_frame_no][corner::br] - corners[frame_no - first_frame_no][corner::tl])
+                    + p.x * (corners[frame_no - first_frame_no][corner::tr] - corners[frame_no - first_frame_no][corner::tl]) / width(frame_no)
+                    + p.y * (corners[frame_no - first_frame_no][corner::bl] - corners[frame_no - first_frame_no][corner::tl]) / height(frame_no);
             }
 
-            points.back()[n] = p;
+            points[frame_no - first_frame_no][n] = p;
         }
     }
 
@@ -306,14 +313,14 @@ public:
         );
     }
 
-    /// @returns width of this person's bounding box in current frame.
-    double width() const {
-        return cv::norm(corners.back()[corner::tr] - corners.back()[corner::tl]);
+    /// @returns width of this person's bounding box in given frame.
+    double width(std::size_t frame_no) const {
+        return cv::norm(corners[frame_no - first_frame_no][corner::tr] - corners[frame_no - first_frame_no][corner::tl]);
     }
 
-    /// @returns height of this person's bounding box in current frame.
-    double height() const {
-        return cv::norm(corners.back()[corner::bl] - corners.back()[corner::tl]);
+    /// @returns height of this person's bounding box in given frame.
+    double height(std::size_t frame_no) const {
+        return cv::norm(corners[frame_no - first_frame_no][corner::bl] - corners[frame_no - first_frame_no][corner::tl]);
     }
 
     /**
@@ -338,6 +345,7 @@ public:
 
         // Update tracker.
         if (tracker->update(rotated, box)) {
+            // TODO: crop frame and save it for future deep detection.
             // Append person's bounding box corners.
             corners.push_back(transform(get_corners(box), frame, frame_no, true));
             return move_analyzer.update(frame, box, frame_no);
@@ -367,7 +375,24 @@ public:
         cv::Mat blob = cv::dnn::blobFromImage(input, 1.0 / 255, cv::Size(), cv::Scalar(), false, false, CV_32F);
         net.setInput(blob);
         cv::Mat output = net.forward();
-        extract_points(output);
+        extract_points(output, frame_no);
+    }
+
+    /// @brief Returns centers of gravity of person in each frame.
+    std::vector<cv::Point2d> get_centers_of_gravity() const {
+        std::vector<cv::Point2d> res;
+        for (const auto &p : points) {
+            // Average of left and right hip (if possible).
+            if ((p[8].y > 0) && (p[11].y > 0))
+                res.emplace_back((p[8] + p[11]) / 2);
+            else if (p[8].y > 0)
+                res.emplace_back(p[8]);
+            else if (p[11].y > 0)
+                res.emplace_back(p[11]);
+            else
+                res.emplace_back();
+        }
+        return res;
     }
 
     /**

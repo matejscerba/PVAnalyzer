@@ -7,6 +7,7 @@
 #include <vector>
 #include <algorithm>
 #include <list>
+#include <fstream>
 
 #include "person.hpp"
 
@@ -112,6 +113,19 @@ class body_detector {
         }
     }
 
+    void write_params(const person &p) const {
+        std::vector<cv::Point2d> cogs = p.get_centers_of_gravity();
+        std::ofstream file;
+        file.open("cogs.csv");
+        for (const auto &cog : cogs) {
+            if (cog.y != 0)
+                file << cog.y << std::endl;
+            else
+                file << std::endl;
+        }
+        file.close();
+    }
+
 public:
 
     /// @brief Supported return values for function `detect`.
@@ -160,8 +174,12 @@ public:
             }
         } else if (frame_no > person_frame) {
             // Try to track every person in frame, if it fails, remove such person from `people`.
-            people.remove_if([&frame, frame_no](person &p){ return !p.track(frame, frame_no); });
-            if (people.empty()) res = result::error;
+            // people.remove_if([&frame, frame_no](person &p){ return !p.track(frame, frame_no); });
+            // if (people.empty()) res = result::error;
+            if (!people.front().track(frame, frame_no)) {
+                res = result::error;
+                write_params(people.front());
+            }
         }
 
         // Detect body parts of all people in frame.

@@ -82,8 +82,8 @@ public:
                 frames.push_back(frame.clone());
 
                 // Display current frame.
-                cv::imshow("frame", frame);
-                cv::waitKey();
+                // cv::imshow("frame", frame);
+                // cv::waitKey();
 
                 if (filename.find("kolin2.MOV") != std::string::npos) {
                     video >> frame; video >> frame; video >> frame;
@@ -97,7 +97,7 @@ public:
             }
         }
 
-        // write("scaling-2.avi");
+        // write("no_last_box.avi");
 
         // Free resources.
         video.release();
