@@ -49,16 +49,6 @@ class background_tracker {
     double valid_direction_threshold;
 
     /**
-     * @brief Compute center of given rectangle.
-     * 
-     * @param rect Rectangle whose center should be computed.
-     * @returns center of `rect`.
-     */
-    cv::Point2d get_center(const cv::Rect &rect) const {
-        return cv::Point2d((double)rect.x + (double)rect.width / 2, (double)rect.y + (double)rect.height / 2);
-    }
-
-    /**
      * @brief Update background part to be tracked.
      * 
      * Change background part to be tracked if no part was tracked before or
@@ -115,22 +105,6 @@ class background_tracker {
         }
         person_offsets.push_back(get_center(person) - get_center(new_background) + background_offsets.back());
         frame_offsets.push_back(person_offsets.back() - get_center(person));
-    }
-
-    /**
-     * @brief Count mean of offset of given consecutive values in vector.
-     * 
-     * @param begin Iterator specifying beginning of values to be processed.
-     * @param end Iterator specifying end of values to be processed.
-     * @returns mean of offsets of given consecutive values.
-    */
-    cv::Point2d count_mean_delta(std::vector<cv::Point2d>::const_iterator begin, std::vector<cv::Point2d>::const_iterator end) const {
-        double n = end - begin - 1;
-        if (n) {
-            cv::Point2d sum = *(--end) - *begin;
-            return sum / n;
-        }
-        return cv::Point2d();
     }
 
 public:

@@ -25,12 +25,6 @@ class body_detector {
     /// @brief Deep neural network used for detecting athlete's body parts.
     cv::dnn::Net net;
 
-    /// @brief Path to protofile to be used for deep neural network intialization.
-    const std::string protofile = "pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt";
-
-    /// @brief Path to caffe model to be used for deep neural network intialization.
-    const std::string caffemodel = "pose/mpi/pose_iter_160000.caffemodel";
-
     /// @brief Number of frame, where person is supposed to be detected for the first time.
     std::size_t person_frame;
 
@@ -56,9 +50,9 @@ class body_detector {
      * @param lhs, rhs The rectangles to be compared.
      * @returns true if the first parameter is closer to `person_position` than the second parameter.
      */
-    bool distance_compare(const cv::Rect &lhs, const cv::Rect &rhs) const {
-        cv::Point l(lhs.x + lhs.width / 2, lhs.y + lhs.height / 2);
-        cv::Point r(rhs.x + rhs.width / 2, rhs.y + rhs.height / 2);
+    bool distance_compare(const cv::Rect &lhs, const cv::Rect &rhs) {
+        cv::Point l = get_center(lhs);
+        cv::Point r = get_center(rhs);
         double lhsDist = std::sqrt(
             (l.x - person_position.x) * (l.x - person_position.x) +
             (l.y - person_position.y) * (l.y - person_position.y)

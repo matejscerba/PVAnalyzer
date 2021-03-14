@@ -11,12 +11,6 @@
 
 #include "movement_analyzer.hpp"
 
-std::optional<cv::Point2d> operator+(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs) {
-    if (lhs && rhs)
-        return *lhs + *rhs;
-    return std::nullopt;
-}
-
 /**
  * @brief Represents person through whole video.
  * 
@@ -28,80 +22,11 @@ class person {
 
     friend class vault_analyzer;
 
-    /// @brief Bounding box corner indices.
-    enum corner : std::size_t {
-        /// Top left.
-        tl = 0,
-        /// Top right.
-        tr,
-        /// Bottom left.
-        bl,
-        /// Bottom right.
-        br
-    };
-
-    /// @brief Expected vault duration in seconds.
-    const double vault_duration = 0.8;
-
     /// @brief Number of frames during vault.
     const double vault_frames;
 
     /// @brief Holds information, whether scaling was performed.
     bool scaling_performed = true;
-
-    /**
-     * @brief Determines size of bounding box where to detect body parts.
-     * 
-     * Ratio of size of bounding box used to detect body parts and size of
-     * bounding box tracked by `tracker`.
-     * 
-     * @note Measures size linearly, not bounding box's surface.
-     */
-    const double scale_factor = 1.8;
-
-    /// @brief Number of body parts, that is being detected.
-    const int npoints = 16;
-
-    /// @brief Number of pairs of body parts (joined by line to form a stickman).
-    const int npairs = 14;
-
-    /**
-     * @brief Body parts pairs specified by indices.
-     * 
-     * Head – 0, Neck – 1, Right Shoulder – 2, Right Elbow – 3, Right Wrist – 4, Left Shoulder – 5,
-     * Left Elbow – 6, Left Wrist – 7, Right Hip – 8, Right Knee – 9, Right Ankle – 10, Left Hip – 11,
-     * Left Knee – 12, Left Ankle – 13, Chest – 14, Background – 15.
-     */
-    const int pairs[14][2] = {
-        {0,1}, {1,2}, {2,3},
-        {3,4}, {1,5}, {5,6},
-        {6,7}, {1,14}, {14,8}, {8,9},
-        {9,10}, {14,11}, {11,12}, {12,13}
-    };
-
-    /**
-     * @brief Maps body parts' names to correct indices to access its points.
-     */
-    enum body_part : std::size_t {
-        head = 0,
-        neck = 1,
-        r_shoulder = 2,
-        r_elbow = 3,
-        r_wrist = 4,
-        l_shoulder = 5,
-        l_elbow = 6,
-        l_wrist = 7,
-        r_hip = 8,
-        r_knee = 9,
-        r_ankle = 10,
-        l_hip = 11,
-        l_knee = 12,
-        l_ankle = 13,
-        chest = 14
-    };
-
-    /// @brief Minimal probability value to mark body part as valid.
-    const double probThreshold = 0.1;
 
     /// @brief Deep neural network used for detecting person's body parts.
     cv::dnn::Net net;
@@ -126,7 +51,7 @@ class person {
      * @note Bounding box (which corners represent) can be rotated, so it
      *     is saved as individual corners.
     */
-    std::vector<std::vector<cv::Point2d>> corners;
+    person_corners corners;
 
     /**
      * @brief Body parts of person in each frame.
@@ -134,24 +59,10 @@ class person {
      * Body parts are saved in similar way as corners, after accessing body parts
      * for certain frame, indices correspond to `pairs`.
      */
-    std::vector<std::vector<std::optional<cv::Point2d>>> points;
+    video_body points;
 
     /// @brief Analyzes this person's movement.
     movement_analyzer move_analyzer;
-
-    /**
-     * @brief Extract corners from rectangle.
-     * 
-     * @param rect Rectangle to extract corners from.
-     * @returns vector of points representing corners so that indices
-     *     correspond to `enum corner`.
-    */
-    std::vector<cv::Point2d> get_corners(const cv::Rect &rect) const {
-        return {
-            rect.tl(), cv::Point2d(rect.br().x, rect.tl().y),
-            cv::Point2d(rect.tl().x, rect.br().y), rect.br()
-        };
-    }
 
     /**
      * @brief Save detected body parts to `points`.
@@ -164,7 +75,7 @@ class person {
      * @param frame_no Number of frame in which to process `output`.
     */
     void extract_points(cv::Mat &output, std::size_t frame_no) {
-        points.push_back(std::vector<std::optional<cv::Point2d>>(npoints));
+        points.push_back(frame_body(npoints));
         
         int h = output.size[2];
         int w = output.size[3];
@@ -179,13 +90,13 @@ class person {
             cv::Mat probMat(h, w, CV_32F, output.ptr(0, n));
 
             // Get point in output with maximum probability of "being point `n`".
-            std::optional<cv::Point2d> p = std::nullopt;
+            frame_part p = std::nullopt;
             cv::Point max;
             double prob;
             cv::minMaxLoc(probMat, 0, &prob, 0, &max);
 
             // Check point probability against a threshold
-            if (prob > probThreshold) {
+            if (prob > detection_threshold) {
                 p = max;
                 p->x *= sx; p->y *= sy; // Scale point so it fits original frame.
 
@@ -251,18 +162,6 @@ class person {
     double get_angle(std::size_t frame_no) const {
         std::size_t frames = move_analyzer.vault_frames(frame_no);
         return (double)move_analyzer.get_direction() * 180.0 * std::min(1.0, (double)frames / (double)vault_frames);
-    }
-
-    /**
-     * @brief Computes center of given frame.
-     * 
-     * @param frame Given frame used to compute its center.
-     * @returns point in center of given frame.
-     */
-    cv::Point get_center(const cv::Mat &frame) const {
-        return cv::Point(
-            frame.cols / 2, frame.rows / 2
-        );
     }
 
     /**
@@ -408,12 +307,12 @@ public:
         extract_points(output, frame_no);
     }
 
-    std::vector<std::vector<std::optional<cv::Point2d>>> get_points() const {
-        std::vector<std::vector<std::optional<cv::Point2d>>> res;
+    video_body get_points() const {
+        video_body res;
         for (std::size_t i = 0; i < points.size(); i++) {
-            std::vector<std::optional<cv::Point2d>> transformed;
+            frame_body transformed;
             std::transform(points[i].begin(), points[i].end(), std::back_inserter(transformed),
-                           [i, this](const std::optional<cv::Point2d> &p) { return p + this->move_analyzer.frame_offset(i); }
+                           [i, this](const frame_part &p) { return p + this->move_analyzer.frame_offset(i); }
             );
             res.push_back(std::move(transformed));
         }

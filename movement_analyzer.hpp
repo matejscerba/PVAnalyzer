@@ -23,12 +23,6 @@ class movement_analyzer {
     /// @brief In which frame the vault began (contains value if it was set).
     std::optional<std::size_t> _vault_began;
 
-    /// @brief How many frames to check to determine if vault began.
-    const std::size_t vault_check_frames = 6;
-
-    /// @brief How much the person's coordinates must change in order to set `_vault_began` to true.
-    const double vault_threshold = -0.55 / 720;
-
     /// @brief Horizontal direction of person's movement.
     int dir = unknown;
 
@@ -57,15 +51,6 @@ class movement_analyzer {
     }
 
 public:
-
-    /**
-     * @brief Supported horizontal movement directions and their corresponding values.
-    */
-    enum direction : int {
-        right = -1,
-        unknown = 0,
-        left = 1
-    };
 
     /**
      * @brief Default constructor.

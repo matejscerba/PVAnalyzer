@@ -6,6 +6,6 @@ project(rp)
 
 find_package(OpenCV REQUIRED)
 
-add_executable(rp main.cpp)
+add_executable(rp forward.cpp main.cpp)
 
 target_link_libraries(rp PRIVATE ${OpenCV_LIBS})

@@ -12,21 +12,25 @@ class vault_analyzer {
 
     /**
      * @brief Body parts of person in each frame transformed into correct coordinates.
+     * 
+     * @see forward.hpp.
      */
-    std::vector<std::vector<std::optional<cv::Point2d>>> points;
-    std::string filename;
+    video_body points;
+    
+    /// @brief Path to analyzed video.
+    std::string filename; 
 
     /// @brief Returns centers of gravity of person in each frame.
     std::vector<cv::Point2d> get_centers_of_gravity() const {
         std::vector<cv::Point2d> res;
         for (const auto &p : points) {
             // Average of left and right hip (if possible).
-            if (p[person::body_part::r_hip] && p[person::body_part::l_hip]) {
-                res.push_back((*p[person::body_part::r_hip] + *p[person::body_part::l_hip]) / 2);
-            } else if (p[person::body_part::r_hip]) {
-                res.push_back(*p[person::body_part::r_hip]);
-            } else if (p[person::body_part::l_hip]) {
-                res.push_back(*p[person::body_part::l_hip]);
+            if (p[body_part::r_hip] && p[body_part::l_hip]) {
+                res.push_back((*p[body_part::r_hip] + *p[body_part::l_hip]) / 2);
+            } else if (p[body_part::r_hip]) {
+                res.push_back(*p[body_part::r_hip]);
+            } else if (p[body_part::l_hip]) {
+                res.push_back(*p[body_part::l_hip]);
             } else {
                 res.emplace_back();
             }
