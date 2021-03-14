@@ -6,6 +6,8 @@
 #include <iostream>
 
 #include "body_detector.hpp"
+#include "person.hpp"
+#include "vault_analyzer.hpp"
 
 
 /**
@@ -71,6 +73,8 @@ public:
             if (frame.empty())
                 break;
 
+            std::cout << frame_no << std::endl;
+
             // Detect body.
             body_detector::result res = detector.detect(frame, frame_no);
             if (res == body_detector::result::ok) {
@@ -97,11 +101,15 @@ public:
             }
         }
 
-        // write("no_last_box.avi");
-
         // Free resources.
         video.release();
         cv::destroyAllWindows();
+
+        vault_analyzer analyzer;
+        person athlete = detector.get_athlete();
+        analyzer.analyze(athlete, filename);
+
+        // write("no_last_box.avi");
     }
 
 };

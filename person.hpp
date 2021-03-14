@@ -7,8 +7,15 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <optional>
 
 #include "movement_analyzer.hpp"
+
+std::optional<cv::Point2d> operator+(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs) {
+    if (lhs && rhs)
+        return *lhs + *rhs;
+    return std::nullopt;
+}
 
 /**
  * @brief Represents person through whole video.
@@ -19,8 +26,10 @@
 */
 class person {
 
+    friend class vault_analyzer;
+
     /// @brief Bounding box corner indices.
-    enum corner : int {
+    enum corner : std::size_t {
         /// Top left.
         tl = 0,
         /// Top right.
@@ -70,6 +79,27 @@ class person {
         {9,10}, {14,11}, {11,12}, {12,13}
     };
 
+    /**
+     * @brief Maps body parts' names to correct indices to access its points.
+     */
+    enum body_part : std::size_t {
+        head = 0,
+        neck = 1,
+        r_shoulder = 2,
+        r_elbow = 3,
+        r_wrist = 4,
+        l_shoulder = 5,
+        l_elbow = 6,
+        l_wrist = 7,
+        r_hip = 8,
+        r_knee = 9,
+        r_ankle = 10,
+        l_hip = 11,
+        l_knee = 12,
+        l_ankle = 13,
+        chest = 14
+    };
+
     /// @brief Minimal probability value to mark body part as valid.
     const double probThreshold = 0.1;
 
@@ -104,7 +134,7 @@ class person {
      * Body parts are saved in similar way as corners, after accessing body parts
      * for certain frame, indices correspond to `pairs`.
      */
-    std::vector<std::vector<cv::Point2d>> points;
+    std::vector<std::vector<std::optional<cv::Point2d>>> points;
 
     /// @brief Analyzes this person's movement.
     movement_analyzer move_analyzer;
@@ -134,7 +164,7 @@ class person {
      * @param frame_no Number of frame in which to process `output`.
     */
     void extract_points(cv::Mat &output, std::size_t frame_no) {
-        points.push_back(std::vector<cv::Point2d>(npoints));
+        points.push_back(std::vector<std::optional<cv::Point2d>>(npoints));
         
         int h = output.size[2];
         int w = output.size[3];
@@ -149,7 +179,7 @@ class person {
             cv::Mat probMat(h, w, CV_32F, output.ptr(0, n));
 
             // Get point in output with maximum probability of "being point `n`".
-            cv::Point2d p(-1, -1);
+            std::optional<cv::Point2d> p = std::nullopt;
             cv::Point max;
             double prob;
             cv::minMaxLoc(probMat, 0, &prob, 0, &max);
@@ -157,13 +187,13 @@ class person {
             // Check point probability against a threshold
             if (prob > probThreshold) {
                 p = max;
-                p.x *= sx; p.y *= sy; // Scale point so it fits original frame.
+                p->x *= sx; p->y *= sy; // Scale point so it fits original frame.
 
                 // Move point `p` so it is in correct position in frame.
                 p = corners[frame_no - first_frame_no][corner::tl]
                     + (1.0 - scale_factor) * 0.5 * (corners[frame_no - first_frame_no][corner::br] - corners[frame_no - first_frame_no][corner::tl])
-                    + p.x * (corners[frame_no - first_frame_no][corner::tr] - corners[frame_no - first_frame_no][corner::tl]) / width(frame_no)
-                    + p.y * (corners[frame_no - first_frame_no][corner::bl] - corners[frame_no - first_frame_no][corner::tl]) / height(frame_no);
+                    + p->x * (corners[frame_no - first_frame_no][corner::tr] - corners[frame_no - first_frame_no][corner::tl]) / width(frame_no)
+                    + p->y * (corners[frame_no - first_frame_no][corner::bl] - corners[frame_no - first_frame_no][corner::tl]) / height(frame_no);
             }
 
             points[frame_no - first_frame_no][n] = p;
@@ -287,7 +317,7 @@ public:
      * @param net Deep neural network used for detecting person's body parts.
     */
     person(std::size_t frame_no, const cv::Mat &frame, std::size_t fps, const cv::Rect &box, cv::dnn::Net &net)
-        : vault_frames((double)fps * vault_duration) {
+        : vault_frames((double)fps * vault_duration), move_analyzer(frame, box) {
             first_frame_no = frame_no;
             current_frame_no = frame_no;
             corners.push_back(get_corners(box));
@@ -378,19 +408,14 @@ public:
         extract_points(output, frame_no);
     }
 
-    /// @brief Returns centers of gravity of person in each frame.
-    std::vector<cv::Point2d> get_centers_of_gravity() const {
-        std::vector<cv::Point2d> res;
-        for (const auto &p : points) {
-            // Average of left and right hip (if possible).
-            if ((p[8].y > 0) && (p[11].y > 0))
-                res.emplace_back((p[8] + p[11]) / 2);
-            else if (p[8].y > 0)
-                res.emplace_back(p[8]);
-            else if (p[11].y > 0)
-                res.emplace_back(p[11]);
-            else
-                res.emplace_back();
+    std::vector<std::vector<std::optional<cv::Point2d>>> get_points() const {
+        std::vector<std::vector<std::optional<cv::Point2d>>> res;
+        for (std::size_t i = 0; i < points.size(); i++) {
+            std::vector<std::optional<cv::Point2d>> transformed;
+            std::transform(points[i].begin(), points[i].end(), std::back_inserter(transformed),
+                           [i, this](const std::optional<cv::Point2d> &p) { return p + this->move_analyzer.frame_offset(i); }
+            );
+            res.push_back(std::move(transformed));
         }
         return res;
     }
@@ -420,7 +445,7 @@ public:
             cv::Point2d br = corners[idx][corner::br];
 
             cv::Scalar color(0, 0, 255);
-            if (move_analyzer.vault_began(frame_no))
+            if (move_analyzer.vault_frames(frame_no))
                 color = cv::Scalar(0, 255, 0);
 
             cv::line(frame, tl, tr, color, 1);
@@ -439,7 +464,7 @@ public:
                 - (1.0 - scale_factor) * 0.5 * (corners[idx][corner::br] - corners[idx][corner::tl]);
 
             color = cv::Scalar(0, 0, 127);
-            if (move_analyzer.vault_began(frame_no))
+            if (move_analyzer.vault_frames(frame_no))
                 color = cv::Scalar(0, 127, 0);
 
             cv::line(frame, tl, tr, color, 1);
@@ -451,22 +476,21 @@ public:
         // Body parts if they were detected.
         if (points.size() > idx) {
             for (int n = 0; n < npairs; n++) {
-                cv::Point2d a = points[idx][pairs[n][0]];
-                cv::Point2d b = points[idx][pairs[n][1]];
+                std::optional<cv::Point2d> a = points[idx][pairs[n][0]];
+                std::optional<cv::Point2d> b = points[idx][pairs[n][1]];
 
                 // Check if points `a` and `b` are valid.
-                if (a.x <= 0 || a.y <= 0 || b.x <= 0 || b.y <= 0)
-                    continue;
-
-                // Draw points representing joints and connect them with lines.
-                cv::line(frame, a, b, cv::Scalar(0, 255, 255), 2);
-                cv::circle(frame, a, 2, cv::Scalar(0, 0, 255), -1);
-                cv::circle(frame, b, 2, cv::Scalar(0, 0, 255), -1);
+                if (a && b) {
+                    // Draw points representing joints and connect them with lines.
+                    cv::line(frame, *a, *b, cv::Scalar(0, 255, 255), 2);
+                    cv::circle(frame, *a, 2, cv::Scalar(0, 0, 255), -1);
+                    cv::circle(frame, *b, 2, cv::Scalar(0, 0, 255), -1);
+                }
             }
         }
 
         // Movement analyzer.
-        move_analyzer.draw(frame);
+        move_analyzer.draw(frame, idx);
     }
 
 };

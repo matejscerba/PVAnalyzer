@@ -7,7 +7,6 @@
 #include <vector>
 #include <algorithm>
 #include <list>
-#include <fstream>
 
 #include "person.hpp"
 
@@ -113,19 +112,6 @@ class body_detector {
         }
     }
 
-    void write_params(const person &p) const {
-        std::vector<cv::Point2d> cogs = p.get_centers_of_gravity();
-        std::ofstream file;
-        file.open("cogs.csv");
-        for (const auto &cog : cogs) {
-            if (cog.y != 0)
-                file << cog.y << std::endl;
-            else
-                file << std::endl;
-        }
-        file.close();
-    }
-
 public:
 
     /// @brief Supported return values for function `detect`.
@@ -178,18 +164,26 @@ public:
             // if (people.empty()) res = result::error;
             if (!people.front().track(frame, frame_no)) {
                 res = result::error;
-                write_params(people.front());
             }
         }
 
-        // Detect body parts of all people in frame.
-        if (frame_no >= person_frame) {
+        // Detect body parts of all valid people in frame.
+        if ((res != result::error) && (frame_no >= person_frame)) {
             for (auto &p : people) {
                 p.detect(frame, frame_no);
             }
         }
 
         return res;
+    }
+
+    /**
+     * @brief Get valid athlete detected in processed video.
+     * 
+     * @returns person representing valid athlete.
+     */
+    person get_athlete() const {
+        return people.front();
     }
 
     /**
