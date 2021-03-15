@@ -46,7 +46,7 @@ class vault_analyzer {
     void write_params() const {
         std::vector<cv::Point2d> cogs = get_centers_of_gravity();
         std::ofstream file;
-        file.open("cogs_analyzer_updated_coords.csv");
+        file.open("outputs/cogs_analyzer_updated_coords_2.csv");
         file << "Athlete's center of gravity in video " << filename << std::endl;
         for (const auto &cog : cogs) {
             if (cog.y != 0)

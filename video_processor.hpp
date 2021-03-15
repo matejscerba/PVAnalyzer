@@ -87,8 +87,8 @@ public:
                 frames.push_back(frame.clone());
 
                 // Display current frame.
-                cv::imshow("frame", frame);
-                cv::waitKey();
+                // cv::imshow("frame", frame);
+                // cv::waitKey();
 
                 if (filename.find("kolin2.MOV") != std::string::npos) {
                     video >> frame; video >> frame; video >> frame;
@@ -106,9 +106,9 @@ public:
         video.release();
         cv::destroyAllWindows();
 
-        // vault_analyzer analyzer;
-        // person athlete = detector.get_athlete();
-        // analyzer.analyze(athlete, filename);
+        vault_analyzer analyzer;
+        person athlete = detector.get_athlete();
+        analyzer.analyze(athlete, filename);
 
         // write("no_last_box.avi");
     }

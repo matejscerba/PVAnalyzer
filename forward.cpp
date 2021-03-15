@@ -1,7 +1,3 @@
-#include <opencv2/opencv.hpp>
-
-#include <string>
-
 #include "forward.hpp"
 
 const std::string protofile = "pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt";
