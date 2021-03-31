@@ -307,12 +307,12 @@ public:
         extract_points(output, frame_no);
     }
 
-    video_body get_points() const {
+    video_body get_points(bool real = false) const {
         video_body res;
         for (std::size_t i = 0; i < points.size(); i++) {
             frame_body transformed;
             std::transform(points[i].begin(), points[i].end(), std::back_inserter(transformed),
-                           [i, this](const frame_part &p) { return p + this->move_analyzer.frame_offset(i); }
+                           [i, this, real](const frame_part &p) { return p + this->move_analyzer.frame_offset(i, real); }
             );
             res.push_back(std::move(transformed));
         }

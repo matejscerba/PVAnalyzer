@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <tuple>
 
 /**
  * @brief File containing definitions of type aliases, constants and helper functions.
@@ -21,6 +22,9 @@ typedef std::vector<frame_body> video_body;
 
 /// @brief Represents corners of person's bounding box in all frames where person was detected.
 typedef std::vector<std::vector<cv::Point2d>> person_corners;
+
+/// @brief Represents parameter's name and values.
+typedef std::tuple<std::string, std::vector<double>> parameter;
 
 /// @brief Maps bounding box corners to indices.
 enum corner : std::size_t {
@@ -63,6 +67,22 @@ enum direction : int {
     unknown = 0,
     left = 1
 };
+
+/**
+ * @brief Extract name of given parameter.
+ * 
+ * @param p Parameter to extract name from.
+ * @returns name of parameter `p`.
+ */
+std::string get_name(const parameter &p);
+
+/**
+ * @brief Extract values of given parameter.
+ * 
+ * @param p Parameter to extract values from.
+ * @returns values of parameter `p`.
+ */
+std::vector<double> get_values(const parameter &p);
 
 /**
  * @brief Add two optional points if both are valid.

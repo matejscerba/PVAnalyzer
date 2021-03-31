@@ -4,6 +4,14 @@ const std::string protofile = "pose/mpi/pose_deploy_linevec_faster_4_stages.prot
 
 const std::string caffemodel = "pose/mpi/pose_iter_160000.caffemodel";
 
+std::string get_name(const parameter &p) {
+    return std::get<0>(p);
+}
+
+std::vector<double> get_values(const parameter &p) {
+    return std::get<1>(p);
+}
+
 std::optional<cv::Point2d> operator+(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs) {
     if (lhs && rhs)
         return *lhs + *rhs;
