@@ -8,7 +8,7 @@ std::string get_name(const parameter &p) {
     return std::get<0>(p);
 }
 
-std::vector<double> get_values(const parameter &p) {
+std::vector<std::optional<double>> get_values(const parameter &p) {
     return std::get<1>(p);
 }
 

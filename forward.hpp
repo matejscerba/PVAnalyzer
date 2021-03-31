@@ -7,6 +7,8 @@
 #include <optional>
 #include <tuple>
 
+// TODO: Parameters values typedef...
+
 /**
  * @brief File containing definitions of type aliases, constants and helper functions.
  */
@@ -24,7 +26,7 @@ typedef std::vector<frame_body> video_body;
 typedef std::vector<std::vector<cv::Point2d>> person_corners;
 
 /// @brief Represents parameter's name and values.
-typedef std::tuple<std::string, std::vector<double>> parameter;
+typedef std::tuple<std::string, std::vector<std::optional<double>>> parameter;
 
 /// @brief Maps bounding box corners to indices.
 enum corner : std::size_t {
@@ -82,7 +84,7 @@ std::string get_name(const parameter &p);
  * @param p Parameter to extract values from.
  * @returns values of parameter `p`.
  */
-std::vector<double> get_values(const parameter &p);
+std::vector<std::optional<double>> get_values(const parameter &p);
 
 /**
  * @brief Add two optional points if both are valid.

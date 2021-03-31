@@ -41,28 +41,29 @@ class vault_analyzer {
     std::string filename;
 
     /// @brief Returns position of person's body part.
-    cv::Point2d get_part(const frame_body &body, body_part part) const {
-        if (body[part]) return *body[part];
-        return cv::Point2d();
+    std::optional<cv::Point2d> get_part(const frame_body &body, body_part part) const {
+        return body[part];
     }
 
     /// @brief Returns height of person's body part.
-    double get_part_height(const frame_body &body, body_part part) const {
-        return get_part(body, part).y;
+    std::optional<double> get_part_height(const frame_body &body, body_part part) const {
+        auto p = get_part(body, part);
+        if (p) return p->y;
+        return std::nullopt;
     }
 
     /// @brief Returns height of person's left foot.
-    double get_left_foot_height(const frame_body &body) const {
+    std::optional<double> get_left_foot_height(const frame_body &body) const {
         return get_part_height(body, body_part::l_ankle);
     }
 
     /// @brief Returns height of person's right foot.
-    double get_right_foot_height(const frame_body &body) const {
+    std::optional<double> get_right_foot_height(const frame_body &body) const {
         return get_part_height(body, body_part::r_ankle);
     }
 
     /// @brief Returns person's hips position.
-    cv::Point2d get_hips(const frame_body &body) const {
+    std::optional<cv::Point2d> get_hips(const frame_body &body) const {
         // Average of left and right hip (if possible).
         if (body[body_part::r_hip] && body[body_part::l_hip]) {
             return ((*body[body_part::r_hip] + *body[body_part::l_hip]) / 2);
@@ -71,7 +72,7 @@ class vault_analyzer {
         } else if (body[body_part::l_hip]) {
             return *body[body_part::l_hip];
         } else {
-            return cv::Point2d();
+            return std::nullopt;
         }
     }
 
@@ -82,8 +83,10 @@ class vault_analyzer {
      * 
      * @returns height of person's hips.
      */
-    double get_hips_height(const frame_body &body) const {
-        return get_hips(body).y;
+    std::optional<double> get_hips_height(const frame_body &body) const {
+        auto hips = get_hips(body);
+        if (hips) return hips->y;
+        return std::nullopt;
     }
 
     /**
@@ -95,16 +98,16 @@ class vault_analyzer {
      * 
      * @returns parameter containing its name and values.
      */
-    parameter get_parameter(std::string name, double (vault_analyzer::*get_value)(const frame_body &) const , bool real = false) const {
+    parameter get_parameter(std::string name, std::optional<double> (vault_analyzer::*get_value)(const frame_body &) const , bool real = false) const {
         video_body points = points_frame;
         std::string full_name = name + " (frame coordinates)";
         if (real) {
             points = points_real;
             full_name = name + " (real coordinates)";
         }
-        std::vector<double> res;
+        std::vector<std::optional<double>> res;
         for (std::size_t i = 0; i < first_frame; i++)
-            res.emplace_back(); // Skip frames without athlete detected.
+            res.push_back(std::nullopt); // Skip frames without athlete detected.
         std::transform(points.begin(), points.end(), std::back_inserter(res),
                        [this, get_value](const frame_body &body){ return (this->*get_value)(body); }
         );
@@ -143,25 +146,26 @@ class vault_analyzer {
         
         // Extract values from parameters.
         std::vector<std::string> names;
-        std::vector<std::vector<double>> values;
+        std::vector<std::vector<std::optional<double>>> values;
         for (auto &param : parameters) {
             names.push_back(get_name(param));
             values.push_back(get_values(param));
         }
+        output << "Frame number";
         // Write names of parameters.
         for (const auto &name : names) {
-            output << name << ",";
+            output << "," << name;
         }
         // Write values of parameters.
         for (std::size_t i = 0; i < frames; i++) {
-            output << std::endl;
+            output << std::endl << i;
             bool written = false;
             for (const auto &val : values) {
+                output << ",";
                 if (i < val.size()) {
-                    output << val[i];
+                    if (val[i]) output << - *val[i];
                     written = true;
                 }
-                output << ",";
             }
             if (!written) {
                 break;
