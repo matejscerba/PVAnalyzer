@@ -307,6 +307,12 @@ public:
         extract_points(output, frame_no);
     }
 
+    /**
+     * @brief Get point of all body parts of person.
+     * 
+     * @param real Transforms detected points into real life coordinates if true.
+     * @returns detected body parts in part of video where person was detected.
+     */
     video_body get_points(bool real = false) const {
         video_body res;
         for (std::size_t i = 0; i < points.size(); i++) {

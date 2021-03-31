@@ -12,42 +12,56 @@
 
 #include "person.hpp"
 
+/**
+ * @brief Analyzes detections made when processing video.
+ */
 class vault_analyzer {
 
     /**
-     * @brief Body parts of person in each frame transformed into correct coordinates.
+     * @brief Body parts of person in each frame (untransformed).
      * 
      * @see forward.hpp.
      */
     video_body points_frame;
 
+    /**
+     * @brief Body parts of person in each frame transformed into real life coordinates.
+     * 
+     * @see forward.hpp.
+     */
     video_body points_real;
 
+    /// @brief Number of first frame in which person was detected.
     std::size_t first_frame;
 
+    /// @brief Number of frames in video where person was detected.
     std::size_t frames;
     
     /// @brief Path to analyzed video.
     std::string filename;
 
+    /// @brief Returns position of person's body part.
     cv::Point2d get_part(const frame_body &body, body_part part) const {
         if (body[part]) return *body[part];
         return cv::Point2d();
     }
 
+    /// @brief Returns height of person's body part.
     double get_part_height(const frame_body &body, body_part part) const {
         return get_part(body, part).y;
     }
 
+    /// @brief Returns height of person's left foot.
     double get_left_foot_height(const frame_body &body) const {
         return get_part_height(body, body_part::l_ankle);
     }
 
+    /// @brief Returns height of person's right foot.
     double get_right_foot_height(const frame_body &body) const {
         return get_part_height(body, body_part::r_ankle);
     }
 
-    /// @brief Returns centers of gravity of person in each frame.
+    /// @brief Returns person's hips position.
     cv::Point2d get_hips(const frame_body &body) const {
         // Average of left and right hip (if possible).
         if (body[body_part::r_hip] && body[body_part::l_hip]) {
@@ -61,11 +75,26 @@ class vault_analyzer {
         }
     }
 
-    /// @brief Returns centers of gravity of person in each frame.
+    /**
+     * @brief Returns hips height of person based on position of its body parts.
+     * 
+     * @param body Body parts of person to be processed.
+     * 
+     * @returns height of person's hips.
+     */
     double get_hips_height(const frame_body &body) const {
         return get_hips(body).y;
     }
 
+    /**
+     * @brief Get parameter and its values from detected body parts.
+     * 
+     * @param name Name of parameter to be analyzed.
+     * @param get_value Function extracting parameter's value from detected body parts in single frame.
+     * @param real Uses transformed coordinates (based on background tracking) if true.
+     * 
+     * @returns parameter containing its name and values.
+     */
     parameter get_parameter(std::string name, double (vault_analyzer::*get_value)(const frame_body &) const , bool real = false) const {
         video_body points = points_frame;
         std::string full_name = name + " (frame coordinates)";
@@ -82,6 +111,11 @@ class vault_analyzer {
         return parameter(full_name, res);
     }
 
+    /**
+     * @brief Create name for output file from current date.
+     * 
+     * @returns name for output .csv file.
+     */
     std::string create_output_filename() const {
         std::time_t now = std::time(nullptr);
         std::stringstream sstr;
@@ -92,7 +126,7 @@ class vault_analyzer {
     /**
      * @brief Write parameters in csv file.
      * 
-     * Needs to be improved...
+     * Each column represents one parameter. Each frame has its value in one row.
      */
     void write_params() const {
         std::vector<parameter> parameters;

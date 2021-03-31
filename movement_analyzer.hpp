@@ -127,9 +127,11 @@ public:
      * @brief Get offset of frame specified by its number.
      * 
      * @param frame_no Number of frame which offset should be computed.
+     * @param real Returns valid offset if true, zero offset otherwise.
      * @returns offset of specified frame, invalid value if offset could not be computed.
      * 
      * @note Frame number 0 corresponds to first frame, in which person was detected.
+     * @note If real is false, frame offset is irrelevant.
      * 
      * @see background_tracker::frame_offset.
      */
