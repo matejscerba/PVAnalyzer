@@ -6,6 +6,7 @@
 #include <vector>
 #include <optional>
 #include <tuple>
+#include <ostream>
 
 // TODO: Parameters values typedef...
 
@@ -85,6 +86,8 @@ std::string get_name(const parameter &p);
  * @returns values of parameter `p`.
  */
 std::vector<std::optional<double>> get_values(const parameter &p);
+
+std::ostream& operator<<(std::ostream &os, std::optional<double> val);
 
 /**
  * @brief Add two optional points if both are valid.

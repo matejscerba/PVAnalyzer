@@ -9,6 +9,7 @@
 #include "body_detector.hpp"
 #include "person.hpp"
 #include "vault_analyzer.hpp"
+#include "visual.hpp"
 
 
 /**
@@ -21,6 +22,9 @@ class video_processor {
 
     /// @brief Holds frames modified by processor.
     std::vector<cv::Mat> frames;
+
+    /// @brief Holds frames unmodified by processor.
+    std::vector<cv::Mat> raw_frames;
 
     /**
      * @brief Write modified frames as a video to given file.
@@ -81,6 +85,8 @@ public:
             if (res == body_detector::result::ok) {
                 // Detection on given frame was valid.
                 
+                raw_frames.push_back(frame.clone());
+
                 // Draw.
                 detector.draw(frame, frame_no);
                 
@@ -98,6 +104,8 @@ public:
                 break;
             } else if (res == body_detector::result::skip) {
                 // This frame is supposed to be skipped.
+                frames.push_back(frame.clone());
+                raw_frames.push_back(frame.clone());
                 continue;
             }
         }
@@ -106,9 +114,13 @@ public:
         video.release();
         cv::destroyAllWindows();
 
+        // TODO: Valid athlete?
         vault_analyzer analyzer;
         person athlete = detector.get_athlete();
         analyzer.analyze(athlete, filename);
+
+        visual v(frames, raw_frames, analyzer.get_parameters());
+        v.show();
 
         // write("no_last_box.avi");
     }

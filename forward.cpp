@@ -12,6 +12,15 @@ std::vector<std::optional<double>> get_values(const parameter &p) {
     return std::get<1>(p);
 }
 
+std::ostream& operator<<(std::ostream &os, std::optional<double> val) {
+    if (val) {
+        os << *val;
+    } else {
+        os << "?";
+    }
+    return os;
+}
+
 std::optional<cv::Point2d> operator+(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs) {
     if (lhs && rhs)
         return *lhs + *rhs;

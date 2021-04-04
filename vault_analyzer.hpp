@@ -43,6 +43,8 @@ class vault_analyzer {
 
     int dir;
 
+    std::vector<parameter> parameters;
+
     /// @brief Returns position of person's body part.
     std::optional<cv::Point2d> get_part(const frame_body &body, body_part part) const {
         return body[part];
@@ -166,8 +168,8 @@ class vault_analyzer {
         return "outputs/" + sstr.str() + ".csv";
     }
 
-    std::vector<parameter> compute_parameters() const {
-        std::vector<parameter> parameters;
+    // TODO: parameters not for each frame
+    void compute_parameters() {
         parameters.push_back(get_parameter("Hips height", &vault_analyzer::get_hips_height));
         parameters.push_back(get_parameter("Hips height", &vault_analyzer::get_hips_height, true));
         parameters.push_back(get_parameter("Left foot height", &vault_analyzer::get_left_foot_height));
@@ -176,7 +178,6 @@ class vault_analyzer {
         parameters.push_back(get_parameter("Right foot height", &vault_analyzer::get_right_foot_height, true));
         parameters.push_back(get_parameter("Torso tilt (chest)", &vault_analyzer::get_chest_tilt));
         parameters.push_back(get_parameter("Torso tilt (shoulders)", &vault_analyzer::get_shoulders_tilt));
-        return parameters;
     }
     
     /**
@@ -235,8 +236,12 @@ public:
         frames = first_frame + points_frame.size();
         this->filename = filename;
 
-        std::vector<parameter> parameters = compute_parameters();
-        write_params(parameters);
+        compute_parameters();
+        //write_params();
+    }
+
+    std::vector<parameter> get_parameters() const {
+        return parameters;
     }
 
 };
