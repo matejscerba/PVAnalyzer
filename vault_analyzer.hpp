@@ -9,6 +9,7 @@
 #include <tuple>
 #include <ctime>
 #include <iomanip>
+#include <cmath>
 
 #include "person.hpp"
 
@@ -39,6 +40,8 @@ class vault_analyzer {
     
     /// @brief Path to analyzed video.
     std::string filename;
+
+    int dir;
 
     /// @brief Returns position of person's body part.
     std::optional<cv::Point2d> get_part(const frame_body &body, body_part part) const {
@@ -90,6 +93,43 @@ class vault_analyzer {
     }
 
     /**
+     * 
+     */
+    std::optional<double> get_chest_tilt(const frame_body &body) const {
+        auto hips = get_hips(body);
+        auto chest = get_part(body, body_part::chest);
+        if (hips && chest) {
+            double y = hips->y - chest->y;
+            // Check that athlete is not upside down.
+            if (y > 0) {
+                double x = (double)dir * (hips->x - chest->x);
+                return std::atan(x / y) * 180.0 / M_PI;
+            }
+        }
+        return std::nullopt;
+    }
+
+    /**
+     * 
+     */
+    std::optional<double> get_shoulders_tilt(const frame_body &body) const {
+        auto hips = get_hips(body);
+        auto l_shoulder = get_part(body, body_part::l_shoulder);
+        auto r_shoulder = get_part(body, body_part::r_shoulder);
+        auto shoulders = l_shoulder + r_shoulder;
+        if (hips && shoulders) {
+            shoulders = *shoulders / 2;
+            double y = hips->y - shoulders->y;
+            // Check that athlete is not upside down.
+            if (y > 0) {
+                double x = (double)dir * (hips->x - shoulders->x);
+                return std::atan(x / y) * 180.0 / M_PI;
+            }
+        }
+        return std::nullopt;
+    }
+
+    /**
      * @brief Get parameter and its values from detected body parts.
      * 
      * @param name Name of parameter to be analyzed.
@@ -126,12 +166,7 @@ class vault_analyzer {
         return "outputs/" + sstr.str() + ".csv";
     }
 
-    /**
-     * @brief Write parameters in csv file.
-     * 
-     * Each column represents one parameter. Each frame has its value in one row.
-     */
-    void write_params() const {
+    std::vector<parameter> compute_parameters() const {
         std::vector<parameter> parameters;
         parameters.push_back(get_parameter("Hips height", &vault_analyzer::get_hips_height));
         parameters.push_back(get_parameter("Hips height", &vault_analyzer::get_hips_height, true));
@@ -139,7 +174,17 @@ class vault_analyzer {
         parameters.push_back(get_parameter("Left foot height", &vault_analyzer::get_left_foot_height, true));
         parameters.push_back(get_parameter("Right foot height", &vault_analyzer::get_right_foot_height));
         parameters.push_back(get_parameter("Right foot height", &vault_analyzer::get_right_foot_height, true));
-
+        parameters.push_back(get_parameter("Torso tilt (chest)", &vault_analyzer::get_chest_tilt));
+        parameters.push_back(get_parameter("Torso tilt (shoulders)", &vault_analyzer::get_shoulders_tilt));
+        return parameters;
+    }
+    
+    /**
+     * @brief Write parameters in csv file.
+     * 
+     * Each column represents one parameter. Each frame has its value in one row.
+     */
+    void write_params(const std::vector<parameter> &parameters) const {
         std::ofstream output;
         output.open(create_output_filename());
         output << filename << std::endl;
@@ -186,9 +231,12 @@ public:
         points_frame = athlete.get_points();
         points_real = athlete.get_points(true);
         first_frame = athlete.first_frame_no;
+        dir = athlete.move_analyzer.get_direction();
         frames = first_frame + points_frame.size();
         this->filename = filename;
-        write_params();
+
+        std::vector<parameter> parameters = compute_parameters();
+        write_params(parameters);
     }
 
 };
