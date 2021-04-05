@@ -13,43 +13,6 @@
  * @brief Handles movement of person's bounding box.
  */
 class movement_analyzer {
-
-    /// @brief Background tracker used for tracking athlete assuming he is moving to the left.
-    std::optional<background_tracker> left_direction_tracker;
-
-    /// @brief Background tracker used for tracking athlete assuming he is moving to the right.
-    std::optional<background_tracker> right_direction_tracker;
-
-    /// @brief In which frame the vault began (contains value if it was set).
-    std::optional<std::size_t> _vault_began;
-
-    /// @brief Horizontal direction of person's movement.
-    int dir = unknown;
-
-    /**
-     * @brief Update person's movement direction based on background trackers.
-     * 
-     * @param person Person, whose direction should be updated.
-     * 
-     * @note Invalidate the second tracker if person is moving according to the first one.
-    */
-    void update_direction(const cv::Rect2d &person) {
-        if (dir == unknown) {
-            if (left_direction_tracker) {
-                if (left_direction_tracker->is_valid_direction()) {
-                    dir = left;
-                    right_direction_tracker.reset();
-                }
-            }
-            if (right_direction_tracker) {
-                if (right_direction_tracker->is_valid_direction()) {
-                    dir = right;
-                    left_direction_tracker.reset();
-                }
-            }
-        }
-    }
-
 public:
 
     /**
@@ -59,8 +22,8 @@ public:
      * @param person Bounding box of person in `frame`.
      */
     movement_analyzer(const cv::Mat &frame, const cv::Rect2d &person) {
-        left_direction_tracker = background_tracker(frame, person, direction::left, vault_check_frames, vault_threshold);
-        right_direction_tracker = background_tracker(frame, person, direction::right, vault_check_frames, vault_threshold);
+        left_direction_tracker = background_tracker(frame, person, direction::left);
+        right_direction_tracker = background_tracker(frame, person, direction::right);
     }
 
     /**
@@ -155,6 +118,45 @@ public:
             left_direction_tracker->draw(frame, frame_no);
         if (right_direction_tracker)
             right_direction_tracker->draw(frame, frame_no);
+    }
+
+private:
+
+    /// @brief Background tracker used for tracking athlete assuming he is moving to the left.
+    std::optional<background_tracker> left_direction_tracker;
+
+    /// @brief Background tracker used for tracking athlete assuming he is moving to the right.
+    std::optional<background_tracker> right_direction_tracker;
+
+    /// @brief In which frame the vault began (contains value if it was set).
+    std::optional<std::size_t> _vault_began;
+
+    // TODO: rename to direction
+    /// @brief Horizontal direction of person's movement.
+    int dir = unknown;
+
+    /**
+     * @brief Update person's movement direction based on background trackers.
+     * 
+     * @param person Person, whose direction should be updated.
+     * 
+     * @note Invalidate the second tracker if person is moving according to the first one.
+    */
+    void update_direction(const cv::Rect2d &person) {
+        if (dir == unknown) {
+            if (left_direction_tracker) {
+                if (left_direction_tracker->is_valid_direction()) {
+                    dir = left;
+                    right_direction_tracker.reset();
+                }
+            }
+            if (right_direction_tracker) {
+                if (right_direction_tracker->is_valid_direction()) {
+                    dir = right;
+                    left_direction_tracker.reset();
+                }
+            }
+        }
     }
 
 };

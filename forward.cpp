@@ -42,11 +42,11 @@ cv::Point2d get_center(const cv::Rect &rect) {
     return cv::Point2d((double)rect.x + (double)rect.width / 2, (double)rect.y + (double)rect.height / 2);
 }
 
-cv::Point2d count_mean_delta(std::vector<cv::Point2d>::const_iterator begin, std::vector<cv::Point2d>::const_iterator end) {
-    double n = end - begin - 1;
-    if (n) {
+cv::Point2d count_mean_delta(std::vector<cv::Point2d>::const_iterator begin, std::vector<cv::Point2d>::const_iterator end) noexcept {
+    auto n = end - begin - 1;
+    if (n > 0) {
         cv::Point2d sum = *(--end) - *begin;
-        return sum / n;
+        return sum / (double)n;
     }
     return cv::Point2d();
 }

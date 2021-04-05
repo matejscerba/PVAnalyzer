@@ -14,13 +14,17 @@
  * @brief File containing definitions of type aliases, constants and helper functions.
  */
 
-/// @brief Represents body part in frame, can be invalid.
+//////////////////////////////////////////////////////////////////////////////////////
+// typedefs
+//////////////////////////////////////////////////////////////////////////////////////
+
+/// @brief Represents person's body part in frame, can be invalid.
 typedef std::optional<cv::Point2d> frame_part;
 
-/// @brief Represents whole body in frame.
+/// @brief Represents person's body in frame.
 typedef std::vector<frame_part> frame_body;
 
-/// @brief Represents whole body in all frames where person was detected.
+/// @brief Represents person's body in all frames where person was detected.
 typedef std::vector<frame_body> video_body;
 
 /// @brief Represents corners of person's bounding box in all frames where person was detected.
@@ -28,6 +32,10 @@ typedef std::vector<std::vector<cv::Point2d>> person_corners;
 
 /// @brief Represents parameter's name and values.
 typedef std::tuple<std::string, std::vector<std::optional<double>>> parameter;
+
+//////////////////////////////////////////////////////////////////////////////////////
+// enums
+//////////////////////////////////////////////////////////////////////////////////////
 
 /// @brief Maps bounding box corners to indices.
 enum corner : std::size_t {
@@ -42,7 +50,7 @@ enum corner : std::size_t {
 };
 
 /**
- * @brief Maps body parts' names to correct indices to access its points.
+ * @brief Maps body parts' names to correct indices.
  */
 enum body_part : std::size_t {
     head = 0,
@@ -64,12 +72,18 @@ enum body_part : std::size_t {
 
 /**
  * @brief Supported horizontal movement directions and their corresponding values.
+ * 
+ * @note This value multiplies angle so that video rotates the correct way during vault.
 */
 enum direction : int {
     right = -1,
     unknown = 0,
     left = 1
 };
+
+//////////////////////////////////////////////////////////////////////////////////////
+// functions
+//////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @brief Extract name of given parameter.
@@ -87,6 +101,9 @@ std::string get_name(const parameter &p);
  */
 std::vector<std::optional<double>> get_values(const parameter &p);
 
+/**
+ * @brief Write optional value to output stream if valid.
+ */
 std::ostream& operator<<(std::ostream &os, std::optional<double> val);
 
 /**
@@ -117,7 +134,7 @@ cv::Point get_center(const cv::Mat &frame);
  * @brief Compute center of given rectangle.
  * 
  * @param rect Rectangle whose center should be computed.
- * @returns center of `rect`.
+ * @returns point in center of given rectangle.
  */
 cv::Point2d get_center(const cv::Rect &rect);
 
@@ -128,7 +145,11 @@ cv::Point2d get_center(const cv::Rect &rect);
  * @param end Iterator specifying end of values to be processed.
  * @returns mean of offsets of given consecutive values.
 */
-cv::Point2d count_mean_delta(std::vector<cv::Point2d>::const_iterator begin, std::vector<cv::Point2d>::const_iterator end);
+cv::Point2d count_mean_delta(std::vector<cv::Point2d>::const_iterator begin, std::vector<cv::Point2d>::const_iterator end) noexcept;
+
+//////////////////////////////////////////////////////////////////////////////////////
+// constants
+//////////////////////////////////////////////////////////////////////////////////////
 
 /// @brief Path to protofile to be used for deep neural network intialization.
 extern const std::string protofile;

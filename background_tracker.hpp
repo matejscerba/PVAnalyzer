@@ -3,11 +3,9 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/tracking/tracking.hpp>
 
-#include <vector>
-#include <iostream>
 #include <algorithm>
-#include <cmath>
 #include <optional>
+#include <vector>
 
 /**
  * @brief Handles background tracking used to determine person's movements.
@@ -16,6 +14,95 @@
  * moving away from tracked part of background. Determines whether a vault has begun.
  */
 class background_tracker {
+public:
+
+    /**
+     * @brief Default contructor.
+     * 
+     * @param frame First frame in which person was detected.
+     * @param person Bounding box of person in `frame`.
+     * @param dir Assumed direction of person's movement.
+     */
+    background_tracker(const cv::Mat &frame, const cv::Rect &person, int dir) noexcept {
+        direction = dir;
+        valid_direction_threshold = person.width;
+        tracker = cv::TrackerCSRT::create();
+        update(frame, person);
+    }
+
+    /**
+     * @brief Track background in given frame and update properties.
+     * 
+     * @param frame Frame in which to track background.
+     * @param person Person's bounding box in `frame`.
+     */
+    bool update(const cv::Mat &frame, const cv::Rect &person) noexcept {
+        cv::Rect background_rect;
+        if (!backgrounds.size()) {
+            tracker->init(frame, update_rect(frame, background_rect, person));
+        }
+        if (tracker->update(frame, background_rect)) {
+            update_properties(frame, background_rect, person);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @brief Check if assumed direction is correct.
+     * 
+     * @returns true if assumed direction is correct, false otherwise.
+     */
+    bool is_valid_direction() const noexcept {
+        return person_offsets.size() && (- direction * person_offsets.back().x > valid_direction_threshold);
+    }
+
+    /**
+     * @brief Check if vault is beginning.
+     * 
+     * @param frame_height Height of frame.
+     * @param person_height Height of person in frame.
+     * @returns true if vault is beginning, false otherwise.
+     */
+    bool is_vault_beginning(double frame_height, double person_height) const noexcept {
+        if (person_offsets.size() > vault_check_frames) {
+            double size = person_height / frame_height;
+            double runup_mean_delta = count_mean_delta(person_offsets.begin(), person_offsets.end() - vault_check_frames).y;
+            double vault_mean_delta = count_mean_delta(person_offsets.end() - vault_check_frames, person_offsets.end()).y;
+
+            if ((vault_mean_delta - runup_mean_delta) * size / frame_height < vault_threshold)
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * @brief Get offset of frame specified by its number.
+     * 
+     * @param person_frame_no Number of frame which offset should be computed.
+     * @returns offset of specified frame, invalid value if offset could not be computed.
+     *
+     * @note Frame number 0 corresponds to first frame, in which person was detected.
+     * 
+     * @see movement_analyzer::frame_offset.
+     */
+    std::optional<cv::Point2d> frame_offset(std::size_t person_frame_no) const noexcept {
+        if (person_frame_no < frame_offsets.size())
+            return frame_offsets[person_frame_no];
+        return std::nullopt;
+    }
+
+    /**
+     * @brief Draw bounding box of currently tracked background part.
+     * 
+     * @param frame Frame in which bounding box should be drawn.
+     * @param person_frame_no Number of given frame.
+    */
+    void draw(cv::Mat &frame, std::size_t person_frame_no) const noexcept {
+        cv::rectangle(frame, backgrounds[person_frame_no].tl(), backgrounds[person_frame_no].br(), cv::Scalar(255, 0, 0), 2);
+    }
+
+private:
 
     /// @brief Tracker used to track background.
     cv::Ptr<cv::Tracker> tracker;
@@ -39,13 +126,7 @@ class background_tracker {
      */
     int direction;
 
-    /// @see movement_analyzer::vault_check_frames.
-    std::size_t vault_check_frames;
-
-    /// @see movement_analyzer::vault_threshold.
-    double vault_threshold;
-
-    /// @brief Horizontal distance, that person must move in assumed direction.
+    /// @brief Horizontal distance, that person must move in assumed direction in order to mark that direction as valid.
     double valid_direction_threshold;
 
     /**
@@ -59,7 +140,7 @@ class background_tracker {
      * @param person Bounding box of person in `frame`.
      * @returns updated background bounding box.
      */
-    cv::Rect update_rect(const cv::Mat &frame, const cv::Rect &background, const cv::Rect &person) {
+    cv::Rect update_rect(const cv::Mat &frame, const cv::Rect &background, const cv::Rect &person) noexcept {
         cv::Rect bg = background;
         if (!backgrounds.size() || bg.x <= 0 || bg.y <= 0 ||
             bg.x + bg.width >= (double)frame.cols ||
@@ -81,9 +162,9 @@ class background_tracker {
     }
 
     /**
-     * @brief Update all stored elements.
+     * @brief Update all stored properties.
      * 
-     * Compute all properties to be tracked for each frame for given frame.
+     * Compute all properties to be tracked for given frame.
      * 
      * @param frame Frame in which properties should be computed.
      * @param background Last tracked background's bounding box.
@@ -91,7 +172,7 @@ class background_tracker {
      * 
      * @note All offsets are computed against person's initial position.
      */
-    void update_elements(const cv::Mat &frame, const cv::Rect &background, const cv::Rect &person) {
+    void update_properties(const cv::Mat &frame, const cv::Rect &background, const cv::Rect &person) noexcept {
         cv::Rect new_background = update_rect(frame, background, person);
         backgrounds.push_back(new_background);
         if (background_offsets.size()) {
@@ -105,102 +186,6 @@ class background_tracker {
         }
         person_offsets.push_back(get_center(person) - get_center(new_background) + background_offsets.back());
         frame_offsets.push_back(person_offsets.back() - get_center(person));
-    }
-
-public:
-
-    /**
-     * @brief Default contructor.
-     * 
-     * @param frame First frame in which person was detected.
-     * @param person Bounding box of person in `frame`.
-     * @param dir Assumed direction of person's movement.
-     * @param check_frames Number of frames to check for vault's beginning.
-     * @param threshold Threshold to determine beginning of vault.
-     */
-    background_tracker( const cv::Mat &frame,
-                        const cv::Rect &person,
-                        int dir,
-                        std::size_t check_frames,
-                        double threshold) {
-        direction = dir;
-        vault_check_frames = check_frames;
-        vault_threshold = threshold;
-        valid_direction_threshold = person.width;
-        tracker = cv::TrackerCSRT::create();
-        update(frame, person);
-    }
-
-    /**
-     * @brief Track background in given frame and update properties.
-     * 
-     * @param frame Frame in which to track background.
-     * @param person Person's bounding box in `frame`.
-     */
-    bool update(const cv::Mat &frame, const cv::Rect &person) {
-        cv::Rect background_rect;
-        if (!backgrounds.size()) {
-            tracker->init(frame, update_rect(frame, background_rect, person));
-        }
-        if (tracker->update(frame, background_rect)) {
-            update_elements(frame, background_rect, person);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * @brief Check if assumed direction is correct.
-     * 
-     * @returns true if assumed direction is correct, false otherwise.
-     */
-    bool is_valid_direction() const {
-        return person_offsets.size() && (- direction * person_offsets.back().x > valid_direction_threshold);
-    }
-
-    /**
-     * @brief Check if vault is beginning.
-     * 
-     * @param frame_height Height of frame.
-     * @param person_height Height of person in frame.
-     * @returns true if vault is beginning, false otherwise.
-     */
-    bool is_vault_beginning(double frame_height, double person_height) const {
-        if (person_offsets.size() > vault_check_frames) {
-            double size = person_height / frame_height;
-            double runup_mean_delta = count_mean_delta(person_offsets.begin(), person_offsets.end() - vault_check_frames).y;
-            double vault_mean_delta = count_mean_delta(person_offsets.end() - vault_check_frames, person_offsets.end()).y;
-
-            if ((vault_mean_delta - runup_mean_delta) * size / frame_height < vault_threshold)
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * @brief Get offset of frame specified by its number.
-     * 
-     * @param frame_no Number of frame which offset should be computed.
-     * @returns offset of specified frame, invalid value if offset could not be computed.
-     *
-     * @note Frame number 0 corresponds to first frame, in which person was detected.
-     * 
-     * @see movement_analyzer::frame_offset.
-     */
-    std::optional<cv::Point2d> frame_offset(std::size_t frame_no) const {
-        if (frame_no < frame_offsets.size())
-            return frame_offsets[frame_no];
-        return std::nullopt;
-    }
-
-    /**
-     * @brief Draw bounding box of currently tracked background part.
-     * 
-     * @param frame Frame in which bounding box should be drawn.
-     * @param frame_no Number of given frame.
-    */
-    void draw(cv::Mat &frame, std::size_t person_frame_no) const {
-        cv::rectangle(frame, backgrounds[person_frame_no].tl(), backgrounds[person_frame_no].br(), cv::Scalar(255, 0, 0), 2);
     }
 
 };

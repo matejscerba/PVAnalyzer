@@ -19,191 +19,6 @@
  * Handles rotations during vault as well.
 */
 class person {
-
-    friend class vault_analyzer;
-
-    /// @brief Number of frames during vault.
-    const double vault_frames;
-
-    /// @brief Holds information, whether scaling was performed.
-    bool scaling_performed = true;
-
-    /// @brief Deep neural network used for detecting person's body parts.
-    cv::dnn::Net net;
-
-    /// @brief Tracker used to track person in frames.
-    cv::Ptr<cv::Tracker> tracker;
-
-    /// @brief Number of first frame in which person is detected.
-    std::size_t first_frame_no;
-
-    /// @brief Number of currently processed frame.
-    std::size_t current_frame_no;
-
-    /**
-     * @brief Corners of bounding boxes of person in each frame.
-     * 
-     * Corners of bounding box in frame number `first_frame_no` are stored at index 0.
-     * Certain corners are supposed to be accessed using `enum corner`. For example:
-     * bottom left corner of bounding box in current frame should be accessed as
-     * `corners[current_frame_no - first_frame_no][corner::bl]`.
-     * 
-     * @note Bounding box (which corners represent) can be rotated, so it
-     *     is saved as individual corners.
-    */
-    person_corners corners;
-
-    /**
-     * @brief Body parts of person in each frame.
-     * 
-     * Body parts are saved in similar way as corners, after accessing body parts
-     * for certain frame, indices correspond to `pairs`.
-     */
-    video_body points;
-
-    /// @brief Analyzes this person's movement.
-    movement_analyzer move_analyzer;
-
-    /**
-     * @brief Save detected body parts to `points`.
-     * 
-     * Process output of deep neural network used to detect body parts
-     * and save correct values to points.
-     * 
-     * @param output Result given by `net.forward()` applied on scaled bounding
-     *     box of this person in current frame.
-     * @param frame_no Number of frame in which to process `output`.
-    */
-    void extract_points(cv::Mat &output, std::size_t frame_no) {
-        points.push_back(frame_body(npoints));
-        
-        int h = output.size[2];
-        int w = output.size[3];
-
-        // Scale by `scaling_factor` if last rectangle was scaled.
-        double factor = scaling_performed ? scale_factor : 1;
-        double sx = factor * width(frame_no) / (double)w;
-        double sy = factor * height(frame_no) / (double)h;
-
-        // Get points from output.
-        for (int n = 0; n < npoints; n++) {
-            cv::Mat probMat(h, w, CV_32F, output.ptr(0, n));
-
-            // Get point in output with maximum probability of "being point `n`".
-            frame_part p = std::nullopt;
-            cv::Point max;
-            double prob;
-            cv::minMaxLoc(probMat, 0, &prob, 0, &max);
-
-            // Check point probability against a threshold
-            if (prob > detection_threshold) {
-                p = max;
-                p->x *= sx; p->y *= sy; // Scale point so it fits original frame.
-
-                // Move point `p` so it is in correct position in frame.
-                p = corners[frame_no - first_frame_no][corner::tl]
-                    + (1.0 - scale_factor) * 0.5 * (corners[frame_no - first_frame_no][corner::br] - corners[frame_no - first_frame_no][corner::tl])
-                    + p->x * (corners[frame_no - first_frame_no][corner::tr] - corners[frame_no - first_frame_no][corner::tl]) / width(frame_no)
-                    + p->y * (corners[frame_no - first_frame_no][corner::bl] - corners[frame_no - first_frame_no][corner::tl]) / height(frame_no);
-            }
-
-            points[frame_no - first_frame_no][n] = p;
-        }
-    }
-
-    /**
-     * @brief Compute position of given points after transformation.
-     * 
-     * @param src Vector of given points.
-     * @param frame Frame in which points are detected.
-     * @param frame_no Number of given frame.
-     * @param back Indicator whether to transform points in the opposite rotation.
-     * @returns vector of points after rotation specified `frame_no` (used to compute
-     *     rotation angle), in the opposite direction if `back` is true.
-    */
-    std::vector<cv::Point2d> transform(const std::vector<cv::Point2d> &src,
-                                       const cv::Mat &frame,
-                                       std::size_t frame_no,
-                                       bool back = false) const {
-        double angle = get_angle(frame_no);
-        if (back) angle *= -1;
-        cv::Mat rotation = cv::getRotationMatrix2D(get_center(frame), angle, 1.0);
-        std::vector<cv::Point2d> res;
-        cv::transform(src, res, rotation);
-        return res;
-    }
-
-    /**
-     * @brief Crop frame so that it contains its whole body.
-     * 
-     * Frame must be rotated so that person's bounding box is not rotated and can
-     * be cropped from frame.
-     * 
-     * @param corners Corners of person's unscaled bounding box in unrotated frame.
-     * @param frame Frame that is supposed to be cropped.
-     * @param frame_no Number of given frame.
-     * @returns part of `frame`, that contains whole person.
-    */
-    cv::Mat get_person_frame(const std::vector<cv::Point2d> &corners, const cv::Mat &frame, std::size_t frame_no) {
-        cv::Mat rotated = rotate(frame, frame_no);
-        std::vector<cv::Point2d> transformed = transform(corners, frame, frame_no);
-        cv::Rect bbox(
-            transformed[corner::tl], transformed[corner::br]
-        );
-        cv::Rect2d scaled = scale(bbox, frame);
-        return rotated(scaled).clone();
-    }
-
-    /**
-     * @brief Compute angle from given number of frame.
-     * 
-     * @param frame_no Number of frame used to determine angle of rotation.
-     */
-    double get_angle(std::size_t frame_no) const {
-        std::size_t frames = move_analyzer.vault_frames(frame_no);
-        return (double)move_analyzer.get_direction() * 180.0 * std::min(1.0, (double)frames / (double)vault_frames);
-    }
-
-    /**
-     * @brief Rotate frame so that person's angle of rotation is as low as possible.
-     * 
-     * @param frame Frame to be rotated.
-     * @param frame_no Number of frame to be rotated.
-     * @returns rotated frame.
-     */
-    cv::Mat rotate(const cv::Mat &frame, std::size_t frame_no) const {
-        double angle = get_angle(frame_no);
-        cv::Mat rotation = cv::getRotationMatrix2D(get_center(frame), angle, 1.0);
-        cv::Mat rotated;
-        cv::warpAffine(frame, rotated, rotation, frame.size());
-        return rotated;
-    }
-
-    /**
-     * @brief Scale rectangle by given factor if it fits inside frame.
-     * 
-     * @param rect Given rectangle to be scaled.
-     * @param frame Frame in which scaled rectangle must fit.
-     * @returns scaled rectangle if it fits inside frame, `rect` otherwise.
-     * 
-     * @note If scaled rectangle does not fit inside frame, scaling is not performed.
-    */
-    cv::Rect scale(const cv::Rect &rect, const cv::Mat &frame) {
-        cv::Point center(rect.x + rect.width / 2, rect.y + rect.height / 2);
-        cv::Point diag = center - rect.tl();
-        cv::Point tl = center - scale_factor * diag;
-        cv::Point br = center + scale_factor * diag;
-
-        if (tl.x >= 0 && tl.y >= 0 && br.x <= frame.cols && br.y <= frame.rows) {
-            // Make sure it fits inside frame.
-            scaling_performed = true; // Remember if scaling was performed.
-            return cv::Rect(tl, br);
-        } else {
-            scaling_performed = false;
-            return rect;
-        }
-    }
-
 public:
 
     /**
@@ -396,6 +211,192 @@ public:
 
         // Movement analyzer.
         move_analyzer.draw(frame, idx);
+    }
+
+private:
+
+    friend class vault_analyzer;
+
+    /// @brief Number of frames during vault.
+    const double vault_frames;
+
+    /// @brief Holds information, whether scaling was performed.
+    bool scaling_performed = true;
+
+    /// @brief Deep neural network used for detecting person's body parts.
+    cv::dnn::Net net;
+
+    /// @brief Tracker used to track person in frames.
+    cv::Ptr<cv::Tracker> tracker;
+
+    /// @brief Number of first frame in which person is detected.
+    std::size_t first_frame_no;
+
+    /// @brief Number of currently processed frame.
+    std::size_t current_frame_no;
+
+    /**
+     * @brief Corners of bounding boxes of person in each frame.
+     * 
+     * Corners of bounding box in frame number `first_frame_no` are stored at index 0.
+     * Certain corners are supposed to be accessed using `enum corner`. For example:
+     * bottom left corner of bounding box in current frame should be accessed as
+     * `corners[current_frame_no - first_frame_no][corner::bl]`.
+     * 
+     * @note Bounding box (which corners represent) can be rotated, so it
+     *     is saved as individual corners.
+    */
+    person_corners corners;
+
+    /**
+     * @brief Body parts of person in each frame.
+     * 
+     * Body parts are saved in similar way as corners, after accessing body parts
+     * for certain frame, indices correspond to `pairs`.
+     */
+    video_body points;
+
+    /// @brief Analyzes this person's movement.
+    movement_analyzer move_analyzer;
+
+    /**
+     * @brief Save detected body parts to `points`.
+     * 
+     * Process output of deep neural network used to detect body parts
+     * and save correct values to points.
+     * 
+     * @param output Result given by `net.forward()` applied on scaled bounding
+     *     box of this person in current frame.
+     * @param frame_no Number of frame in which to process `output`.
+    */
+    void extract_points(cv::Mat &output, std::size_t frame_no) {
+        points.push_back(frame_body(npoints));
+        
+        int h = output.size[2];
+        int w = output.size[3];
+
+        // Scale by `scaling_factor` if last rectangle was scaled.
+        double factor = scaling_performed ? scale_factor : 1;
+        double sx = factor * width(frame_no) / (double)w;
+        double sy = factor * height(frame_no) / (double)h;
+
+        // Get points from output.
+        for (int n = 0; n < npoints; n++) {
+            cv::Mat probMat(h, w, CV_32F, output.ptr(0, n));
+
+            // Get point in output with maximum probability of "being point `n`".
+            frame_part p = std::nullopt;
+            cv::Point max;
+            double prob;
+            cv::minMaxLoc(probMat, 0, &prob, 0, &max);
+
+            // Check point probability against a threshold
+            if (prob > detection_threshold) {
+                p = max;
+                p->x *= sx; p->y *= sy; // Scale point so it fits original frame.
+
+                // Move point `p` so it is in correct position in frame.
+                p = corners[frame_no - first_frame_no][corner::tl]
+                    + (1.0 - scale_factor) * 0.5 * (corners[frame_no - first_frame_no][corner::br] - corners[frame_no - first_frame_no][corner::tl])
+                    + p->x * (corners[frame_no - first_frame_no][corner::tr] - corners[frame_no - first_frame_no][corner::tl]) / width(frame_no)
+                    + p->y * (corners[frame_no - first_frame_no][corner::bl] - corners[frame_no - first_frame_no][corner::tl]) / height(frame_no);
+            }
+
+            points[frame_no - first_frame_no][n] = p;
+        }
+    }
+
+    /**
+     * @brief Compute position of given points after transformation.
+     * 
+     * @param src Vector of given points.
+     * @param frame Frame in which points are detected.
+     * @param frame_no Number of given frame.
+     * @param back Indicator whether to transform points in the opposite rotation.
+     * @returns vector of points after rotation specified `frame_no` (used to compute
+     *     rotation angle), in the opposite direction if `back` is true.
+    */
+    std::vector<cv::Point2d> transform(const std::vector<cv::Point2d> &src,
+                                       const cv::Mat &frame,
+                                       std::size_t frame_no,
+                                       bool back = false) const {
+        double angle = get_angle(frame_no);
+        if (back) angle *= -1;
+        cv::Mat rotation = cv::getRotationMatrix2D(get_center(frame), angle, 1.0);
+        std::vector<cv::Point2d> res;
+        cv::transform(src, res, rotation);
+        return res;
+    }
+
+    /**
+     * @brief Crop frame so that it contains its whole body.
+     * 
+     * Frame must be rotated so that person's bounding box is not rotated and can
+     * be cropped from frame.
+     * 
+     * @param corners Corners of person's unscaled bounding box in unrotated frame.
+     * @param frame Frame that is supposed to be cropped.
+     * @param frame_no Number of given frame.
+     * @returns part of `frame`, that contains whole person.
+    */
+    cv::Mat get_person_frame(const std::vector<cv::Point2d> &corners, const cv::Mat &frame, std::size_t frame_no) {
+        cv::Mat rotated = rotate(frame, frame_no);
+        std::vector<cv::Point2d> transformed = transform(corners, frame, frame_no);
+        cv::Rect bbox(
+            transformed[corner::tl], transformed[corner::br]
+        );
+        cv::Rect2d scaled = scale(bbox, frame);
+        return rotated(scaled).clone();
+    }
+
+    /**
+     * @brief Compute angle from given number of frame.
+     * 
+     * @param frame_no Number of frame used to determine angle of rotation.
+     */
+    double get_angle(std::size_t frame_no) const {
+        std::size_t frames = move_analyzer.vault_frames(frame_no);
+        return (double)move_analyzer.get_direction() * 180.0 * std::min(1.0, (double)frames / (double)vault_frames);
+    }
+
+    /**
+     * @brief Rotate frame so that person's angle of rotation is as low as possible.
+     * 
+     * @param frame Frame to be rotated.
+     * @param frame_no Number of frame to be rotated.
+     * @returns rotated frame.
+     */
+    cv::Mat rotate(const cv::Mat &frame, std::size_t frame_no) const {
+        double angle = get_angle(frame_no);
+        cv::Mat rotation = cv::getRotationMatrix2D(get_center(frame), angle, 1.0);
+        cv::Mat rotated;
+        cv::warpAffine(frame, rotated, rotation, frame.size());
+        return rotated;
+    }
+
+    /**
+     * @brief Scale rectangle by given factor if it fits inside frame.
+     * 
+     * @param rect Given rectangle to be scaled.
+     * @param frame Frame in which scaled rectangle must fit.
+     * @returns scaled rectangle if it fits inside frame, `rect` otherwise.
+     * 
+     * @note If scaled rectangle does not fit inside frame, scaling is not performed.
+    */
+    cv::Rect scale(const cv::Rect &rect, const cv::Mat &frame) {
+        cv::Point center(rect.x + rect.width / 2, rect.y + rect.height / 2);
+        cv::Point diag = center - rect.tl();
+        cv::Point tl = center - scale_factor * diag;
+        cv::Point br = center + scale_factor * diag;
+
+        if (tl.x >= 0 && tl.y >= 0 && br.x <= frame.cols && br.y <= frame.rows) {
+            // Make sure it fits inside frame.
+            scaling_performed = true; // Remember if scaling was performed.
+            return cv::Rect(tl, br);
+        } else {
+            scaling_performed = false;
+            return rect;
+        }
     }
 
 };

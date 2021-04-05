@@ -19,25 +19,6 @@
  * the video and passes individual frames to other parts of the program.
  */
 class video_processor {
-
-    /// @brief Holds frames modified by processor.
-    std::vector<cv::Mat> frames;
-
-    /// @brief Holds frames unmodified by processor.
-    std::vector<cv::Mat> raw_frames;
-
-    /**
-     * @brief Write modified frames as a video to given file.
-     * 
-     * @param filename Path to file, where modified video should be saved.
-     */
-    void write(const std::string &&filename) const {
-        cv::VideoWriter writer(filename, cv::VideoWriter::fourcc('D','I','V','X'), 30, cv::Size(frames.back().cols, frames.back().rows));
-        for (const auto &f : frames)
-            writer.write(f);
-        writer.release();
-    }
-
 public:
 
     /**
@@ -78,7 +59,7 @@ public:
             if (frame.empty())
                 break;
 
-            std::cout << frame_no << std::endl;
+            std::cout << "Processing frame " << frame_no << std::endl;
 
             // Detect body.
             body_detector::result res = detector.detect(frame, frame_no);
@@ -123,6 +104,26 @@ public:
         v.show();
 
         // write("no_last_box.avi");
+    }
+
+private:
+
+    /// @brief Holds frames modified by processor.
+    std::vector<cv::Mat> frames;
+
+    /// @brief Holds frames unmodified by processor.
+    std::vector<cv::Mat> raw_frames;
+
+    /**
+     * @brief Write modified frames as a video to given file.
+     * 
+     * @param filename Path to file, where modified video should be saved.
+     */
+    void write(const std::string &&filename) const {
+        cv::VideoWriter writer(filename, cv::VideoWriter::fourcc('D','I','V','X'), 30, cv::Size(frames.back().cols, frames.back().rows));
+        for (const auto &f : frames)
+            writer.write(f);
+        writer.release();
     }
 
 };

@@ -7,40 +7,29 @@
 #include <iostream>
 
 #include "forward.hpp"
-#include "vault_analyzer.hpp"
-#include "body_detector.hpp"
-#include "person.hpp"
-#include "movement_analyzer.hpp"
-#include "background_tracker.hpp"
+
 
 class visual {
-
-    std::size_t frame_no = 0;
-    bool drawing = true;
-    const std::vector<cv::Mat> frames;
-    const std::vector<cv::Mat> raw_frames;
-    const std::vector<parameter> parameters;
-
-    void write_parameters() const {
-        for (const auto &p : parameters) {
-            if (frame_no < get_values(p).size()) {
-                std::cout << get_name(p) << " : " <<  get_values(p)[frame_no] << std::endl;
-            }
-        }
-        std::cout << std::endl;
-    }
-
 public:
 
+    /**
+     * @brief Default constructor.
+     */
     visual(const std::vector<cv::Mat> &frames, const std::vector<cv::Mat> &raw_frames, const std::vector<parameter> &parameters)
         : frames(frames), raw_frames(raw_frames), parameters(parameters) {}
 
+    /**
+     * @brief Show current frame of video.
+     * 
+     * Handle user inputs: left arrow shows previous frame, right arrow shows the next one,
+     * space bar toggles whether to show detected rectangles and points, escape key closes window.
+     */
     void show() {
         for (;;) {
-            std::stringstream s;
-            s << "Frame " << frame_no << "/" << frames.size() - 1 << (drawing ? " with drawing" : "");
+            std::stringstream label;
+            label << "Frame " << frame_no << "/" << frames.size() - 1 << (drawing ? " with drawing" : "");
             cv::destroyAllWindows();
-            cv::imshow(s.str(), drawing ? frames[frame_no] : raw_frames[frame_no]);
+            cv::imshow(label.str(), drawing ? frames[frame_no] : raw_frames[frame_no]);
             write_parameters();
             switch (cv::waitKey()) {
                 case 2:
@@ -69,6 +58,26 @@ public:
                     break;
             }
         }
+    }
+
+private:
+
+    std::size_t frame_no = 0;
+    bool drawing = true;
+    const std::vector<cv::Mat> frames;
+    const std::vector<cv::Mat> raw_frames;
+    const std::vector<parameter> parameters;
+
+    /**
+     * @brief Write parameters of current frame to standard output.
+     */
+    void write_parameters() const {
+        for (const auto &p : parameters) {
+            if (frame_no < get_values(p).size()) {
+                std::cout << get_name(p) << " : " <<  get_values(p)[frame_no] << std::endl;
+            }
+        }
+        std::cout << std::endl;
     }
 
 };

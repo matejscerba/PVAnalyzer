@@ -18,6 +18,93 @@
  * is performed by instance of class person.
 */
 class body_detector {
+public:
+
+    /// @brief Supported return values for function `detect`.
+    enum class result {
+        /// Processed frame was skipped.
+        skip,
+        /// Frame was processed correctly (athlete was detected).
+        ok,
+        /// An error occured when frame was being processed.
+        error
+    };
+
+    /**
+     * @brief Default constructor.
+     * 
+     * @param frame Number of frame when detection should begin, frames before are supposed
+     *     to be skipped, computed from 0.
+     * @param position Point in frame (specified by first parameter), where athlete is expected.
+     * @param fps Frame rate of processed video.
+     */
+    body_detector(std::size_t frame, const cv::Point &position, std::size_t fps) :
+        hog(cv::Size(48, 96), cv::Size(16, 16), cv::Size(8, 8), cv::Size(8, 8), 9),
+        person_position(position) {
+            person_frame = frame;
+            hog.setSVMDetector(cv::HOGDescriptor::getDaimlerPeopleDetector());
+            net = cv::dnn::readNet(protofile, caffemodel);
+            this->fps = fps;
+    }
+
+    /**
+     * @brief Detect athlete in given frame or track it if it was detected earlier.
+     * 
+     * @param frame Frame, in which athlete should be detected.
+     * @param frame_no Number of given frame.
+     * @returns result of detection, whether frame was skipped, detected correctly or an error occured.
+     */
+    result detect(const cv::Mat &frame, std::size_t frame_no) {
+        result res = result::ok;
+        if (frame_no < person_frame) {
+            res = result::skip;
+        } else if (frame_no == person_frame) {
+            // Detect person in frame.
+            if (!detect_current(frame, frame_no)) {
+                std::cout << "detection failed" << std::endl;
+                res = result::error;
+            }
+        } else if (frame_no > person_frame) {
+            // Try to track every person in frame, if it fails, remove such person from `people`.
+            // people.remove_if([&frame, frame_no](person &p){ return !p.track(frame, frame_no); });
+            // if (people.empty()) res = result::error;
+            if (!people.front().track(frame, frame_no)) {
+                res = result::error;
+            }
+        }
+
+        // Detect body parts of all valid people in frame.
+        if ((res != result::error) && (frame_no >= person_frame)) {
+            for (auto &p : people) {
+                p.detect(frame, frame_no);
+            }
+        }
+
+        return res;
+    }
+
+    /**
+     * @brief Get valid athlete detected in processed video.
+     * 
+     * @returns person representing valid athlete.
+     */
+    person get_athlete() const {
+        return people.front();
+    }
+
+    /**
+     * @brief Draw each person in frame.
+     * 
+     * @param frame Frame where to draw people.
+     * @param frame_no Number of given frame.
+     */
+    void draw(cv::Mat &frame, std::size_t frame_no) const {
+        for (auto &p : people) {
+            p.draw(frame, frame_no);
+        }
+    }
+
+private:
 
     /// @brief Holds instance, which takes care of detecting people in frame.
     cv::HOGDescriptor hog;
@@ -103,92 +190,6 @@ class body_detector {
             return true;
         } else {
             return false;
-        }
-    }
-
-public:
-
-    /// @brief Supported return values for function `detect`.
-    enum class result {
-        /// Processed frame was skipped.
-        skip,
-        /// Frame was processed correctly (athlete was detected).
-        ok,
-        /// An error occured when frame was being processed.
-        error
-    };
-
-    /**
-     * @brief Default constructor.
-     * 
-     * @param frame Number of frame when detection should begin, frames before are supposed
-     *     to be skipped, computed from 0.
-     * @param position Point in frame (specified by first parameter), where athlete is expected.
-     * @param fps Frame rate of processed video.
-     */
-    body_detector(std::size_t frame, const cv::Point &position, std::size_t fps) :
-        hog(cv::Size(48, 96), cv::Size(16, 16), cv::Size(8, 8), cv::Size(8, 8), 9),
-        person_position(position) {
-            person_frame = frame;
-            hog.setSVMDetector(cv::HOGDescriptor::getDaimlerPeopleDetector());
-            net = cv::dnn::readNet(protofile, caffemodel);
-            this->fps = fps;
-    }
-
-    /**
-     * @brief Detect athlete in given frame or track it if it was detected earlier.
-     * 
-     * @param frame Frame, in which athlete should be detected.
-     * @param frame_no Number of given frame.
-     * @returns result of detection, whether frame was skipped, detected correctly or an error occured.
-     */
-    result detect(const cv::Mat &frame, std::size_t frame_no) {
-        result res = result::ok;
-        if (frame_no < person_frame) {
-            res = result::skip;
-        } else if (frame_no == person_frame) {
-            // Detect person in frame.
-            if (!detect_current(frame, frame_no)) {
-                std::cout << "detection failed" << std::endl;
-                res = result::error;
-            }
-        } else if (frame_no > person_frame) {
-            // Try to track every person in frame, if it fails, remove such person from `people`.
-            // people.remove_if([&frame, frame_no](person &p){ return !p.track(frame, frame_no); });
-            // if (people.empty()) res = result::error;
-            if (!people.front().track(frame, frame_no)) {
-                res = result::error;
-            }
-        }
-
-        // Detect body parts of all valid people in frame.
-        if ((res != result::error) && (frame_no >= person_frame)) {
-            for (auto &p : people) {
-                p.detect(frame, frame_no);
-            }
-        }
-
-        return res;
-    }
-
-    /**
-     * @brief Get valid athlete detected in processed video.
-     * 
-     * @returns person representing valid athlete.
-     */
-    person get_athlete() const {
-        return people.front();
-    }
-
-    /**
-     * @brief Draw each person in frame.
-     * 
-     * @param frame Frame where to draw people.
-     * @param frame_no Number of given frame.
-     */
-    void draw(cv::Mat &frame, std::size_t frame_no) const {
-        for (auto &p : people) {
-            p.draw(frame, frame_no);
         }
     }
 

@@ -17,6 +17,36 @@
  * @brief Analyzes detections made when processing video.
  */
 class vault_analyzer {
+public:
+
+    /**
+     * @brief Analyze athlete's movements in analyzed video.
+     * 
+     * @param athlete Athlete to be analyzed.
+     * @param filename Path to analyzed video.
+     */
+    void analyze(const person &athlete, const std::string &filename) {
+        points_frame = athlete.get_points();
+        points_real = athlete.get_points(true);
+        first_frame = athlete.first_frame_no;
+        dir = athlete.move_analyzer.get_direction();
+        frames = first_frame + points_frame.size();
+        this->filename = filename;
+
+        compute_parameters();
+        //write_params();
+    }
+
+    /**
+     * @brief Get computed parameters.
+     * 
+     * @returns computed parameters.
+     */
+    std::vector<parameter> get_parameters() const {
+        return parameters;
+    }
+
+private:
 
     /**
      * @brief Body parts of person in each frame (untransformed).
@@ -218,30 +248,6 @@ class vault_analyzer {
             }
         }
         output.close();
-    }
-
-public:
-
-    /**
-     * @brief Analyze athlete's movements in analyzed video.
-     * 
-     * @param athlete Athlete to be analyzed.
-     * @param filename Path to analyzed video.
-     */
-    void analyze(const person &athlete, const std::string &filename) {
-        points_frame = athlete.get_points();
-        points_real = athlete.get_points(true);
-        first_frame = athlete.first_frame_no;
-        dir = athlete.move_analyzer.get_direction();
-        frames = first_frame + points_frame.size();
-        this->filename = filename;
-
-        compute_parameters();
-        //write_params();
-    }
-
-    std::vector<parameter> get_parameters() const {
-        return parameters;
     }
 
 };
