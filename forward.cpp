@@ -4,14 +4,6 @@ const std::string protofile = "pose/mpi/pose_deploy_linevec_faster_4_stages.prot
 
 const std::string caffemodel = "pose/mpi/pose_iter_160000.caffemodel";
 
-std::string get_name(const parameter &p) {
-    return std::get<0>(p);
-}
-
-std::vector<std::optional<double>> get_values(const parameter &p) {
-    return std::get<1>(p);
-}
-
 std::ostream& operator<<(std::ostream &os, std::optional<double> val) {
     if (val) {
         os << *val;
@@ -22,9 +14,19 @@ std::ostream& operator<<(std::ostream &os, std::optional<double> val) {
 }
 
 std::optional<cv::Point2d> operator+(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs) {
-    if (lhs && rhs)
-        return *lhs + *rhs;
+    if (lhs && rhs) return *lhs + *rhs;
     return std::nullopt;
+}
+
+std::optional<cv::Point2d> operator/(const std::optional<cv::Point2d> &lhs, double rhs) {
+    if (lhs) return *lhs / rhs;
+    return std::nullopt;
+}
+
+video_body operator+(const video_body &&lhs, const video_body &&rhs) {
+    video_body res = std::move(lhs);
+    res.insert(res.end(), rhs.begin(), rhs.end());
+    return res;
 }
 
 std::vector<cv::Point2d> get_corners(const cv::Rect &rect) {
@@ -49,4 +51,39 @@ cv::Point2d count_mean_delta(std::vector<cv::Point2d>::const_iterator begin, std
         return sum / (double)n;
     }
     return cv::Point2d();
+}
+
+std::string body_part_name(const body_part part) {
+    switch (part) {
+        case body_part::head:
+            return "Head";
+        case body_part::neck:
+            return "Neck";
+        case body_part::r_shoulder:
+            return "Right shoulder";
+        case body_part::r_elbow:
+            return "Right elbow";
+        case body_part::r_wrist:
+            return "Right wrist";
+        case body_part::l_shoulder:
+            return "Left shoulder";
+        case body_part::l_elbow:
+            return "Left elbow";
+        case body_part::l_wrist:
+            return "Left wrist";
+        case body_part::r_hip:
+            return "Right hip";
+        case body_part::r_knee:
+            return "Right knee";
+        case body_part::r_ankle:
+            return "Right ankle";
+        case body_part::l_hip:
+            return "Left hip";
+        case body_part::l_knee:
+            return "Left knee";
+        case body_part::l_ankle:
+            return "Left ankle";
+        case body_part::chest:
+            return "Chest";
+    }
 }

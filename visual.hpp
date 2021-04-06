@@ -4,10 +4,13 @@
 
 #include <string>
 #include <sstream>
+#include <ios>
+#include <iomanip>
 #include <iostream>
+#include <memory>
 
 #include "forward.hpp"
-
+#include "parameters.hpp"
 
 class visual {
 public:
@@ -15,7 +18,7 @@ public:
     /**
      * @brief Default constructor.
      */
-    visual(const std::vector<cv::Mat> &frames, const std::vector<cv::Mat> &raw_frames, const std::vector<parameter> &parameters)
+    visual(const std::vector<cv::Mat> &frames, const std::vector<cv::Mat> &raw_frames, const std::vector<std::shared_ptr<parameter>> &parameters)
         : frames(frames), raw_frames(raw_frames), parameters(parameters) {}
 
     /**
@@ -25,6 +28,7 @@ public:
      * space bar toggles whether to show detected rectangles and points, escape key closes window.
      */
     void show() {
+        std::cout << std::fixed << std::setprecision(2);
         for (;;) {
             std::stringstream label;
             label << "Frame " << frame_no << "/" << frames.size() - 1 << (drawing ? " with drawing" : "");
@@ -66,15 +70,17 @@ private:
     bool drawing = true;
     const std::vector<cv::Mat> frames;
     const std::vector<cv::Mat> raw_frames;
-    const std::vector<parameter> parameters;
+    const std::vector<std::shared_ptr<parameter>> parameters;
 
     /**
      * @brief Write parameters of current frame to standard output.
      */
     void write_parameters() const {
         for (const auto &p : parameters) {
-            if (frame_no < get_values(p).size()) {
-                std::cout << get_name(p) << " : " <<  get_values(p)[frame_no] << std::endl;
+            if (frame_no < p->size()) {
+                std::cout << p->name << " : ";
+                p->write_value(std::cout, frame_no, true);
+                std::cout << std::endl;
             }
         }
         std::cout << std::endl;

@@ -8,8 +8,6 @@
 #include <tuple>
 #include <ostream>
 
-// TODO: Parameters values typedef...
-
 /**
  * @brief File containing definitions of type aliases, constants and helper functions.
  */
@@ -29,9 +27,6 @@ typedef std::vector<frame_body> video_body;
 
 /// @brief Represents corners of person's bounding box in all frames where person was detected.
 typedef std::vector<std::vector<cv::Point2d>> person_corners;
-
-/// @brief Represents parameter's name and values.
-typedef std::tuple<std::string, std::vector<std::optional<double>>> parameter;
 
 //////////////////////////////////////////////////////////////////////////////////////
 // enums
@@ -86,22 +81,6 @@ enum direction : int {
 //////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @brief Extract name of given parameter.
- * 
- * @param p Parameter to extract name from.
- * @returns name of parameter `p`.
- */
-std::string get_name(const parameter &p);
-
-/**
- * @brief Extract values of given parameter.
- * 
- * @param p Parameter to extract values from.
- * @returns values of parameter `p`.
- */
-std::vector<std::optional<double>> get_values(const parameter &p);
-
-/**
  * @brief Write optional value to output stream if valid.
  */
 std::ostream& operator<<(std::ostream &os, std::optional<double> val);
@@ -112,6 +91,18 @@ std::ostream& operator<<(std::ostream &os, std::optional<double> val);
  * @returns sum of two points if both are valid, empty optional otherwise.
  */
 std::optional<cv::Point2d> operator+(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs);
+
+/**
+ * @brief
+ */
+std::optional<cv::Point2d> operator/(const std::optional<cv::Point2d> &lhs, double rhs);
+
+/**
+ * @brief Add two video bodies together.
+ * 
+ * @returns result of appending `rhs` to `lhs`.
+ */
+video_body operator+(const video_body &&lhs, const video_body &&rhs);
 
 /**
  * @brief Extract corners from rectangle.
@@ -146,6 +137,11 @@ cv::Point2d get_center(const cv::Rect &rect);
  * @returns mean of offsets of given consecutive values.
 */
 cv::Point2d count_mean_delta(std::vector<cv::Point2d>::const_iterator begin, std::vector<cv::Point2d>::const_iterator end) noexcept;
+
+/**
+ * @brief
+ */
+std::string body_part_name(const body_part part);
 
 //////////////////////////////////////////////////////////////////////////////////////
 // constants
