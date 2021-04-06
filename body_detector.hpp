@@ -7,6 +7,7 @@
 #include <vector>
 #include <algorithm>
 #include <list>
+#include <optional>
 
 #include "person.hpp"
 
@@ -86,12 +87,14 @@ public:
     }
 
     /**
-     * @brief Get valid athlete detected in processed video.
+     * @brief Get valid athlete detected in processed video, invalid optional otherwise.
      * 
-     * @returns person representing valid athlete.
+     * @returns person representing valid athlete, invalid optional if no valid athlete was detected.
      */
-    person get_athlete() const {
-        return people.front();
+    std::optional<person> get_athlete() const {
+        if (people.size())
+            return people.front();
+        return std::nullopt;
     }
 
     /**

@@ -32,19 +32,24 @@ public:
      * @param filename Path to analyzed video.
      * @param frames Number of frames in video.
      */
-    void analyze(const person &athlete, const std::string &filename, std::size_t frames) noexcept {
-        std::size_t before = athlete.first_frame_no;
-        std::size_t after = frames - (athlete.first_frame_no + athlete.get_points().size());
-        points_frame =
-            video_body(before, frame_body(npoints, std::nullopt)) +
-            athlete.get_points() +
-            video_body(after, frame_body(npoints, std::nullopt));
-        points_real =
-            video_body(before, frame_body(npoints, std::nullopt)) +
-            athlete.get_points(true) +
-            video_body(after, frame_body(npoints, std::nullopt));
+    void analyze(const std::optional<person> &athlete, const std::string &filename, std::size_t frames) noexcept {
+        if (athlete) {
+            std::size_t before = athlete->first_frame_no;
+            std::size_t after = frames - (athlete->first_frame_no + athlete->get_points().size());
+            points_frame =
+                video_body(before, frame_body(npoints, std::nullopt)) +
+                athlete->get_points() +
+                video_body(after, frame_body(npoints, std::nullopt));
+            points_real =
+                video_body(before, frame_body(npoints, std::nullopt)) +
+                athlete->get_points(true) +
+                video_body(after, frame_body(npoints, std::nullopt));
+        } else {
+            points_frame = video_body(frames, frame_body(npoints, std::nullopt));
+            points_real = video_body(frames, frame_body(npoints, std::nullopt));
+        }
 
-        dir = athlete.move_analyzer.get_direction();
+        dir = athlete->move_analyzer.get_direction();
         this->filename = filename;
 
         compute_parameters();

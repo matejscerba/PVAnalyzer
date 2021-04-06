@@ -4,6 +4,7 @@
 
 #include <string>
 #include <iostream>
+#include <optional>
 
 #include "forward.hpp"
 #include "body_detector.hpp"
@@ -89,9 +90,11 @@ public:
         video.release();
         cv::destroyAllWindows();
 
-        // TODO: Valid athlete?
         vault_analyzer analyzer;
-        person athlete = detector.get_athlete();
+        std::optional<person> athlete = detector.get_athlete();
+        if (!athlete) {
+            std::cout << "Athlete could not be detected in given video" << std::endl;
+        }
         analyzer.analyze(athlete, filename, frames.size());
 
         visual v(frames, raw_frames, analyzer.get_parameters());
