@@ -27,7 +27,9 @@ public:
         /// Frame was processed correctly (athlete was detected).
         ok,
         /// An error occured when frame was being processed.
-        error
+        error,
+        /// No information about result is available.
+        unknown
     };
 
     /**

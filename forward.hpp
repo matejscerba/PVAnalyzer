@@ -81,11 +81,6 @@ enum direction : int {
 //////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @brief Write optional value to output stream if valid.
- */
-std::ostream& operator<<(std::ostream &os, std::optional<double> val);
-
-/**
  * @brief Add two optional points if both are valid.
  * 
  * @returns sum of two points if both are valid, empty optional otherwise.

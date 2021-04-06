@@ -50,10 +50,12 @@ public:
         // Prepare body detector.
         body_detector detector(frame_start, position, fps);
 
-        cv::Mat frame;
+        cv::Mat frame, raw_frame;
+        body_detector::result res = body_detector::result::unknown;
         // Video is opened, processing frame by frame begins.
         for (std::size_t frame_no = 0; ; frame_no++) {
             video >> frame;
+            raw_frame = frame.clone();
 
             // Video ended.
             if (frame.empty())
@@ -61,33 +63,25 @@ public:
 
             std::cout << "Processing frame " << frame_no << std::endl;
 
-            // Detect body.
-            body_detector::result res = detector.detect(frame, frame_no);
-            if (res == body_detector::result::ok) {
-                // Detection on given frame was valid.
-                
-                raw_frames.push_back(frame.clone());
+            if (res != body_detector::result::error) {
+                // No error occured yet, process video further.
 
-                // Draw.
-                detector.draw(frame, frame_no);
-                
-                frames.push_back(frame.clone());
+                // Detect body.
+                res = detector.detect(frame, frame_no);
+                if (res == body_detector::result::ok) {
+                    // Detection on given frame was valid.
 
-                // Display current frame.
-                // cv::imshow("frame", frame);
-                // cv::waitKey();
-
-                if (filename.find("kolin2.MOV") != std::string::npos) {
-                    video >> frame; video >> frame; video >> frame;
+                    // Draw detections in frame.
+                    detector.draw(frame, frame_no);
                 }
-            } else if (res == body_detector::result::error) {
-                // Error has occured while detecting body.
-                break;
-            } else if (res == body_detector::result::skip) {
-                // This frame is supposed to be skipped.
-                frames.push_back(frame.clone());
-                raw_frames.push_back(frame.clone());
-                continue;
+            }
+
+            raw_frames.push_back(raw_frame);
+            frames.push_back(frame.clone());
+
+            // To be removed.
+            if (filename.find("kolin2.MOV") != std::string::npos) {
+                video >> frame; video >> frame; video >> frame;
             }
         }
 
@@ -98,7 +92,7 @@ public:
         // TODO: Valid athlete?
         vault_analyzer analyzer;
         person athlete = detector.get_athlete();
-        analyzer.analyze(athlete, filename);
+        analyzer.analyze(athlete, filename, frames.size());
 
         visual v(frames, raw_frames, analyzer.get_parameters());
         v.show();

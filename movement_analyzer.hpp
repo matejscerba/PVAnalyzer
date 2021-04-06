@@ -66,7 +66,7 @@ public:
     }
 
     /// @brief Get detected direction.
-    int get_direction() const {
+    int get_direction() const noexcept {
         return dir;
     }
 

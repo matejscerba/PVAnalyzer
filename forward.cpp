@@ -4,15 +4,6 @@ const std::string protofile = "pose/mpi/pose_deploy_linevec_faster_4_stages.prot
 
 const std::string caffemodel = "pose/mpi/pose_iter_160000.caffemodel";
 
-std::ostream& operator<<(std::ostream &os, std::optional<double> val) {
-    if (val) {
-        os << *val;
-    } else {
-        os << "?";
-    }
-    return os;
-}
-
 std::optional<cv::Point2d> operator+(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs) {
     if (lhs && rhs) return *lhs + *rhs;
     return std::nullopt;

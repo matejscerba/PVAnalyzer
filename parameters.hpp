@@ -43,6 +43,8 @@ public:
 
     virtual ~parameter() noexcept = default;
 
+    virtual void compute(const video_body &points) = 0;
+
     /**
      * @brief Write value into given stream for given frame number.
      * 
@@ -75,11 +77,6 @@ protected:
      */
     parameter(const std::string name, const vault_part part, const std::string &&unit) noexcept
         : name(name), part(part), unit(unit) {}
-
-    /**
-     * @brief
-     */
-    virtual std::optional<double> extract_value(const frame_body &body) const noexcept = 0;
 
 };
 
@@ -131,17 +128,45 @@ private:
 struct frame_wise_parameter : parameter {
 public:
 
+    /**
+     * @brief Write parameter's value for given frame number.
+     * 
+     * If value is valid, write it to output stream followed by unit if it is supposed to be written.
+     * Write nothing if unit is not supposed to be written. 
+     * Write question mark followed by unit if unit is supposed to be written.
+     * 
+     * @param os Output stream.
+     * @param frame_no Number of frame for which this parameter's value should be written.
+     * @param write_unit True if unit is supposed to be written as well, false otherwise.
+     * 
+     * @note Writes message to standard output if `frame_no` is out of range of values' indices.
+     */
+    virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
+        if (frame_no < values.size()) {
+            if (write_unit) {
+                if (values[frame_no]) {
+                    os << *values[frame_no];
+                } else {
+                    os << "?";
+                }
+                os << unit;
+            } else if (values[frame_no]) {
+                os << *values[frame_no];
+            }
+        } else {
+            std::cout << "Unable to write parameter \"" << name << "\" for frame number " << frame_no << std::endl;
+        }
+    }
+
     virtual std::size_t size() const noexcept {
         return values.size();
     }
 
-    virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
-        if (frame_no < values.size()) {
-            os << values[frame_no];
-            if (write_unit) os << unit;
-        } else {
-            std::cout << "Unable to write parameter \"" << name << "\" for frame number " << frame_no << std::endl;
-        }
+    virtual void compute(const video_body &points) noexcept {
+        values.clear();
+        std::transform(points.begin(), points.end(), std::back_inserter(values),
+                       [this](const frame_body &body){ return this->extract_value(body); }
+        );
     }
 
 protected:
@@ -151,12 +176,10 @@ protected:
     frame_wise_parameter(const std::string name, const vault_part part, const std::string &&unit) noexcept
         : parameter(name, part, std::move(unit)) {}
 
-    void extract_values(const video_body &points) noexcept {
-        values.clear();
-        std::transform(points.begin(), points.end(), std::back_inserter(values),
-                       [this](const frame_body &body){ return this->extract_value(body); }
-        );
-    }
+    /**
+     * @brief
+     */
+    virtual std::optional<double> extract_value(const frame_body &body) const noexcept = 0;
 
 };
 
@@ -166,10 +189,8 @@ protected:
 struct hips_height_parameter : frame_wise_parameter {
 public:
 
-    hips_height_parameter(const video_body &points) noexcept
-        : frame_wise_parameter("Hips height", vault_part::runup, " px") {
-            extract_values(points);
-    }
+    hips_height_parameter() noexcept
+        : frame_wise_parameter("Hips height", vault_part::runup, " px") {}
 
 private:
     
@@ -202,10 +223,8 @@ private:
 struct body_part_height_parameter : frame_wise_parameter {
 public:
 
-    body_part_height_parameter(const video_body &points, body_part b_part) noexcept
-        : frame_wise_parameter(body_part_name(b_part) + " height", vault_part::runup, " px"), b_part(b_part) {
-            extract_values(points);
-    }
+    body_part_height_parameter(body_part b_part) noexcept
+        : frame_wise_parameter(body_part_name(b_part) + " height", vault_part::runup, " px"), b_part(b_part) {}
 
 private:
 
@@ -232,10 +251,8 @@ private:
 struct vertical_tilt_parameter : frame_wise_parameter {
 public:
 
-    vertical_tilt_parameter(const video_body &points, std::string name, body_part a1, body_part a2, body_part b1, body_part b2, int direction, bool extract = true) noexcept
-        : frame_wise_parameter(name, vault_part::runup, "°"), a1_part(a1), a2_part(a2), b1_part(b1), b2_part(b2), dir(direction) {
-            if (extract) extract_values(points);
-    }
+    vertical_tilt_parameter(std::string name, body_part a1, body_part a2, body_part b1, body_part b2, int direction) noexcept
+        : frame_wise_parameter(name, vault_part::runup, "°"), a1_part(a1), a2_part(a2), b1_part(b1), b2_part(b2), dir(direction) {}
 
 protected:
     
@@ -271,10 +288,8 @@ private:
 struct horizontal_tilt_parameter : vertical_tilt_parameter {
 public:
 
-    horizontal_tilt_parameter(const video_body &points, std::string name, body_part a1, body_part a2, body_part b1, body_part b2, int direction) noexcept
-        : vertical_tilt_parameter(points, name, a1, a2, b1, b2, direction, false) {
-            extract_values(points);
-        }
+    horizontal_tilt_parameter(std::string name, body_part a1, body_part a2, body_part b1, body_part b2, int direction) noexcept
+        : vertical_tilt_parameter(name, a1, a2, b1, b2, direction) {}
 
 private:
 
@@ -288,7 +303,6 @@ private:
      */
     virtual std::optional<double> extract_value(const frame_body &body) const noexcept {
         std::optional<double> vertical_tilt = vertical_tilt_parameter::extract_value(body);
-        std::cout << vertical_tilt << " " << 90.0 - std::abs(*vertical_tilt) << std::endl;
         if (vertical_tilt) return 90.0 - std::abs(*vertical_tilt);
         return std::nullopt;
     }
