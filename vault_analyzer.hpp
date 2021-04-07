@@ -101,7 +101,7 @@ private:
         std::time_t now = std::time(nullptr);
         std::stringstream sstr;
         sstr << std::put_time(std::localtime(&now), "%Y-%m-%d_%H-%M-%S");
-        return "outputs/" + sstr.str() + ".csv";
+        return "parameters/" + sstr.str() + ".csv";
     }
 
     /**
