@@ -77,11 +77,11 @@ private:
      */
     void write_parameters() const {
         for (const auto &p : parameters) {
-            if (frame_no < p->size()) {
+            // if (frame_no < p->size()) {
                 std::cout << p->name << " : ";
                 p->write_value(std::cout, frame_no, true);
                 std::cout << std::endl;
-            }
+            // }
         }
         std::cout << std::endl;
     }

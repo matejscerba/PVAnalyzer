@@ -119,14 +119,14 @@ private:
      * @brief Compute values of parameters to be analyzed.
      */
     void compute_parameters() noexcept {
-        parameters.push_back(std::make_shared<hips_height_parameter>());
-        parameters.push_back(std::make_shared<body_part_height_parameter>(body_part::l_ankle));
-        parameters.push_back(std::make_shared<body_part_height_parameter>(body_part::r_ankle));
-        parameters.push_back(std::make_shared<vertical_tilt_parameter>(
+        parameters.push_back(std::make_shared<hips_height>());
+        parameters.push_back(std::make_shared<body_part_height>(body_part::l_ankle));
+        parameters.push_back(std::make_shared<body_part_height>(body_part::r_ankle));
+        parameters.push_back(std::make_shared<vertical_tilt>(
             "Torso tilt", body_part::l_hip, body_part::r_hip, body_part::neck, body_part::neck, dir));
-        parameters.push_back(std::make_shared<vertical_tilt_parameter>(
+        parameters.push_back(std::make_shared<vertical_tilt>(
             "Shoulders tilt", body_part::l_hip, body_part::r_hip, body_part::l_shoulder, body_part::r_shoulder, dir));
-        parameters.push_back(std::make_shared<steps_frequency_parameter>(fps));
+        parameters.push_back(std::make_shared<steps_duration>(fps));
 
         // Compute corresponding values.
         for (auto &param : parameters) {

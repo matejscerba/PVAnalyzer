@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <functional>
 #include <iostream>
 #include <iterator>
 #include <optional>
@@ -137,13 +138,13 @@ public:
      * @see parameter::size
      */
     virtual std::size_t size() const noexcept {
-        return 232;
+        return values.size();
     }
 
 protected:
 
     /**
-     * @brief Values for this parameter.
+     * @brief Values of this parameter.
      */
     std::vector<std::optional<double>> values;
 
@@ -162,18 +163,35 @@ protected:
 };
 
 /**
- * @brief 
+ * @brief Duration of each step in seconds.
  */
-struct steps_frequency_parameter : multiple_values_parameter {
+struct steps_duration : multiple_values_parameter {
 public:
 
-    steps_frequency_parameter(double fps)
-        : multiple_values_parameter("Steps frequency", vault_part::runup, " s"), fps(fps) {}
+    /**
+     * @brief Default constructor
+     * 
+     * Specifies parameter's name, vault part and unit as well as frame rate of processed video.
+     * 
+     * @param fps Frame rate of processed video.
+     */
+    steps_duration(double fps)
+        : multiple_values_parameter("Steps duration", vault_part::runup, " s"), fps(fps) {}
 
     /**
-     * @brief 
+     * @brief Compute duration of each step based on detected body parts in whole video.
+     * 
+     * Get numbers of frames where the lower ankle leaves locally lowest point and where
+     * the higher ankle leaves locally highest point. Keep low points, which are below
+     * center of previous low point and high point (the first one is kept every time).
+     * Compute duration between subsequent low points based on their frame numbers and
+     * frame rate of processed video.
+     * 
+     * @param points Athlete's body parts detected in the whole video.
+     * 
+     * @note Ankle must leave local point of interest by more than 1 px (vertically).
      */
-    void compute(const video_body &points) noexcept {
+    virtual void compute(const video_body &points) noexcept {
         values.clear();
         step_frames.clear();
         std::greater<double> low;
@@ -187,8 +205,8 @@ public:
             double l = *get_height(l_body[body_part::l_ankle], l_body[body_part::r_ankle], low);
             double h = *get_height(h_body[body_part::l_ankle], h_body[body_part::r_ankle], high);
             if (i > 0) {
-                if (high(l, center)) continue; // Low point is above center.
-                if (low(h, center)) continue;  // High point is below center.
+                if (high(l, center)) continue; // Low point is above center of previous points.
+                if (low(h, center)) continue;  // High point is below center of previous points.
             }
             center = (l + h) / 2.0;
             step_frames.push_back(lows[i]);
@@ -199,33 +217,47 @@ public:
     }
 
     /**
-     * @brief 
+     * @brief Write duration of step ending in frame number `frame_no`.
+     * 
+     * @param[out] os Output stream.
+     * @param frame_no Number of frame for which this parameter's value should be written.
+     * @param write_unit True if unit is supposed to be written as well, false otherwise.
      */
     virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
-        // os << (values[frame_no] ? *values[frame_no] : 0);
-        if (write_unit) {
-            for (const auto val : values) {
-                os << *val << unit << ", ";
-            }
-            os << (std::find(step_frames.begin(), step_frames.end(), frame_no) != step_frames.end());
-        } else {
-            if (frame_no < values.size()) {
-                os << *values[frame_no];
-            }
+        auto found = std::find(step_frames.begin(), step_frames.end(), frame_no);
+        if (found != step_frames.end()) {
+            std::ptrdiff_t idx = found - step_frames.begin();
+            if (idx) os << *values[idx - 1] << (write_unit ? unit : "");
         }
     }
 
 private:
 
+    /**
+     * @brief Numbers of frames in which the lower ankle leaves locally lowest point.
+     */
     std::vector<std::size_t> step_frames;
 
+    /**
+     * @brief Frame rate of processed video.
+     */
     double fps;
 
+    /**
+     * @brief Get numbers of frames in which ankle specified by `compare` reaches local point of interest.
+     * 
+     * `compare` returns true if given values are in correct order based on `compare`. Only ankle satisfying
+     * `compare` for each frame is taken into consideration, once it leaves point of interest (next ankle in
+     * next frame is vertically in the opposit relation than `compare` by more than 1 px) the previous frame
+     * number is added to vector that will be returned.
+     * 
+     * @param points Detected body parts of athlete in the whole video.
+     * @param compare Binary comparison function.
+     * @returns vector of frame numbers where ankles leave specified local point of interest.
+     */
     std::vector<std::size_t> get_frames(const video_body &points, std::function<bool (double, double)> compare) noexcept {
         std::vector<std::size_t> res;
         std::optional<double> last_height = std::nullopt;
-        std::optional<double> last_poi = std::nullopt; // TODO
-        std::optional<std::size_t> last_poi_idx = std::nullopt; // TODO
         std::size_t index = 0;
         bool correct_diff = false;
         for (const auto &body : points) {
@@ -324,7 +356,7 @@ protected:
 /**
  * @brief Parameter specifying y-coordinate of center of athlete's hips in each frame.
  */
-struct hips_height_parameter : frame_wise_parameter {
+struct hips_height : frame_wise_parameter {
 public:
 
     /**
@@ -332,7 +364,7 @@ public:
      * 
      * Specifies parameter's name, vault part and unit.
      */
-    hips_height_parameter() noexcept
+    hips_height() noexcept
         : frame_wise_parameter("Hips height", vault_part::runup, " px") {}
 
 private:
@@ -361,7 +393,7 @@ private:
 /**
  * @brief Parameter specifying y-coordinate of a body part in each frame.
  */
-struct body_part_height_parameter : frame_wise_parameter {
+struct body_part_height : frame_wise_parameter {
 public:
 
     /**
@@ -371,7 +403,7 @@ public:
      * 
      * Specifies parameter's name, vault part and unit.
      */
-    body_part_height_parameter(body_part b_part) noexcept
+    body_part_height(body_part b_part) noexcept
         : frame_wise_parameter(body_part_name(b_part) + " height", vault_part::runup, " px"), b_part(b_part) {}
 
 private:
@@ -400,7 +432,7 @@ private:
  * Ray is given by two pairs of body parts, so that the pairs can be centered.
  * If line should be given by only two body parts, pass each part twice.
  */
-struct vertical_tilt_parameter : frame_wise_parameter {
+struct vertical_tilt : frame_wise_parameter {
 public:
 
     /**
@@ -411,7 +443,7 @@ public:
      * @param b1, b2 Second pair of body parts, their center specifies a point ray passes through.
      * @param direction Athlete's runup direction.
      */
-    vertical_tilt_parameter(std::string name, body_part a1, body_part a2, body_part b1, body_part b2, int direction) noexcept
+    vertical_tilt(std::string name, body_part a1, body_part a2, body_part b1, body_part b2, int direction) noexcept
         : frame_wise_parameter(name, vault_part::runup, "°"), a1_part(a1), a2_part(a2), b1_part(b1), b2_part(b2), dir(direction) {}
 
 protected:
@@ -458,7 +490,7 @@ private:
  * 
  * @see vertical_tilt_parameter.
  */
-struct horizontal_tilt_parameter : vertical_tilt_parameter {
+struct horizontal_tilt : vertical_tilt {
 public:
 
     /**
@@ -470,8 +502,8 @@ public:
      * 
      * @note Direction passes to vertical_tilt_parameter's constructor is irrelevant.
      */
-    horizontal_tilt_parameter(std::string name, body_part a1, body_part a2, body_part b1, body_part b2) noexcept
-        : vertical_tilt_parameter(name, a1, a2, b1, b2, direction::left) {}
+    horizontal_tilt(std::string name, body_part a1, body_part a2, body_part b1, body_part b2) noexcept
+        : vertical_tilt(name, a1, a2, b1, b2, direction::left) {}
 
 private:
 
@@ -485,7 +517,7 @@ private:
      * @note Angle's degrees range is [-90,90].
      */
     virtual std::optional<double> extract_value(const frame_body &body) const noexcept {
-        std::optional<double> vertical_tilt = vertical_tilt_parameter::extract_value(body);
+        std::optional<double> vertical_tilt = vertical_tilt::extract_value(body);
         if (vertical_tilt) return 90.0 - std::abs(*vertical_tilt);
         return std::nullopt;
     }
