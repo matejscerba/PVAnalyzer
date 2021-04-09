@@ -30,8 +30,8 @@ public:
      * @param box Bounding box of this person in `frame`.
      * @param net Deep neural network used for detecting person's body parts.
     */
-    person(std::size_t frame_no, const cv::Mat &frame, std::size_t fps, const cv::Rect &box, cv::dnn::Net &net)
-        : vault_frames((double)fps * vault_duration), move_analyzer(frame, box) {
+    person(std::size_t frame_no, const cv::Mat &frame, double fps, const cv::Rect &box, cv::dnn::Net &net)
+        : vault_frames(fps * vault_duration), move_analyzer(frame, box) {
             first_frame_no = frame_no;
             current_frame_no = frame_no;
             corners.push_back(get_corners(box));
@@ -196,13 +196,27 @@ public:
         // Body parts if they were detected.
         if (points.size() > idx) {
             for (int n = 0; n < npairs; n++) {
-                std::optional<cv::Point2d> a = points[idx][pairs[n][0]];
-                std::optional<cv::Point2d> b = points[idx][pairs[n][1]];
+                std::size_t a_idx = pairs[n][0];
+                std::size_t b_idx = pairs[n][1];
+                std::optional<cv::Point2d> a = points[idx][a_idx];
+                std::optional<cv::Point2d> b = points[idx][b_idx];
 
                 // Check if points `a` and `b` are valid.
                 if (a && b) {
+                    cv::Scalar c(0, 255, 255);
+                    if ((a_idx == body_part::l_ankle) || (a_idx == body_part::l_knee) || (a_idx == body_part::l_hip) ||
+                        (a_idx == body_part::l_wrist) || (a_idx == body_part::l_elbow) || (a_idx == body_part::l_shoulder) ||
+                        (b_idx == body_part::l_ankle) || (b_idx == body_part::l_knee) || (b_idx == body_part::l_hip) ||
+                        (b_idx == body_part::l_wrist) || (b_idx == body_part::l_elbow) || (b_idx == body_part::l_shoulder)) {
+                            c = cv::Scalar(255, 0, 255);
+                    } else if ((a_idx == body_part::r_ankle) || (a_idx == body_part::r_knee) || (a_idx == body_part::r_hip) ||
+                        (a_idx == body_part::r_wrist) || (a_idx == body_part::r_elbow) || (a_idx == body_part::r_shoulder) ||
+                        (b_idx == body_part::r_ankle) || (b_idx == body_part::r_knee) || (b_idx == body_part::r_hip) ||
+                        (b_idx == body_part::r_wrist) || (b_idx == body_part::r_elbow) || (b_idx == body_part::r_shoulder)) {
+                            c = cv::Scalar(255, 255, 0);
+                    }
                     // Draw points representing joints and connect them with lines.
-                    cv::line(frame, *a, *b, cv::Scalar(0, 255, 255), 2);
+                    cv::line(frame, *a, *b, c, 2);
                     cv::circle(frame, *a, 2, cv::Scalar(0, 0, 255), -1);
                     cv::circle(frame, *b, 2, cv::Scalar(0, 0, 255), -1);
                 }

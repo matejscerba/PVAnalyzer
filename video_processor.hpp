@@ -36,11 +36,10 @@ public:
         }
 
         // Set default parameters.
-        std::size_t fps = 30;
+        double fps = 30;
         std::size_t frame_start = 0;
         cv::Point position;
         if (filename.find("kolin2.MOV") != std::string::npos) {
-            fps = 30;
             frame_start = 0;
             position = cv::Point(805, 385);
         } else if (filename.find("kolin.mp4") != std::string::npos) {
@@ -95,7 +94,7 @@ public:
         if (!athlete) {
             std::cout << "Athlete could not be detected in given video" << std::endl;
         }
-        analyzer.analyze(athlete, filename, frames.size());
+        analyzer.analyze(athlete, filename, frames.size(), fps);
 
         visual v(frames, raw_frames, analyzer.get_parameters());
         v.show();

@@ -138,6 +138,10 @@ cv::Point2d count_mean_delta(std::vector<cv::Point2d>::const_iterator begin, std
  */
 std::string body_part_name(const body_part part);
 
+std::optional<double> distance(const std::optional<cv::Point2d> &a, const std::optional<cv::Point2d> &b) noexcept;
+
+std::optional<double> get_height(const frame_part &a, const frame_part &b, std::function<bool (double, double)> compare) noexcept;
+
 //////////////////////////////////////////////////////////////////////////////////////
 // constants
 //////////////////////////////////////////////////////////////////////////////////////
@@ -174,7 +178,7 @@ const int npairs = 14;
  * Left Elbow – 6, Left Wrist – 7, Right Hip – 8, Right Knee – 9, Right Ankle – 10, Left Hip – 11,
  * Left Knee – 12, Left Ankle – 13, Chest – 14, Background – 15.
  */
-const int pairs[14][2] = {
+const std::size_t pairs[14][2] = {
     {0,1}, {1,2}, {2,3},
     {3,4}, {1,5}, {5,6},
     {6,7}, {1,14}, {14,8}, {8,9},

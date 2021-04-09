@@ -78,3 +78,23 @@ std::string body_part_name(const body_part part) {
             return "Chest";
     }
 }
+
+std::optional<double> distance(const std::optional<cv::Point2d> &a, const std::optional<cv::Point2d> &b) noexcept {
+    if (a && b) {
+        return std::sqrt((a->x - b->x) * (a->x - b->x) + (a->y - b->y) * (a->y - b-> y));
+    }
+    return std::nullopt;
+}
+
+std::optional<double> get_height(const frame_part &a, const frame_part &b, std::function<bool (double, double)> compare) noexcept {
+    if (a && b) {
+        if (compare(a->y, b->y))
+            return a->y;
+        return b->y;
+    } else if (a) {
+        return a->y;
+    } else if (b) {
+        return b->y;
+    }
+    return std::nullopt;
+}

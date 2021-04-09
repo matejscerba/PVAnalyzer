@@ -41,7 +41,7 @@ public:
      * @param position Point in frame (specified by first parameter), where athlete is expected.
      * @param fps Frame rate of processed video.
      */
-    body_detector(std::size_t frame, const cv::Point &position, std::size_t fps) :
+    body_detector(std::size_t frame, const cv::Point &position, double fps) :
         hog(cv::Size(48, 96), cv::Size(16, 16), cv::Size(8, 8), cv::Size(8, 8), 9),
         person_position(position) {
             person_frame = frame;
@@ -124,7 +124,7 @@ private:
     const cv::Point person_position;
 
     /// @brief Frame rate of processed video.
-    std::size_t fps;
+    double fps;
 
     /**
      * @brief List of detected people.

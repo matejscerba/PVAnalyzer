@@ -137,7 +137,7 @@ public:
      * @see parameter::size
      */
     virtual std::size_t size() const noexcept {
-        return values.size();
+        return 232;
     }
 
 protected:
@@ -158,6 +158,94 @@ protected:
      */
     multiple_values_parameter(const std::string name, const vault_part part, const std::string &&unit) noexcept
         : parameter(name, part, std::move(unit)) {}
+
+};
+
+/**
+ * @brief 
+ */
+struct steps_frequency_parameter : multiple_values_parameter {
+public:
+
+    steps_frequency_parameter(double fps)
+        : multiple_values_parameter("Steps frequency", vault_part::runup, " s"), fps(fps) {}
+
+    /**
+     * @brief 
+     */
+    void compute(const video_body &points) noexcept {
+        values.clear();
+        step_frames.clear();
+        std::greater<double> low;
+        std::vector<std::size_t> lows = get_frames(points, low);
+        std::less<double> high;
+        std::vector<std::size_t> highs = get_frames(points, high);
+        double center = 0;
+        for (std::size_t i = 0; i < std::min(lows.size(), highs.size()); i++) {
+            frame_body l_body = points[lows[i]];
+            frame_body h_body = points[highs[i]];
+            double l = *get_height(l_body[body_part::l_ankle], l_body[body_part::r_ankle], low);
+            double h = *get_height(h_body[body_part::l_ankle], h_body[body_part::r_ankle], high);
+            if (i > 0) {
+                if (high(l, center)) continue; // Low point is above center.
+                if (low(h, center)) continue;  // High point is below center.
+            }
+            center = (l + h) / 2.0;
+            step_frames.push_back(lows[i]);
+        }
+        for (std::size_t i = 1; i < step_frames.size(); i++) {
+            values.push_back((step_frames[i] - step_frames[i - 1]) / fps);
+        }
+    }
+
+    /**
+     * @brief 
+     */
+    virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
+        // os << (values[frame_no] ? *values[frame_no] : 0);
+        if (write_unit) {
+            for (const auto val : values) {
+                os << *val << unit << ", ";
+            }
+            os << (std::find(step_frames.begin(), step_frames.end(), frame_no) != step_frames.end());
+        } else {
+            if (frame_no < values.size()) {
+                os << *values[frame_no];
+            }
+        }
+    }
+
+private:
+
+    std::vector<std::size_t> step_frames;
+
+    double fps;
+
+    std::vector<std::size_t> get_frames(const video_body &points, std::function<bool (double, double)> compare) noexcept {
+        std::vector<std::size_t> res;
+        std::optional<double> last_height = std::nullopt;
+        std::optional<double> last_poi = std::nullopt; // TODO
+        std::optional<std::size_t> last_poi_idx = std::nullopt; // TODO
+        std::size_t index = 0;
+        bool correct_diff = false;
+        for (const auto &body : points) {
+            std::optional<double> height = get_height(body[body_part::l_ankle], body[body_part::r_ankle], compare);
+            if (height && last_height) {
+                // Current and last value is valid.
+                if (correct_diff && !compare(*height, *last_height) && std::abs(*height - *last_height) > 1) {
+                    // Value was changing in the right direction, it stopped changing and is changing in the wrong direction.
+                    correct_diff = false;
+                    res.push_back(index - 1);
+                }
+                if (compare(*height, *last_height)) {
+                    correct_diff = true;
+                }
+            }
+            last_height = height;
+            index++;
+        }
+        return res;
+    }
 
 };
 
