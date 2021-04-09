@@ -66,7 +66,7 @@ public:
     }
 
     /// @brief Get detected direction.
-    int get_direction() const noexcept {
+    direction get_direction() const noexcept {
         return dir;
     }
 
@@ -133,7 +133,7 @@ private:
 
     // TODO: rename to direction
     /// @brief Horizontal direction of person's movement.
-    int dir = unknown;
+    direction dir = direction::unknown;
 
     /**
      * @brief Update person's movement direction based on background trackers.
@@ -143,16 +143,16 @@ private:
      * @note Invalidate the second tracker if person is moving according to the first one.
     */
     void update_direction(const cv::Rect2d &person) {
-        if (dir == unknown) {
+        if (dir == direction::unknown) {
             if (left_direction_tracker) {
                 if (left_direction_tracker->is_valid_direction()) {
-                    dir = left;
+                    dir = direction::left;
                     right_direction_tracker.reset();
                 }
             }
             if (right_direction_tracker) {
                 if (right_direction_tracker->is_valid_direction()) {
-                    dir = right;
+                    dir = direction::right;
                     left_direction_tracker.reset();
                 }
             }

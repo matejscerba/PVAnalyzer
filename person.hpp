@@ -370,7 +370,13 @@ private:
      */
     double get_angle(std::size_t frame_no) const {
         std::size_t frames = move_analyzer.vault_frames(frame_no);
-        return (double)move_analyzer.get_direction() * 180.0 * std::min(1.0, (double)frames / (double)vault_frames);
+        direction dir = move_analyzer.get_direction();
+        double d = 0;
+        if (dir == direction::left)
+            d = 1;
+        else if (dir == direction::right)
+            d = -1;
+        return d * 180.0 * std::min(1.0, (double)frames / (double)vault_frames);
     }
 
     /**

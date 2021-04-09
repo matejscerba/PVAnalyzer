@@ -70,10 +70,10 @@ enum body_part : std::size_t {
  * 
  * @note This value multiplies angle so that video rotates the correct way during vault.
 */
-enum direction : int {
-    right = -1,
-    unknown = 0,
-    left = 1
+enum class direction {
+    right,
+    unknown,
+    left
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

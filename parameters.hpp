@@ -441,10 +441,10 @@ public:
      * @param name Name of this parameter.
      * @param a1, a2 First pair of body parts, their center specifies origin of ray.
      * @param b1, b2 Second pair of body parts, their center specifies a point ray passes through.
-     * @param direction Athlete's runup direction.
+     * @param dir Athlete's runup direction.
      */
-    vertical_tilt(std::string name, body_part a1, body_part a2, body_part b1, body_part b2, int direction) noexcept
-        : frame_wise_parameter(name, vault_part::runup, "°"), a1_part(a1), a2_part(a2), b1_part(b1), b2_part(b2), dir(direction) {}
+    vertical_tilt(std::string name, body_part a1, body_part a2, body_part b1, body_part b2, direction dir) noexcept
+        : frame_wise_parameter(name, vault_part::runup, "°"), a1_part(a1), a2_part(a2), b1_part(b1), b2_part(b2), dir(dir) {}
 
 protected:
     
@@ -462,7 +462,12 @@ protected:
         std::optional<cv::Point2d> b = (body[b1_part] + body[b2_part]) / 2.0;
         if (a && b) {
             double y = a->y - b->y;
-            double x = (double)dir * (a->x - b->x);
+            double d = 0;
+            if (dir == direction::left)
+                d = 1;
+            else if (dir == direction::right)
+                d = -1;
+            double x = d * (a->x - b->x);
             return std::atan(x / y) * 180.0 / M_PI;
         }
         return std::nullopt;
@@ -481,7 +486,7 @@ private:
     /**
      * @brief Direction of athlete's runup.
      */
-    int dir;
+    direction dir;
 
 };
 

@@ -88,7 +88,7 @@ private:
     /**
      * @brief Athlete's movement direction.
      */
-    int dir;
+    direction dir;
 
     double fps;
 

@@ -23,8 +23,8 @@ public:
      * @param person Bounding box of person in `frame`.
      * @param dir Assumed direction of person's movement.
      */
-    background_tracker(const cv::Mat &frame, const cv::Rect &person, int dir) noexcept {
-        direction = dir;
+    background_tracker(const cv::Mat &frame, const cv::Rect &person, direction dir) noexcept {
+        this->dir = dir;
         valid_direction_threshold = person.width;
         tracker = cv::TrackerCSRT::create();
         update(frame, person);
@@ -54,7 +54,12 @@ public:
      * @returns true if assumed direction is correct, false otherwise.
      */
     bool is_valid_direction() const noexcept {
-        return person_offsets.size() && (- direction * person_offsets.back().x > valid_direction_threshold);
+        double d = 0;
+        if (dir == direction::left)
+            d = -1;
+        else if (dir == direction::right)
+            d = 1;
+        return person_offsets.size() && (d * person_offsets.back().x > valid_direction_threshold);
     }
 
     /**
@@ -124,7 +129,7 @@ private:
      * 
      * @see movement_analyzer::direction.
      */
-    int direction;
+    direction dir;
 
     /// @brief Horizontal distance, that person must move in assumed direction in order to mark that direction as valid.
     double valid_direction_threshold;
@@ -146,7 +151,12 @@ private:
             bg.x + bg.width >= (double)frame.cols ||
             bg.y + bg.height >= (double)frame.rows) {
                 // Compute horizontal shift for new background.
-                int shift = direction * person.width;
+                int d = 0;
+                if (dir == direction::left)
+                    d = 1;
+                else if (dir == direction::right)
+                    d = -1;
+                int shift = d * person.width;
                 int x = std::max(0, person.x + shift);
                 int width = std::min(person.x, person.width);
                 width = std::min(width, frame.cols - (person.x + shift));
