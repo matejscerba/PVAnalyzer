@@ -96,7 +96,13 @@ public:
         }
         analyzer.analyze(athlete, filename, frames.size(), fps);
 
-        visual v(frames, raw_frames, analyzer.get_parameters());
+        visual v(
+            frames,
+            raw_frames,
+            analyzer.get_parameters(),
+            analyzer.get_start(),
+            analyzer.get_takeoff(),
+            analyzer.get_culmination());
         v.show();
 
         // write("no_last_box.avi");

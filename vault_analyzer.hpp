@@ -53,9 +53,7 @@ public:
         this->filename = filename;
         this->fps = fps;
 
-        get_moments_of_interest();
-
-        compute_parameters();
+        compute_parameters(points_real);
         write_parameters();
     }
 
@@ -66,6 +64,18 @@ public:
      */
     std::vector<std::shared_ptr<parameter>> get_parameters() const noexcept {
         return parameters;
+    }
+
+    std::optional<std::size_t> get_start() const noexcept {
+        return start;
+    }
+
+    std::optional<std::size_t> get_takeoff() const noexcept {
+        return takeoff;
+    }
+
+    std::optional<std::size_t> get_culmination() const noexcept {
+        return culmination;
     }
 
 private:
@@ -118,7 +128,7 @@ private:
     /**
      * @brief Compute values of parameters to be analyzed.
      */
-    void compute_parameters() noexcept {
+    void compute_parameters(const video_body &points) noexcept {
         parameters.push_back(std::make_shared<hips_height>());
         parameters.push_back(std::make_shared<body_part_height>(body_part::l_ankle));
         parameters.push_back(std::make_shared<body_part_height>(body_part::r_ankle));
@@ -126,47 +136,59 @@ private:
             "Torso tilt", body_part::l_hip, body_part::r_hip, body_part::neck, body_part::neck, dir));
         parameters.push_back(std::make_shared<vertical_tilt>(
             "Shoulders tilt", body_part::l_hip, body_part::r_hip, body_part::l_shoulder, body_part::r_shoulder, dir));
-        parameters.push_back(std::make_shared<steps_duration>(fps));
+        auto steps_dur = std::make_shared<steps_duration>(fps);
+        parameters.push_back(steps_dur);
 
         // Compute corresponding values.
         for (auto &param : parameters) {
-            param->compute(points_real);
+            param->compute(points);
         }
+
+        get_moments_of_interest(steps_dur, points);
     }
 
-    void get_start() noexcept {
-        start = std::nullopt;
+    std::optional<std::size_t> get_start(const video_body &points) noexcept {
         std::size_t index = 0;
         frame_part left = std::nullopt;
         frame_part right = std::nullopt;
-        auto found = std::find_if(points_real.begin(), points_real.end(), [&index, &left, &right, this](const frame_body &body) {
+        for (const auto &body : points) {
             std::optional<double> dist = distance(body[body_part::l_ankle], left);
-            if (dist && *dist > 1) return true;
+            if (dist && *dist > 1) break;
             dist = distance(body[body_part::r_ankle], right);
-            if (dist && *dist > 1) return true;
+            if (dist && *dist > 1) break;
             left = body[body_part::l_ankle];
             right = body[body_part::r_ankle];
             index++;
-            return false;
-        });
-        if (found != this->points_real.end())
-            start = index - 1;
+        }
+        if (index && index != points.size())
+            return index - 1;
+        return std::nullopt;
     }
 
-    void get_takeoff() noexcept {
+    std::optional<std::size_t> get_takeoff(std::shared_ptr<steps_duration> steps_duration) noexcept {
+        return steps_duration->get_takeoff();
     }
 
-    void get_culmination() noexcept {
-        
+    std::optional<std::size_t> get_culmination(const video_body &points) noexcept {
+        std::optional<double> highest;
+        std::size_t highest_idx;
+        for (std::size_t i = 0; i < points.size(); i++) {
+            if (points[i][body_part::l_hip] && points[i][body_part::r_hip]) {
+                double current = (points[i][body_part::l_hip]->y + points[i][body_part::r_hip]->y) / 2;
+                highest = highest ? std::min(current, *highest) : current;
+                highest_idx = (highest == current ? i : highest_idx);
+            }
+        }
+        return highest_idx;
     }
 
     /**
      * @brief Decide which frames represent start of attempt, takeoff and culmination above bar.
      */
-    void get_moments_of_interest() noexcept {
-        get_start();
-        get_takeoff();
-        get_culmination();
+    void get_moments_of_interest(std::shared_ptr<steps_duration> steps_duration, const video_body &points) noexcept {
+        start = get_start(points);
+        takeoff = get_takeoff(steps_duration);
+        culmination = get_culmination(points);
     }
     
     /**

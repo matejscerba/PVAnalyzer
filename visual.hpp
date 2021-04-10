@@ -18,8 +18,18 @@ public:
     /**
      * @brief Default constructor.
      */
-    visual(const std::vector<cv::Mat> &frames, const std::vector<cv::Mat> &raw_frames, const std::vector<std::shared_ptr<parameter>> &parameters)
-        : frames(frames), raw_frames(raw_frames), parameters(parameters) {}
+    visual( const std::vector<cv::Mat> &frames,
+            const std::vector<cv::Mat> &raw_frames,
+            const std::vector<std::shared_ptr<parameter>> &parameters,
+            std::optional<std::size_t> start,
+            std::optional<std::size_t> takeoff,
+            std::optional<std::size_t> culmination) :
+                frames(frames),
+                raw_frames(raw_frames),
+                parameters(parameters),
+                start(start),
+                takeoff(takeoff),
+                culmination(culmination) {}
 
     /**
      * @brief Show current frame of video.
@@ -72,16 +82,60 @@ private:
     const std::vector<cv::Mat> raw_frames;
     const std::vector<std::shared_ptr<parameter>> parameters;
 
+    std::optional<std::size_t> start;
+
+    std::optional<std::size_t> takeoff;
+
+    std::optional<std::size_t> culmination;
+
+    std::vector<parameter::vault_part> get_current_parts() const noexcept {
+        std::vector<parameter::vault_part> res;
+        if (start && frame_no < *start) {
+            res.push_back(parameter::vault_part::invalid);
+        }
+        if (start && takeoff && *start <= frame_no && frame_no <= *takeoff) {
+            res.push_back(parameter::vault_part::runup);
+        }
+        if (takeoff && frame_no == *takeoff) {
+            res.push_back(parameter::vault_part::takeoff);
+        }
+        if (takeoff && culmination && takeoff <= frame_no && frame_no <= culmination) {
+            res.push_back(parameter::vault_part::vault);
+        }
+        return res;
+    }
+
     /**
      * @brief Write parameters of current frame to standard output.
      */
     void write_parameters() const {
-        for (const auto &p : parameters) {
-            // if (frame_no < p->size()) {
-                std::cout << p->name << " : ";
-                p->write_value(std::cout, frame_no, true);
-                std::cout << std::endl;
-            // }
+        std::vector<parameter::vault_part> parts = get_current_parts();
+        std::vector<std::shared_ptr<parameter>> to_write;
+        for (auto &param : parameters) {
+            for (auto part : parts) {
+                if (part == param->part) {
+                    to_write.push_back(param);
+                }
+            }
+        }
+        for (auto part : parts) {
+            if (part == parameter::vault_part::invalid) {
+                std::cout << "invalid" << std::endl;
+            }
+            if (part == parameter::vault_part::runup) {
+                std::cout << "runup" << std::endl;
+            }
+            if (part == parameter::vault_part::takeoff) {
+                std::cout << "takeoff" << std::endl;
+            }
+            if (part == parameter::vault_part::vault) {
+                std::cout << "vault" << std::endl;
+            }
+        }
+        for (const auto &p : to_write) {
+            std::cout << p->name << " : ";
+            p->write_value(std::cout, frame_no, true);
+            std::cout << std::endl;
         }
         std::cout << std::endl;
     }

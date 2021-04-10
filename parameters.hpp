@@ -26,8 +26,6 @@ public:
      * @brief Part of vault.
      */
     enum class vault_part {
-        /// Whole vault including runup, takeoff and vault.
-        whole,
         runup,
         takeoff,
         vault,
@@ -229,6 +227,17 @@ public:
             std::ptrdiff_t idx = found - step_frames.begin();
             if (idx) os << *values[idx - 1] << (write_unit ? unit : "");
         }
+    }
+
+    /**
+     * @brief Get number of frame in which athlete takes off.
+     * 
+     * @returns number of frame in which last step ends, no value if no step was detected.
+     */
+    std::optional<std::size_t> get_takeoff() const noexcept {
+        if (step_frames.size())
+            return step_frames.back();
+        return std::nullopt;
     }
 
 private:
