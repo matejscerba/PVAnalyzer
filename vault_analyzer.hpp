@@ -222,9 +222,9 @@ private:
             output << std::endl << i;
             for (const auto &param : parameters) {
                 output << ",";
-                if (i < param->size()) {
-                    param->write_value(output, i, false);
-                }
+                // if (i < param->size()) {
+                //     param->write_param(output, i, false);
+                // }
             }
         }
         output.close();

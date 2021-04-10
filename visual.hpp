@@ -20,16 +20,14 @@ public:
      */
     visual( const std::vector<cv::Mat> &frames,
             const std::vector<cv::Mat> &raw_frames,
-            const std::vector<std::shared_ptr<parameter>> &parameters,
-            std::optional<std::size_t> start,
-            std::optional<std::size_t> takeoff,
-            std::optional<std::size_t> culmination) :
+            vault_analyzer &analyzer) :
                 frames(frames),
-                raw_frames(raw_frames),
-                parameters(parameters),
-                start(start),
-                takeoff(takeoff),
-                culmination(culmination) {}
+                raw_frames(raw_frames) {
+                    parameters = analyzer.get_parameters();
+                    start = analyzer.get_start();
+                    takeoff = analyzer.get_takeoff();
+                    culmination = analyzer.get_culmination();
+                }
 
     /**
      * @brief Show current frame of video.
@@ -80,7 +78,7 @@ private:
     bool drawing = true;
     const std::vector<cv::Mat> frames;
     const std::vector<cv::Mat> raw_frames;
-    const std::vector<std::shared_ptr<parameter>> parameters;
+    std::vector<std::shared_ptr<parameter>> parameters;
 
     std::optional<std::size_t> start;
 
