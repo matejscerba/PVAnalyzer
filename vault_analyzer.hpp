@@ -129,6 +129,10 @@ private:
      * @brief Compute values of parameters to be analyzed.
      */
     void compute_parameters(const video_body &points) noexcept {
+        auto steps_dur = std::make_shared<steps_duration>(fps);
+        steps_dur->compute(points);
+        get_moments_of_interest(steps_dur, points);
+
         parameters.push_back(std::make_shared<hips_height>());
         parameters.push_back(std::make_shared<body_part_height>(body_part::l_ankle));
         parameters.push_back(std::make_shared<body_part_height>(body_part::r_ankle));
@@ -136,16 +140,17 @@ private:
             "Torso tilt", body_part::l_hip, body_part::r_hip, body_part::neck, body_part::neck, dir));
         parameters.push_back(std::make_shared<vertical_tilt>(
             "Shoulders tilt", body_part::l_hip, body_part::r_hip, body_part::l_shoulder, body_part::r_shoulder, dir));
-        auto steps_dur = std::make_shared<steps_duration>(fps);
-        parameters.push_back(steps_dur);
         parameters.push_back(std::make_shared<steps_angle>(dir));
+        parameters.push_back(std::make_shared<hips_velocity_loss>(takeoff));
+        parameters.push_back(std::make_shared<shoulders_velocity_loss>(takeoff));
+        // parameters.push_back(std::make_shared<takeoff_angle>(takeoff));
 
         // Compute corresponding values.
         for (auto &param : parameters) {
             param->compute(points);
         }
+        parameters.push_back(steps_dur);
 
-        get_moments_of_interest(steps_dur, points);
     }
 
     std::optional<std::size_t> get_start(const video_body &points) noexcept {

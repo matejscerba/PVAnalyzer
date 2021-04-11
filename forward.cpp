@@ -9,6 +9,11 @@ std::optional<cv::Point2d> operator+(const std::optional<cv::Point2d> &lhs, cons
     return std::nullopt;
 }
 
+std::optional<cv::Point2d> operator-(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs) {
+    if (lhs && rhs) return *lhs - *rhs;
+    return std::nullopt;
+}
+
 std::optional<cv::Point2d> operator/(const std::optional<cv::Point2d> &lhs, double rhs) {
     if (lhs) return *lhs / rhs;
     return std::nullopt;

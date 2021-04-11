@@ -118,6 +118,111 @@ protected:
      */
     std::optional<double> value;
 
+    /**
+     * @brief Default constructor.
+     * 
+     * @param name Name of this parameter.
+     * @param part Part of vault for which this parameter is designated.
+     * @param unit String representation of this parameter's unit.
+     * 
+     * @note This constructor can be called by derived structs only.
+     */
+    single_value_parameter(const std::string name, const vault_part part, const std::string &&unit) noexcept
+        : parameter(name, part, std::move(unit)) {}
+
+};
+
+struct takeoff_parameter : single_value_parameter {
+protected:
+
+    const std::optional<std::size_t> takeoff;
+
+    takeoff_parameter(std::optional<std::size_t> takeoff, const std::string name, const vault_part part, const std::string &&unit) noexcept
+        : single_value_parameter(name, part, std::move(unit)), takeoff(takeoff) {}
+
+};
+
+struct velocity_loss : takeoff_parameter {
+public:
+
+    velocity_loss(std::optional<std::size_t> takeoff, const std::string name, body_part a, body_part b) noexcept
+        : takeoff_parameter(takeoff, name, parameter::vault_part::takeoff, " %"),a(a), b(b) {}
+
+    virtual void compute(const video_body &points) noexcept {
+        if (takeoff && (*takeoff >= takeoff_parameter_frames) && (points.size() > *takeoff + takeoff_parameter_frames)) {
+            frame_body before = points[*takeoff - takeoff_parameter_frames];
+            frame_body during = points[*takeoff];
+            frame_body after = points[*takeoff + takeoff_parameter_frames];
+            frame_part p_before = (before[a] + before[b]) / 2.0;
+            frame_part p_during = (during[a] + during[b]) / 2.0;
+            frame_part p_after = (after[a] + after[b]) / 2.0;
+            if (p_before && p_during && p_after) {
+                value = (1.0 - (p_after - p_during)->x / (p_during - p_before)->x) * 100.0;
+            } else {
+                value = std::nullopt;
+            }
+        } else {
+            value = std::nullopt;
+        }
+    }
+
+    virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
+        if (takeoff && (frame_no == *takeoff) && value) {
+            os << *value << (write_unit ? unit : "");
+        }
+    }
+
+private:
+
+    body_part a, b;
+
+};
+
+struct hips_velocity_loss :velocity_loss {
+public:
+
+    hips_velocity_loss(std::optional<std::size_t> takeoff) noexcept
+    : velocity_loss(takeoff, "Hips velocity loss", body_part::l_hip, body_part::r_hip) {}
+
+};
+
+struct shoulders_velocity_loss :velocity_loss {
+public:
+
+    shoulders_velocity_loss(std::optional<std::size_t> takeoff) noexcept
+    : velocity_loss(takeoff, "Shoulders velocity loss", body_part::l_shoulder, body_part::r_shoulder) {}
+
+};
+
+struct takeoff_angle : takeoff_parameter {
+public:
+
+    takeoff_angle(std::optional<std::size_t> takeoff) noexcept
+        : takeoff_parameter(takeoff, "Takeoff angle", parameter::vault_part::takeoff, "°") {}
+
+    virtual void compute(const video_body &points) noexcept {
+        if (takeoff && (*takeoff >= takeoff_parameter_frames) && (points.size() > *takeoff + takeoff_parameter_frames)) {
+            frame_body first;
+            frame_body during = points[*takeoff];
+            frame_body after = points[*takeoff + takeoff_parameter_frames];
+            frame_part p_first = (first[body_part::l_hip] + first[body_part::r_hip]) / 2.0;
+            frame_part p_during = (during[body_part::l_hip] + during[body_part::r_hip]) / 2.0;
+            frame_part p_after = (after[body_part::l_hip] + after[body_part::r_hip]) / 2.0;
+            if (p_first && p_during && p_after) {
+                value = (1.0 - (p_after - p_during)->x / (p_during - p_first)->x) * 100.0;
+            } else {
+                value = std::nullopt;
+            }
+        } else {
+            value = std::nullopt;
+        }
+    }
+
+    virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
+        if (takeoff && (frame_no == *takeoff) && value) {
+            os << *value << (write_unit ? unit : "");
+        }
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

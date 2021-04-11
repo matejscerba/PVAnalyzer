@@ -87,6 +87,8 @@ enum class direction {
  */
 std::optional<cv::Point2d> operator+(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs);
 
+std::optional<cv::Point2d> operator-(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs);
+
 /**
  * @brief
  */
@@ -195,3 +197,5 @@ const std::size_t vault_check_frames = 6;
 
 /// @brief How much the person's coordinates must change in order to set `_vault_began` to true.
 const double vault_threshold = -0.55 / 720;
+
+const std::size_t takeoff_parameter_frames = 3;
