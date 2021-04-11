@@ -23,16 +23,6 @@ struct parameter {
 public:
 
     /**
-     * @brief Part of vault.
-     */
-    enum class vault_part {
-        runup,
-        takeoff,
-        vault,
-        invalid
-    };
-
-    /**
      * @brief This parameter's name.
      */
     const std::string name;
@@ -94,6 +84,9 @@ protected:
 
 };
 
+/**
+ * @brief Comparison operator to be used for sorting parameters.
+ */
 bool operator<(const std::shared_ptr<parameter> &lhs, const std::shared_ptr<parameter> &rhs) noexcept {
     return (lhs && rhs && (lhs->name < rhs->name));
 }
@@ -118,7 +111,7 @@ public:
 protected:
 
     /**
-     * @brief Value for this parameter.
+     * @brief Value of this parameter.
      */
     std::optional<double> value;
 
@@ -136,22 +129,56 @@ protected:
 
 };
 
+/**
+ * @brief Single valued parameter, whose value is associated with takeoff.
+ */
 struct takeoff_parameter : single_value_parameter {
 protected:
 
+    /**
+     * @brief Number of frame in which athlete takes off.
+     */
     const std::optional<std::size_t> takeoff;
 
+    /**
+     * @brief Default constructor.
+     * 
+     * @param name Name of this parameter.
+     * @param part Part of vault for which this parameter is designated.
+     * @param unit String representation of this parameter's unit.
+     * 
+     * @note This constructor can be called by derived structs only.
+     */
     takeoff_parameter(std::optional<std::size_t> takeoff, const std::string name, const vault_part part, const std::string &&unit) noexcept
         : single_value_parameter(name, part, std::move(unit)), takeoff(takeoff) {}
 
 };
 
+/**
+ * @brief Velocity loss of center of given body parts during takeoff.
+ */
 struct velocity_loss : takeoff_parameter {
 public:
 
+    /**
+     * @brief Default constructor.
+     * 
+     * @param takeoff Number of frame in which athlete takes off.
+     * @param name Name of this parameter.
+     * @param a, b Body parts whose velocity loss should be computed.
+     */
     velocity_loss(std::optional<std::size_t> takeoff, const std::string name, body_part a, body_part b) noexcept
-        : takeoff_parameter(takeoff, name, parameter::vault_part::takeoff, " %"),a(a), b(b) {}
+        : takeoff_parameter(takeoff, name, vault_part::takeoff, " %"), a(a), b(b) {}
 
+    /**
+     * @brief Compute horizontal velocity loss during takeoff of given body parts.
+     * 
+     * Velocity is computed for last `takeoff_parameter_frames` before takeoff and for
+     * first `takeoff_parameter_frames` after takeoff. Those two values determine horizontal
+     * velocity loss.
+     * 
+     * @param points Athlete's body parts detected in the whole video.
+     */
     virtual void compute(const video_body &points) noexcept {
         if (takeoff && (*takeoff >= takeoff_parameter_frames) && (points.size() > *takeoff + takeoff_parameter_frames)) {
             frame_body before = points[*takeoff - takeoff_parameter_frames];
@@ -170,6 +197,13 @@ public:
         }
     }
 
+    /**
+     * @brief Write velocity loss if `frame_no` is the number of frame where athlete takes off.
+     * 
+     * @param[out] os Output stream.
+     * @param frame_no Number of frame for which this parameter's value should be written.
+     * @param write_unit True if unit is supposed to be written as well, false otherwise.
+     */
     virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
         if (takeoff && (frame_no == *takeoff) && value) {
             os << *value << (write_unit ? unit : "");
@@ -178,32 +212,68 @@ public:
 
 private:
 
+    /**
+     * @brief Body parts to compute velocity loss from.
+     */
     body_part a, b;
 
 };
 
-struct hips_velocity_loss :velocity_loss {
+/**
+ * @brief Horizontal velocity loss of center of hips.
+ */
+struct hips_velocity_loss : velocity_loss {
 public:
 
+    /**
+     * @brief Default constructor.
+     * 
+     * @param takeoff Number of frame in which athlete takes off.
+     */
     hips_velocity_loss(std::optional<std::size_t> takeoff) noexcept
-    : velocity_loss(takeoff, "Hips velocity loss", body_part::l_hip, body_part::r_hip) {}
+        : velocity_loss(takeoff, "Hips velocity loss", body_part::l_hip, body_part::r_hip) {}
 
 };
 
-struct shoulders_velocity_loss :velocity_loss {
+/**
+ * @brief Horizontal velocity loss of center of shoulders.
+ */
+struct shoulders_velocity_loss : velocity_loss {
 public:
 
+    /**
+     * @brief Default constructor.
+     * 
+     * @param takeoff Number of frame in which athlete takes off.
+     */
     shoulders_velocity_loss(std::optional<std::size_t> takeoff) noexcept
-    : velocity_loss(takeoff, "Shoulders velocity loss", body_part::l_shoulder, body_part::r_shoulder) {}
+        : velocity_loss(takeoff, "Shoulders velocity loss", body_part::l_shoulder, body_part::r_shoulder) {}
 
 };
 
+/**
+ * @brief Athlete's takeoff angle.
+ */
 struct takeoff_angle : takeoff_parameter {
 public:
 
+    /**
+     * @brief Default constructor.
+     * 
+     * @param takeoff Number of frame in which athlete takes off.
+     */
     takeoff_angle(std::optional<std::size_t> takeoff) noexcept
-        : takeoff_parameter(takeoff, "Takeoff angle", parameter::vault_part::takeoff, "°") {}
+        : takeoff_parameter(takeoff, "Takeoff angle", vault_part::takeoff, "°") {}
 
+    /**
+     * @brief Compute athlete's takeoff angle (hips are used to compute angle).
+     * 
+     * Angle is computed for last `takeoff_parameter_frames` before takeoff and for
+     * first `takeoff_parameter_frames` after takeoff. Those two values determine
+     * resulting angle.
+     * 
+     * @param points Athlete's body parts detected in the whole video.
+     */
     virtual void compute(const video_body &points) noexcept {
         if (takeoff && (*takeoff >= takeoff_parameter_frames) && (points.size() > *takeoff + takeoff_parameter_frames)) {
             frame_body first = get_first_hips(points);
@@ -224,6 +294,13 @@ public:
         }
     }
 
+    /**
+     * @brief Write takeoff angle if `frame_no` is the number of frame where athlete takes off.
+     * 
+     * @param[out] os Output stream.
+     * @param frame_no Number of frame for which this parameter's value should be written.
+     * @param write_unit True if unit is supposed to be written as well, false otherwise.
+     */
     virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
         if (takeoff && (frame_no == *takeoff) && value) {
             os << *value << (write_unit ? unit : "");
@@ -232,6 +309,12 @@ public:
 
 private:
 
+    /**
+     * @brief Get first frame_body in which both hips are valid.
+     * 
+     * @param points Athlete's body parts detected in the whole video.
+     * @returns first frame_body in which both hips are valid.
+     */
     frame_body get_first_hips(const video_body &points) const noexcept {
         auto found = std::find_if(points.begin(), points.end(), [](const frame_body &body){
             return body[body_part::l_hip] && body[body_part::r_hip];
