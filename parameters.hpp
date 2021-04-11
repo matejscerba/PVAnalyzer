@@ -45,13 +45,18 @@ public:
      * @brief Write value into given stream for given frame number.
      * 
      * @param os Stream in which this parameter's value for given frame number should be written.
-     * @param frame_no Number of frame.
+     * @param frame_no Number of frame for which to write value.
      * @param write_unit Specifies whether to write this parameter's unit as well.
-     * 
-     * @note `frame_no` is typically ignored for not frame-wise parameters.
-     * @see frame_wise_parameter
      */
     virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept = 0;
+
+    /**
+     * @brief Write value into given stream for given frame number.
+     * 
+     * @param os Stream in which this parameter's value for given frame number should be written.
+     * @param value_no Number of value to write.
+     */
+    virtual void write_param(std::ostream &os, std::size_t value_no) const noexcept = 0;
 
     /**
      * @brief Returns number of values computed for this parameter.
@@ -108,6 +113,13 @@ public:
         return 1;
     }
 
+    /**
+     * @see parameter::write_param
+     */
+    virtual void write_param(std::ostream &os, std::size_t value_no) const noexcept {
+        if (value) os << *value;
+    }
+
 protected:
 
     /**
@@ -138,7 +150,7 @@ protected:
     /**
      * @brief Number of frame in which athlete takes off.
      */
-    const std::optional<std::size_t> takeoff;
+    const std::size_t takeoff;
 
     /**
      * @brief Default constructor.
@@ -149,7 +161,7 @@ protected:
      * 
      * @note This constructor can be called by derived structs only.
      */
-    takeoff_parameter(std::optional<std::size_t> takeoff, const std::string name, const vault_part part, const std::string &&unit) noexcept
+    takeoff_parameter(std::size_t takeoff, const std::string name, const vault_part part, const std::string &&unit) noexcept
         : single_value_parameter(name, part, std::move(unit)), takeoff(takeoff) {}
 
 };
@@ -167,7 +179,7 @@ public:
      * @param name Name of this parameter.
      * @param a, b Body parts whose velocity loss should be computed.
      */
-    velocity_loss(std::optional<std::size_t> takeoff, const std::string name, body_part a, body_part b) noexcept
+    velocity_loss(std::size_t takeoff, const std::string name, body_part a, body_part b) noexcept
         : takeoff_parameter(takeoff, name, vault_part::takeoff, " %"), a(a), b(b) {}
 
     /**
@@ -180,10 +192,10 @@ public:
      * @param points Athlete's body parts detected in the whole video.
      */
     virtual void compute(const video_body &points) noexcept {
-        if (takeoff && (*takeoff >= takeoff_parameter_frames) && (points.size() > *takeoff + takeoff_parameter_frames)) {
-            frame_body before = points[*takeoff - takeoff_parameter_frames];
-            frame_body during = points[*takeoff];
-            frame_body after = points[*takeoff + takeoff_parameter_frames];
+        if ((takeoff >= takeoff_parameter_frames) && (points.size() > takeoff + takeoff_parameter_frames)) {
+            frame_body before = points[takeoff - takeoff_parameter_frames];
+            frame_body during = points[takeoff];
+            frame_body after = points[takeoff + takeoff_parameter_frames];
             frame_part p_before = (before[a] + before[b]) / 2.0;
             frame_part p_during = (during[a] + during[b]) / 2.0;
             frame_part p_after = (after[a] + after[b]) / 2.0;
@@ -205,7 +217,7 @@ public:
      * @param write_unit True if unit is supposed to be written as well, false otherwise.
      */
     virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
-        if (takeoff && (frame_no == *takeoff) && value) {
+        if ((frame_no == takeoff) && value) {
             os << *value << (write_unit ? unit : "");
         }
     }
@@ -230,7 +242,7 @@ public:
      * 
      * @param takeoff Number of frame in which athlete takes off.
      */
-    hips_velocity_loss(std::optional<std::size_t> takeoff) noexcept
+    hips_velocity_loss(std::size_t takeoff) noexcept
         : velocity_loss(takeoff, "Hips velocity loss", body_part::l_hip, body_part::r_hip) {}
 
 };
@@ -246,7 +258,7 @@ public:
      * 
      * @param takeoff Number of frame in which athlete takes off.
      */
-    shoulders_velocity_loss(std::optional<std::size_t> takeoff) noexcept
+    shoulders_velocity_loss(std::size_t takeoff) noexcept
         : velocity_loss(takeoff, "Shoulders velocity loss", body_part::l_shoulder, body_part::r_shoulder) {}
 
 };
@@ -262,7 +274,7 @@ public:
      * 
      * @param takeoff Number of frame in which athlete takes off.
      */
-    takeoff_angle(std::optional<std::size_t> takeoff) noexcept
+    takeoff_angle(std::size_t takeoff) noexcept
         : takeoff_parameter(takeoff, "Takeoff angle", vault_part::takeoff, "°") {}
 
     /**
@@ -275,10 +287,10 @@ public:
      * @param points Athlete's body parts detected in the whole video.
      */
     virtual void compute(const video_body &points) noexcept {
-        if (takeoff && (*takeoff >= takeoff_parameter_frames) && (points.size() > *takeoff + takeoff_parameter_frames)) {
+        if ((takeoff >= takeoff_parameter_frames) && (points.size() > takeoff + takeoff_parameter_frames)) {
             frame_body first = get_first_hips(points);
-            frame_body during = points[*takeoff];
-            frame_body after = points[*takeoff + takeoff_parameter_frames];
+            frame_body during = points[takeoff];
+            frame_body after = points[takeoff + takeoff_parameter_frames];
             frame_part p_first = (first[body_part::l_hip] + first[body_part::r_hip]) / 2.0;
             frame_part p_during = (during[body_part::l_hip] + during[body_part::r_hip]) / 2.0;
             frame_part p_after = (after[body_part::l_hip] + after[body_part::r_hip]) / 2.0;
@@ -302,7 +314,7 @@ public:
      * @param write_unit True if unit is supposed to be written as well, false otherwise.
      */
     virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
-        if (takeoff && (frame_no == *takeoff) && value) {
+        if ((frame_no == takeoff) && value) {
             os << *value << (write_unit ? unit : "");
         }
     }
@@ -345,6 +357,13 @@ public:
      */
     virtual std::size_t size() const noexcept {
         return values.size();
+    }
+
+    /**
+     * @see parameter::write_param
+     */
+    virtual void write_param(std::ostream &os, std::size_t value_no) const noexcept {
+        if (values[value_no]) os << *values[value_no];
     }
 
 protected:
@@ -405,7 +424,7 @@ public:
         std::less<double> high;
         std::vector<std::size_t> highs = get_frame_numbers(points.begin(), points.end(), high);
         double center = 0;
-        for (std::size_t i = 0; i < std::min(lows.size(), highs.size()); i++) {
+        for (std::size_t i = 0; i < std::min(lows.size(), highs.size()); ++i) {
             frame_body l_body = points[lows[i]];
             frame_body h_body = points[highs[i]];
             double l = *get_height(l_body[body_part::l_ankle], l_body[body_part::r_ankle], low);
@@ -417,23 +436,28 @@ public:
             center = (l + h) / 2.0;
             step_frames.push_back(lows[i]);
         }
-        for (std::size_t i = 1; i < step_frames.size(); i++) {
+        for (std::size_t i = 1; i < step_frames.size(); ++i) {
             values.push_back((step_frames[i] - step_frames[i - 1]) / fps);
         }
     }
 
     /**
-     * @brief Write duration of step ending in frame number `frame_no`.
+     * @brief Write duration of step happening during frame `frame_no`.
      * 
      * @param[out] os Output stream.
      * @param frame_no Number of frame for which this parameter's value should be written.
      * @param write_unit True if unit is supposed to be written as well, false otherwise.
      */
     virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
-        auto found = std::find(step_frames.begin(), step_frames.end(), frame_no);
-        if ((found != step_frames.end()) && (found != step_frames.begin())) {
-            std::ptrdiff_t idx = found - step_frames.begin() - 1;
-            os << *values[idx] << (write_unit ? unit : "");
+        std::size_t before = 0;
+        for (; before < step_frames.size(); ++before) {
+            if (step_frames[before] >= frame_no) {
+                // `frame_no` is before `step_frames[before]`.
+                break;
+            }
+        }
+        if (before && (frame_no <= step_frames.back())) {
+            os << *values[before - 1] << (write_unit ? unit : "");
         }
     }
 
@@ -500,7 +524,7 @@ protected:
                 }
             }
             last_height = height;
-            index++;
+            ++index;
         }
         return res;
     }

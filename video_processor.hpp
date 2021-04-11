@@ -10,7 +10,7 @@
 #include "body_detector.hpp"
 #include "person.hpp"
 #include "vault_analyzer.hpp"
-#include "visual.hpp"
+#include "viewer.hpp"
 
 
 /**
@@ -91,12 +91,13 @@ public:
 
         vault_analyzer analyzer;
         std::optional<person> athlete = detector.get_athlete();
-        if (!athlete) {
+        if (athlete) {
+            analyzer.analyze(*athlete, filename, frames.size(), fps);
+        } else {
             std::cout << "Athlete could not be detected in given video" << std::endl;
         }
-        analyzer.analyze(athlete, filename, frames.size(), fps);
 
-        visual v(frames, raw_frames, analyzer);
+        viewer v(frames, raw_frames, analyzer);
         v.show();
 
         // write("no_last_box.avi");

@@ -2,27 +2,37 @@
 
 #include <opencv2/opencv.hpp>
 
-#include <string>
-#include <sstream>
+#include <cstddef>
 #include <ios>
 #include <iomanip>
 #include <iostream>
 #include <memory>
+#include <sstream>
+#include <ostream>
+#include <vector>
 
 #include "forward.hpp"
 #include "parameters.hpp"
 
-class visual {
+/**
+ * @brief Shows user frames of video and parameters' values for each frame.
+ */
+class viewer {
 public:
 
     /**
      * @brief Default constructor.
+     * 
+     * @param frames Frames with detections drawings.
+     * @param raw_frames Unmodified frames of processed video.
+     * @param analyzer Analyzer after analyzing athlete's movement.
+     * 
+     * @see vault_analyzer
      */
-    visual( const std::vector<cv::Mat> &frames,
+    viewer( const std::vector<cv::Mat> &frames,
             const std::vector<cv::Mat> &raw_frames,
-            vault_analyzer &analyzer) :
-                frames(frames),
-                raw_frames(raw_frames) {
+            vault_analyzer &analyzer)
+                : frames(frames), raw_frames(raw_frames) {
                     parameters = analyzer.get_parameters();
                     start = analyzer.get_start();
                     takeoff = analyzer.get_takeoff();
@@ -33,7 +43,7 @@ public:
      * @brief Show current frame of video.
      * 
      * Handle user inputs: left arrow shows previous frame, right arrow shows the next one,
-     * space bar toggles whether to show detected rectangles and points, escape key closes window.
+     * space bar toggles whether to show detections drawings, escape key closes window and ends.
      */
     void show() {
         std::cout << std::fixed << std::setprecision(2);
@@ -47,7 +57,7 @@ public:
                 case 2:
                     // Left arrow.
                     if (frame_no) {
-                        frame_no--;
+                        --frame_no;
                     } else {
                         std::cout << "No frame before this one is available" << std::endl;
                     }
@@ -55,7 +65,7 @@ public:
                 case 3:
                     // Right arrow.
                     if (frame_no < frames.size() - 1) {
-                        frame_no++;
+                        ++frame_no;
                     } else {
                         std::cout << "No frame after this one is available" << std::endl;
                     }
@@ -74,33 +84,68 @@ public:
 
 private:
 
+    /**
+     * @brief Current number of frame.
+     */
     std::size_t frame_no = 0;
+
+    /**
+     * @brief Whether to show detections drawings.
+     */
     bool drawing = true;
+
+    /**
+     * @brief Frames with drawings.
+     */
     const std::vector<cv::Mat> frames;
+
+    /**
+     * @brief Unmodified frames of processed video.
+     */
     const std::vector<cv::Mat> raw_frames;
+
+    /**
+     * @brief Parameters and their values.
+     */
     std::vector<std::shared_ptr<parameter>> parameters;
 
-    std::optional<std::size_t> start;
+    /**
+     * @brief Number of frame in which attempt begins.
+     */
+    std::size_t start;
 
-    std::optional<std::size_t> takeoff;
+    /**
+     * @brief Number of frame in which athlete takes off.
+     */
+    std::size_t takeoff;
 
-    std::optional<std::size_t> culmination;
+    /**
+     * @brief Number of frame in which athlete's hips are highest.
+     */
+    std::size_t culmination;
 
+    /**
+     * @brief Get which vault parts are valid for current frame number.
+     * 
+     * @returns all vault parts valid for current frame number.
+     */
     std::vector<vault_part> get_current_parts() const noexcept {
         std::vector<vault_part> res;
-        if (start && frame_no < *start) {
+        if (!start && !takeoff && !culmination) return res;
+
+        if (frame_no < start) {
             res.push_back(vault_part::invalid);
         }
-        if (start && takeoff && *start <= frame_no && frame_no <= *takeoff) {
+        if (start <= frame_no && frame_no <= takeoff) {
             res.push_back(vault_part::runup);
         }
-        if (takeoff && frame_no == *takeoff) {
+        if (frame_no == takeoff) {
             res.push_back(vault_part::takeoff);
         }
-        if (takeoff && culmination && takeoff <= frame_no && frame_no <= culmination) {
+        if (takeoff <= frame_no && frame_no <= culmination) {
             res.push_back(vault_part::vault);
         }
-        if (culmination && frame_no > culmination) {
+        if (frame_no > culmination) {
             res.push_back(vault_part::invalid);
         }
         return res;
@@ -108,6 +153,8 @@ private:
 
     /**
      * @brief Write parameters of current frame to standard output.
+     * 
+     * Write only parameters valid for current vault part.
      */
     void write_parameters() const {
         std::vector<vault_part> parts = get_current_parts();
@@ -117,20 +164,6 @@ private:
                 if (part == param->part) {
                     to_write.push_back(param);
                 }
-            }
-        }
-        for (auto part : parts) {
-            if (part == vault_part::invalid) {
-                std::cout << "invalid" << std::endl;
-            }
-            if (part == vault_part::runup) {
-                std::cout << "runup" << std::endl;
-            }
-            if (part == vault_part::takeoff) {
-                std::cout << "takeoff" << std::endl;
-            }
-            if (part == vault_part::vault) {
-                std::cout << "vault" << std::endl;
             }
         }
         for (const auto &p : to_write) {
