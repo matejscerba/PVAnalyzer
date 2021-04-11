@@ -1,0 +1,169 @@
+\hypertarget{structsteps__duration}{}\doxysection{steps\+\_\+duration Struct Reference}
+\label{structsteps__duration}\index{steps\_duration@{steps\_duration}}
+
+
+Duration of each step in seconds.  
+
+
+
+
+{\ttfamily \#include $<$parameters.\+hpp$>$}
+
+Inheritance diagram for steps\+\_\+duration\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{structsteps__duration}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structsteps__duration_aaeac2f73846b0999e26de0e66b953a41}{steps\+\_\+duration}} (double \mbox{\hyperlink{structsteps__duration_abb0cfbbfd1db663552514d4404f4326a}{fps}}) noexcept
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{structsteps__duration_a6713637f86ad8bc0303b2f5dce06d4b9}{compute}} (const video\+\_\+body \&points) noexcept
+\begin{DoxyCompactList}\small\item\em Compute duration of each step based on detected body parts in whole video. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{structsteps__duration_ae8c734aeae19e6e0e3ca2438269f5487}{write\+\_\+value}} (std\+::ostream \&os, std\+::size\+\_\+t frame\+\_\+no, bool write\+\_\+unit) const noexcept
+\begin{DoxyCompactList}\small\item\em Write duration of step happening during frame {\ttfamily frame\+\_\+no}. \end{DoxyCompactList}\item 
+std\+::optional$<$ std\+::size\+\_\+t $>$ \mbox{\hyperlink{structsteps__duration_a4e4c4ac185f7fc561f8ddedc0522fa90}{get\+\_\+takeoff}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get number of frame in which athlete takes off. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsteps__duration_a2e9914b0843aee0f91b1245afa661f67}\label{structsteps__duration_a2e9914b0843aee0f91b1245afa661f67}} 
+{\bfseries steps\+\_\+duration} (const std\+::string \mbox{\hyperlink{structparameter_a5c825fcc566d22739856395927f7eee2}{name}}, const vault\+\_\+part \mbox{\hyperlink{structparameter_a2faab1d32b7c1f9138b746966e56bfd4}{part}}, const std\+::string \&\&\mbox{\hyperlink{structparameter_a74ed8a5aa34fd12979f6447519e41ca8}{unit}}) noexcept
+\item 
+std\+::vector$<$ std\+::size\+\_\+t $>$ \mbox{\hyperlink{structsteps__duration_a6e64123151fa5b122cc5d5066c90b4c8}{get\+\_\+frame\+\_\+numbers}} (std\+::vector$<$ frame\+\_\+body $>$\+::const\+\_\+iterator begin, std\+::vector$<$ frame\+\_\+body $>$\+::const\+\_\+iterator end, std\+::function$<$ bool(double, double)$>$ compare) noexcept
+\begin{DoxyCompactList}\small\item\em Get numbers of frames in which ankle specified by {\ttfamily compare} reaches local point of interest. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsteps__duration_ae99589f98d7b68c0db7652bad332557e}\label{structsteps__duration_ae99589f98d7b68c0db7652bad332557e}} 
+std\+::vector$<$ std\+::size\+\_\+t $>$ \mbox{\hyperlink{structsteps__duration_ae99589f98d7b68c0db7652bad332557e}{step\+\_\+frames}}
+\begin{DoxyCompactList}\small\item\em Numbers of frames in which the lower ankle leaves locally lowest point. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structsteps__duration_abb0cfbbfd1db663552514d4404f4326a}\label{structsteps__duration_abb0cfbbfd1db663552514d4404f4326a}} 
+double \mbox{\hyperlink{structsteps__duration_abb0cfbbfd1db663552514d4404f4326a}{fps}}
+\begin{DoxyCompactList}\small\item\em Frame rate of processed video. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+Duration of each step in seconds. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structsteps__duration_aaeac2f73846b0999e26de0e66b953a41}\label{structsteps__duration_aaeac2f73846b0999e26de0e66b953a41}} 
+\index{steps\_duration@{steps\_duration}!steps\_duration@{steps\_duration}}
+\index{steps\_duration@{steps\_duration}!steps\_duration@{steps\_duration}}
+\doxysubsubsection{\texorpdfstring{steps\_duration()}{steps\_duration()}}
+{\footnotesize\ttfamily steps\+\_\+duration\+::steps\+\_\+duration (\begin{DoxyParamCaption}\item[{double}]{fps }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Default constructor. 
+
+Specifies parameter\textquotesingle{}s name, vault part and unit as well as frame rate of processed video.
+
+
+\begin{DoxyParams}{Parameters}
+{\em fps} & Frame rate of processed video. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structsteps__duration_a6713637f86ad8bc0303b2f5dce06d4b9}\label{structsteps__duration_a6713637f86ad8bc0303b2f5dce06d4b9}} 
+\index{steps\_duration@{steps\_duration}!compute@{compute}}
+\index{compute@{compute}!steps\_duration@{steps\_duration}}
+\doxysubsubsection{\texorpdfstring{compute()}{compute()}}
+{\footnotesize\ttfamily virtual void steps\+\_\+duration\+::compute (\begin{DoxyParamCaption}\item[{const video\+\_\+body \&}]{points }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Compute duration of each step based on detected body parts in whole video. 
+
+Get numbers of frames where the lower ankle leaves locally lowest point and where the higher ankle leaves locally highest point. Keep low points, which are below center of previous low point and high point (the first one is kept every time). Compute duration between subsequent low points based on their frame numbers and frame rate of processed video.
+
+
+\begin{DoxyParams}{Parameters}
+{\em points} & Athlete\textquotesingle{}s body parts detected in the whole video.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Ankle must leave local point of interest by more than 1 px (vertically). 
+\end{DoxyNote}
+
+
+Implements \mbox{\hyperlink{structparameter_a838bf155a77ebd8ae84ed7782b564a02}{parameter}}.
+
+
+
+Reimplemented in \mbox{\hyperlink{structsteps__angle_a69fb7ed121919a71e7da3af63b1bc65d}{steps\+\_\+angle}}.
+
+\mbox{\Hypertarget{structsteps__duration_a6e64123151fa5b122cc5d5066c90b4c8}\label{structsteps__duration_a6e64123151fa5b122cc5d5066c90b4c8}} 
+\index{steps\_duration@{steps\_duration}!get\_frame\_numbers@{get\_frame\_numbers}}
+\index{get\_frame\_numbers@{get\_frame\_numbers}!steps\_duration@{steps\_duration}}
+\doxysubsubsection{\texorpdfstring{get\_frame\_numbers()}{get\_frame\_numbers()}}
+{\footnotesize\ttfamily std\+::vector$<$std\+::size\+\_\+t$>$ steps\+\_\+duration\+::get\+\_\+frame\+\_\+numbers (\begin{DoxyParamCaption}\item[{std\+::vector$<$ frame\+\_\+body $>$\+::const\+\_\+iterator}]{begin,  }\item[{std\+::vector$<$ frame\+\_\+body $>$\+::const\+\_\+iterator}]{end,  }\item[{std\+::function$<$ bool(double, double)$>$}]{compare }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}, {\ttfamily [noexcept]}}
+
+
+
+Get numbers of frames in which ankle specified by {\ttfamily compare} reaches local point of interest. 
+
+{\ttfamily compare} returns true if given values are in correct order based on {\ttfamily compare}. Only ankle satisfying {\ttfamily compare} for each frame is taken into consideration, once it leaves point of interest (next ankle in next frame is vertically in the opposit relation than {\ttfamily compare} by more than 1 px) the previous frame number is added to vector that will be returned.
+
+
+\begin{DoxyParams}{Parameters}
+{\em begin} & Const iterator to beginning of detected body parts of athlete in the whole video. \\
+\hline
+{\em end} & Const iterator to end of detected body parts of athlete in the whole video. \\
+\hline
+{\em compare} & Binary comparison function. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+vector of frame numbers where ankles leave specified local point of interest. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structsteps__duration_a4e4c4ac185f7fc561f8ddedc0522fa90}\label{structsteps__duration_a4e4c4ac185f7fc561f8ddedc0522fa90}} 
+\index{steps\_duration@{steps\_duration}!get\_takeoff@{get\_takeoff}}
+\index{get\_takeoff@{get\_takeoff}!steps\_duration@{steps\_duration}}
+\doxysubsubsection{\texorpdfstring{get\_takeoff()}{get\_takeoff()}}
+{\footnotesize\ttfamily std\+::optional$<$std\+::size\+\_\+t$>$ steps\+\_\+duration\+::get\+\_\+takeoff (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Get number of frame in which athlete takes off. 
+
+\begin{DoxyReturn}{Returns}
+number of frame in which last step ends, no value if no step was detected. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structsteps__duration_ae8c734aeae19e6e0e3ca2438269f5487}\label{structsteps__duration_ae8c734aeae19e6e0e3ca2438269f5487}} 
+\index{steps\_duration@{steps\_duration}!write\_value@{write\_value}}
+\index{write\_value@{write\_value}!steps\_duration@{steps\_duration}}
+\doxysubsubsection{\texorpdfstring{write\_value()}{write\_value()}}
+{\footnotesize\ttfamily virtual void steps\+\_\+duration\+::write\+\_\+value (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no,  }\item[{bool}]{write\+\_\+unit }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Write duration of step happening during frame {\ttfamily frame\+\_\+no}. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em os} & Output stream. \\
+\hline
+ & {\em frame\+\_\+no} & Number of frame for which this parameter\textquotesingle{}s value should be written. \\
+\hline
+ & {\em write\+\_\+unit} & True if unit is supposed to be written as well, false otherwise. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{structparameter_aac09ad3208582cc6c999fbab9628dd02}{parameter}}.
+
+
+
+Reimplemented in \mbox{\hyperlink{structsteps__angle_a80117846d84dc30ce2adf1aded2d32a9}{steps\+\_\+angle}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+parameters.\+hpp\end{DoxyCompactItemize}

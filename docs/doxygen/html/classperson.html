@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>RP: person Class Reference</title>
+<title>BP: person Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">RP
+   <div id="projectname">BP
    </div>
   </td>
  </tr>
@@ -63,6 +63,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#friends">Friends</a> &#124;
 <a href="classperson-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">person Class Reference</div>  </div>
@@ -76,9 +77,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab30381ce17a818621097ea6bf6418df4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classperson.html#ab30381ce17a818621097ea6bf6418df4">person</a> (std::size_t frame_no, const cv::Mat &amp;frame, std::size_t fps, const cv::Rect &amp;box, cv::dnn::Net &amp;net)</td></tr>
-<tr class="memdesc:ab30381ce17a818621097ea6bf6418df4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="classperson.html#ab30381ce17a818621097ea6bf6418df4">More...</a><br /></td></tr>
-<tr class="separator:ab30381ce17a818621097ea6bf6418df4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae90f6692ec91554dd77192ae8ce556ee"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classperson.html#ae90f6692ec91554dd77192ae8ce556ee">person</a> (std::size_t frame_no, const cv::Mat &amp;frame, double fps, const cv::Rect &amp;box, cv::dnn::Net &amp;net)</td></tr>
+<tr class="memdesc:ae90f6692ec91554dd77192ae8ce556ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="classperson.html#ae90f6692ec91554dd77192ae8ce556ee">More...</a><br /></td></tr>
+<tr class="separator:ae90f6692ec91554dd77192ae8ce556ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7911b119262c3ebe2d5878653ca6d53"><td class="memItemLeft" align="right" valign="top">cv::Rect&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classperson.html#aa7911b119262c3ebe2d5878653ca6d53">bbox</a> (std::size_t frame_no) const</td></tr>
 <tr class="separator:aa7911b119262c3ebe2d5878653ca6d53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac03253d245f83f8d18f71f011869e6be"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classperson.html#ac03253d245f83f8d18f71f011869e6be">width</a> (std::size_t frame_no) const</td></tr>
@@ -91,20 +92,25 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af730fd6a8f0e0b4e44e45f57034f94c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classperson.html#af730fd6a8f0e0b4e44e45f57034f94c7">detect</a> (const cv::Mat &amp;frame, std::size_t frame_no)</td></tr>
 <tr class="memdesc:af730fd6a8f0e0b4e44e45f57034f94c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detect body parts of this person inside given frame.  <a href="classperson.html#af730fd6a8f0e0b4e44e45f57034f94c7">More...</a><br /></td></tr>
 <tr class="separator:af730fd6a8f0e0b4e44e45f57034f94c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a182bac96f3bc629e5dc91e55d8baea64"><td class="memItemLeft" align="right" valign="top"><a id="a182bac96f3bc629e5dc91e55d8baea64"></a>
-std::vector&lt; cv::Point2d &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classperson.html#a182bac96f3bc629e5dc91e55d8baea64">get_centers_of_gravity</a> () const</td></tr>
-<tr class="memdesc:a182bac96f3bc629e5dc91e55d8baea64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns centers of gravity of person in each frame. <br /></td></tr>
-<tr class="separator:a182bac96f3bc629e5dc91e55d8baea64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad48818624f2f5488b21a9665acd93ef9"><td class="memItemLeft" align="right" valign="top">video_body&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classperson.html#ad48818624f2f5488b21a9665acd93ef9">get_points</a> (bool real=false) const</td></tr>
+<tr class="memdesc:ad48818624f2f5488b21a9665acd93ef9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get point of all body parts of person.  <a href="classperson.html#ad48818624f2f5488b21a9665acd93ef9">More...</a><br /></td></tr>
+<tr class="separator:ad48818624f2f5488b21a9665acd93ef9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c31a2752c61d64c4afdbf8c2480e4bc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classperson.html#a8c31a2752c61d64c4afdbf8c2480e4bc">draw</a> (cv::Mat &amp;frame, std::size_t frame_no) const</td></tr>
 <tr class="memdesc:a8c31a2752c61d64c4afdbf8c2480e4bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw this person in <code>frame</code>.  <a href="classperson.html#a8c31a2752c61d64c4afdbf8c2480e4bc">More...</a><br /></td></tr>
 <tr class="separator:a8c31a2752c61d64c4afdbf8c2480e4bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:a008f20eebd302cf51f40fc30f38e1e4d"><td class="memItemLeft" align="right" valign="top"><a id="a008f20eebd302cf51f40fc30f38e1e4d"></a>
+class&#160;</td><td class="memItemRight" valign="bottom"><b>vault_analyzer</b></td></tr>
+<tr class="separator:a008f20eebd302cf51f40fc30f38e1e4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents person through whole video. </p>
 <p>Holds information about a person through whole video (or its part when certain person is in frame). Handles transitions between frames. Handles rotations during vault as well. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ab30381ce17a818621097ea6bf6418df4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab30381ce17a818621097ea6bf6418df4">&#9670;&nbsp;</a></span>person()</h2>
+<a id="ae90f6692ec91554dd77192ae8ce556ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae90f6692ec91554dd77192ae8ce556ee">&#9670;&nbsp;</a></span>person()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -127,7 +133,7 @@ std::vector&lt; cv::Point2d &gt;&#160;</td><td class="memItemRight" valign="bott
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>fps</em>, </td>
         </tr>
         <tr>
@@ -292,6 +298,41 @@ std::vector&lt; cv::Point2d &gt;&#160;</td><td class="memItemRight" valign="bott
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="ad48818624f2f5488b21a9665acd93ef9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad48818624f2f5488b21a9665acd93ef9">&#9670;&nbsp;</a></span>get_points()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">video_body person::get_points </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>real</em> = <code>false</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get point of all body parts of person. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">real</td><td>Transforms detected points into real life coordinates if true. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>detected body parts in part of video where person was detected. </dd></dl>
 
 </div>
 </div>

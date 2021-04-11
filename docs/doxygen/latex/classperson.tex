@@ -12,7 +12,7 @@ Represents person through whole video.
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classperson_ab30381ce17a818621097ea6bf6418df4}{person}} (std\+::size\+\_\+t frame\+\_\+no, const cv\+::\+Mat \&frame, std\+::size\+\_\+t fps, const cv\+::\+Rect \&box, cv\+::dnn\+::\+Net \&net)
+\mbox{\hyperlink{classperson_ae90f6692ec91554dd77192ae8ce556ee}{person}} (std\+::size\+\_\+t frame\+\_\+no, const cv\+::\+Mat \&frame, double fps, const cv\+::\+Rect \&box, cv\+::dnn\+::\+Net \&net)
 \begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
 cv\+::\+Rect \mbox{\hyperlink{classperson_aa7911b119262c3ebe2d5878653ca6d53}{bbox}} (std\+::size\+\_\+t frame\+\_\+no) const
 \item 
@@ -24,11 +24,16 @@ bool \mbox{\hyperlink{classperson_abc972b7df689b7e8fee4fd7e98e5652a}{track}} (co
 \begin{DoxyCompactList}\small\item\em Track person in next frame. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classperson_af730fd6a8f0e0b4e44e45f57034f94c7}{detect}} (const cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no)
 \begin{DoxyCompactList}\small\item\em Detect body parts of this person inside given frame. \end{DoxyCompactList}\item 
-\mbox{\Hypertarget{classperson_a182bac96f3bc629e5dc91e55d8baea64}\label{classperson_a182bac96f3bc629e5dc91e55d8baea64}} 
-std\+::vector$<$ cv\+::\+Point2d $>$ \mbox{\hyperlink{classperson_a182bac96f3bc629e5dc91e55d8baea64}{get\+\_\+centers\+\_\+of\+\_\+gravity}} () const
-\begin{DoxyCompactList}\small\item\em Returns centers of gravity of person in each frame. \end{DoxyCompactList}\item 
+video\+\_\+body \mbox{\hyperlink{classperson_ad48818624f2f5488b21a9665acd93ef9}{get\+\_\+points}} (bool real=false) const
+\begin{DoxyCompactList}\small\item\em Get point of all body parts of person. \end{DoxyCompactList}\item 
 void \mbox{\hyperlink{classperson_a8c31a2752c61d64c4afdbf8c2480e4bc}{draw}} (cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no) const
 \begin{DoxyCompactList}\small\item\em Draw this person in {\ttfamily frame}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classperson_a008f20eebd302cf51f40fc30f38e1e4d}\label{classperson_a008f20eebd302cf51f40fc30f38e1e4d}} 
+class {\bfseries vault\+\_\+analyzer}
+\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -37,11 +42,11 @@ Represents person through whole video.
 Holds information about a person through whole video (or its part when certain person is in frame). Handles transitions between frames. Handles rotations during vault as well. 
 
 \doxysubsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classperson_ab30381ce17a818621097ea6bf6418df4}\label{classperson_ab30381ce17a818621097ea6bf6418df4}} 
+\mbox{\Hypertarget{classperson_ae90f6692ec91554dd77192ae8ce556ee}\label{classperson_ae90f6692ec91554dd77192ae8ce556ee}} 
 \index{person@{person}!person@{person}}
 \index{person@{person}!person@{person}}
 \doxysubsubsection{\texorpdfstring{person()}{person()}}
-{\footnotesize\ttfamily person\+::person (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no,  }\item[{const cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{fps,  }\item[{const cv\+::\+Rect \&}]{box,  }\item[{cv\+::dnn\+::\+Net \&}]{net }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily person\+::person (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no,  }\item[{const cv\+::\+Mat \&}]{frame,  }\item[{double}]{fps,  }\item[{const cv\+::\+Rect \&}]{box,  }\item[{cv\+::dnn\+::\+Net \&}]{net }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
 
 
 
@@ -115,6 +120,24 @@ Draw this person\textquotesingle{}s unscaled bounding box, scaled bounidng box a
 {\em frame\+\_\+no} & Number of given frame. \\
 \hline
 \end{DoxyParams}
+\mbox{\Hypertarget{classperson_ad48818624f2f5488b21a9665acd93ef9}\label{classperson_ad48818624f2f5488b21a9665acd93ef9}} 
+\index{person@{person}!get\_points@{get\_points}}
+\index{get\_points@{get\_points}!person@{person}}
+\doxysubsubsection{\texorpdfstring{get\_points()}{get\_points()}}
+{\footnotesize\ttfamily video\+\_\+body person\+::get\+\_\+points (\begin{DoxyParamCaption}\item[{bool}]{real = {\ttfamily false} }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get point of all body parts of person. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em real} & Transforms detected points into real life coordinates if true. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+detected body parts in part of video where person was detected. 
+\end{DoxyReturn}
 \mbox{\Hypertarget{classperson_a9822e8678e2639defc9fc9884177ff42}\label{classperson_a9822e8678e2639defc9fc9884177ff42}} 
 \index{person@{person}!height@{height}}
 \index{height@{height}!person@{person}}

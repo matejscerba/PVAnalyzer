@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['person_11',['person',['../classperson.html',1,'person'],['../classperson.html#ab30381ce17a818621097ea6bf6418df4',1,'person::person()']]],
-  ['process_12',['process',['../classvideo__processor.html#a7a8846e85161c128ccf6312807a04483',1,'video_processor']]]
+  ['height_21',['height',['../classperson.html#a9822e8678e2639defc9fc9884177ff42',1,'person']]],
+  ['hips_5fheight_22',['hips_height',['../structhips__height.html',1,'hips_height'],['../structhips__height.html#a4b4dd3b1f590bd1f62b048f75931b39e',1,'hips_height::hips_height()']]],
+  ['hips_5fvelocity_5floss_23',['hips_velocity_loss',['../structhips__velocity__loss.html',1,'hips_velocity_loss'],['../structhips__velocity__loss.html#a4c0bbc56876f7398ceeead072b565a33',1,'hips_velocity_loss::hips_velocity_loss()']]],
+  ['horizontal_5ftilt_24',['horizontal_tilt',['../structhorizontal__tilt.html',1,'horizontal_tilt'],['../structhorizontal__tilt.html#ae64304b005b1adf5dff2286abd2524f8',1,'horizontal_tilt::horizontal_tilt()']]]
 ];

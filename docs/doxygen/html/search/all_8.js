@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['readme_13',['README',['../md__r_e_a_d_m_e.html',1,'']]],
-  ['result_14',['result',['../classbody__detector.html#a237e9cb02069549a0bdfd2d025044f6c',1,'body_detector']]]
+  ['is_5fvalid_5fdirection_25',['is_valid_direction',['../classbackground__tracker.html#adfe84f3edd6e911ad28c1f1195c9be7b',1,'background_tracker']]],
+  ['is_5fvault_5fbeginning_26',['is_vault_beginning',['../classbackground__tracker.html#ae1a8c3abb334bf6b2e9e012879c73e33',1,'background_tracker']]]
 ];

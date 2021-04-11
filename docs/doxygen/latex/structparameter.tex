@@ -1,0 +1,182 @@
+\hypertarget{structparameter}{}\doxysection{parameter Struct Reference}
+\label{structparameter}\index{parameter@{parameter}}
+
+
+Base struct representing vault-\/related parameter, containing its values and operating with them.  
+
+
+
+
+{\ttfamily \#include $<$parameters.\+hpp$>$}
+
+Inheritance diagram for parameter\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.352941cm]{structparameter}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \mbox{\hyperlink{structparameter_a838bf155a77ebd8ae84ed7782b564a02}{compute}} (const video\+\_\+body \&points) noexcept=0
+\begin{DoxyCompactList}\small\item\em Compute parameter\textquotesingle{}s values based on given body parts detected in whole video. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{structparameter_aac09ad3208582cc6c999fbab9628dd02}{write\+\_\+value}} (std\+::ostream \&os, std\+::size\+\_\+t frame\+\_\+no, bool write\+\_\+unit) const noexcept=0
+\begin{DoxyCompactList}\small\item\em Write value into given stream for given frame number. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{structparameter_ad6574f99744b6517a140f3a3e3837b8c}{write\+\_\+param}} (std\+::ostream \&os, std\+::size\+\_\+t value\+\_\+no) const noexcept=0
+\begin{DoxyCompactList}\small\item\em Write value into given stream for given frame number. \end{DoxyCompactList}\item 
+virtual std\+::size\+\_\+t \mbox{\hyperlink{structparameter_ad3acf012ae8ffada5951c058db90e1ef}{size}} () const noexcept=0
+\begin{DoxyCompactList}\small\item\em Returns number of values computed for this parameter. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structparameter_a5c825fcc566d22739856395927f7eee2}\label{structparameter_a5c825fcc566d22739856395927f7eee2}} 
+const std\+::string \mbox{\hyperlink{structparameter_a5c825fcc566d22739856395927f7eee2}{name}}
+\begin{DoxyCompactList}\small\item\em This parameter\textquotesingle{}s name. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structparameter_a2faab1d32b7c1f9138b746966e56bfd4}\label{structparameter_a2faab1d32b7c1f9138b746966e56bfd4}} 
+const vault\+\_\+part \mbox{\hyperlink{structparameter_a2faab1d32b7c1f9138b746966e56bfd4}{part}}
+\begin{DoxyCompactList}\small\item\em Part of vault, for which this parameter is valid. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structparameter_a44d5e87279724ba7c8763aa1a879db7f}{parameter}} (const std\+::string \mbox{\hyperlink{structparameter_a5c825fcc566d22739856395927f7eee2}{name}}, const vault\+\_\+part \mbox{\hyperlink{structparameter_a2faab1d32b7c1f9138b746966e56bfd4}{part}}, const std\+::string \&\&\mbox{\hyperlink{structparameter_a74ed8a5aa34fd12979f6447519e41ca8}{unit}}) noexcept
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+const std\+::string \mbox{\hyperlink{structparameter_a74ed8a5aa34fd12979f6447519e41ca8}{unit}}
+\begin{DoxyCompactList}\small\item\em This parameter\textquotesingle{}s unit in format to be written immediately after value. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Base struct representing vault-\/related parameter, containing its values and operating with them. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structparameter_a44d5e87279724ba7c8763aa1a879db7f}\label{structparameter_a44d5e87279724ba7c8763aa1a879db7f}} 
+\index{parameter@{parameter}!parameter@{parameter}}
+\index{parameter@{parameter}!parameter@{parameter}}
+\doxysubsubsection{\texorpdfstring{parameter()}{parameter()}}
+{\footnotesize\ttfamily parameter\+::parameter (\begin{DoxyParamCaption}\item[{const std\+::string}]{name,  }\item[{const vault\+\_\+part}]{part,  }\item[{const std\+::string \&\&}]{unit }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}, {\ttfamily [noexcept]}}
+
+
+
+Default constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & Name of this parameter. \\
+\hline
+{\em part} & Part of vault, for which this parameter is valid. \\
+\hline
+{\em unit} & This parameter\textquotesingle{}s unit.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+This constructor can be called by derived structs only. 
+\end{DoxyNote}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structparameter_a838bf155a77ebd8ae84ed7782b564a02}\label{structparameter_a838bf155a77ebd8ae84ed7782b564a02}} 
+\index{parameter@{parameter}!compute@{compute}}
+\index{compute@{compute}!parameter@{parameter}}
+\doxysubsubsection{\texorpdfstring{compute()}{compute()}}
+{\footnotesize\ttfamily virtual void parameter\+::compute (\begin{DoxyParamCaption}\item[{const video\+\_\+body \&}]{points }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Compute parameter\textquotesingle{}s values based on given body parts detected in whole video. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em points} & Detected body parts to be processed.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Saves corresponding values to member propoerty defined in derived structs. 
+\end{DoxyNote}
+
+
+Implemented in \mbox{\hyperlink{structframe__wise__parameter_a4df1f5c8465836f988543970d3cca637}{frame\+\_\+wise\+\_\+parameter}}, \mbox{\hyperlink{structsteps__angle_a69fb7ed121919a71e7da3af63b1bc65d}{steps\+\_\+angle}}, \mbox{\hyperlink{structsteps__duration_a6713637f86ad8bc0303b2f5dce06d4b9}{steps\+\_\+duration}}, \mbox{\hyperlink{structtakeoff__angle_a06491bbe29f2a1061de6f506a6fe1a2e}{takeoff\+\_\+angle}}, and \mbox{\hyperlink{structvelocity__loss_a39dcfc43be6ef9ea0b9876fc286ffd16}{velocity\+\_\+loss}}.
+
+\mbox{\Hypertarget{structparameter_ad3acf012ae8ffada5951c058db90e1ef}\label{structparameter_ad3acf012ae8ffada5951c058db90e1ef}} 
+\index{parameter@{parameter}!size@{size}}
+\index{size@{size}!parameter@{parameter}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily virtual std\+::size\+\_\+t parameter\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Returns number of values computed for this parameter. 
+
+\begin{DoxyReturn}{Returns}
+number of values computed for this parameter. 
+\end{DoxyReturn}
+
+
+Implemented in \mbox{\hyperlink{structmultiple__values__parameter_add193ee8e7d35c53863acf9a2d3928b3}{multiple\+\_\+values\+\_\+parameter}}, and \mbox{\hyperlink{structsingle__value__parameter_ad5cfddd7523d8338a3dc7bf643151935}{single\+\_\+value\+\_\+parameter}}.
+
+\mbox{\Hypertarget{structparameter_ad6574f99744b6517a140f3a3e3837b8c}\label{structparameter_ad6574f99744b6517a140f3a3e3837b8c}} 
+\index{parameter@{parameter}!write\_param@{write\_param}}
+\index{write\_param@{write\_param}!parameter@{parameter}}
+\doxysubsubsection{\texorpdfstring{write\_param()}{write\_param()}}
+{\footnotesize\ttfamily virtual void parameter\+::write\+\_\+param (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{std\+::size\+\_\+t}]{value\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Write value into given stream for given frame number. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em os} & Stream in which this parameter\textquotesingle{}s value for given frame number should be written. \\
+\hline
+{\em value\+\_\+no} & Number of value to write. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \mbox{\hyperlink{structmultiple__values__parameter_ad4c7eeced8b519b10f88197fa41942ad}{multiple\+\_\+values\+\_\+parameter}}, and \mbox{\hyperlink{structsingle__value__parameter_a8284e3d0e379e82ef62ddffb3a92b756}{single\+\_\+value\+\_\+parameter}}.
+
+\mbox{\Hypertarget{structparameter_aac09ad3208582cc6c999fbab9628dd02}\label{structparameter_aac09ad3208582cc6c999fbab9628dd02}} 
+\index{parameter@{parameter}!write\_value@{write\_value}}
+\index{write\_value@{write\_value}!parameter@{parameter}}
+\doxysubsubsection{\texorpdfstring{write\_value()}{write\_value()}}
+{\footnotesize\ttfamily virtual void parameter\+::write\+\_\+value (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no,  }\item[{bool}]{write\+\_\+unit }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Write value into given stream for given frame number. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em os} & Stream in which this parameter\textquotesingle{}s value for given frame number should be written. \\
+\hline
+{\em frame\+\_\+no} & Number of frame for which to write value. \\
+\hline
+{\em write\+\_\+unit} & Specifies whether to write this parameter\textquotesingle{}s unit as well. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \mbox{\hyperlink{structframe__wise__parameter_a5a90c0c9975eb325c986713b12724ec3}{frame\+\_\+wise\+\_\+parameter}}, \mbox{\hyperlink{structsteps__angle_a80117846d84dc30ce2adf1aded2d32a9}{steps\+\_\+angle}}, \mbox{\hyperlink{structsteps__duration_ae8c734aeae19e6e0e3ca2438269f5487}{steps\+\_\+duration}}, \mbox{\hyperlink{structtakeoff__angle_ad489c4ea161d887290a7ebf38c9640f1}{takeoff\+\_\+angle}}, and \mbox{\hyperlink{structvelocity__loss_aa6ebdd8fd4b74371f8a1439d86ee9270}{velocity\+\_\+loss}}.
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structparameter_a74ed8a5aa34fd12979f6447519e41ca8}\label{structparameter_a74ed8a5aa34fd12979f6447519e41ca8}} 
+\index{parameter@{parameter}!unit@{unit}}
+\index{unit@{unit}!parameter@{parameter}}
+\doxysubsubsection{\texorpdfstring{unit}{unit}}
+{\footnotesize\ttfamily const std\+::string parameter\+::unit\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+This parameter\textquotesingle{}s unit in format to be written immediately after value. 
+
+\begin{DoxyNote}{Note}
+If this parameter is computed in meters, then value \char`\"{} m\char`\"{} will be written as e.\+g. \char`\"{}5.\+67 m\char`\"{}. 
+\end{DoxyNote}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+parameters.\+hpp\end{DoxyCompactItemize}

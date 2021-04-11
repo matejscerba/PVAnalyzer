@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['skip_15',['skip',['../classbody__detector.html#a237e9cb02069549a0bdfd2d025044f6ca08b43519a7e36ee4c6c5615d1663bcfd',1,'body_detector']]]
+  ['movement_5fanalyzer_27',['movement_analyzer',['../classmovement__analyzer.html',1,'movement_analyzer'],['../classmovement__analyzer.html#a706f6a2c4663d106208079df2f7de3dd',1,'movement_analyzer::movement_analyzer()']]],
+  ['multiple_5fvalues_5fparameter_28',['multiple_values_parameter',['../structmultiple__values__parameter.html',1,'multiple_values_parameter'],['../structmultiple__values__parameter.html#a87c56179055472ad0b0462d811cf75bd',1,'multiple_values_parameter::multiple_values_parameter()']]]
 ];

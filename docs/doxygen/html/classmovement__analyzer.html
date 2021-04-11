@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>RP: movement_analyzer Class Reference</title>
+<title>BP: movement_analyzer Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">RP
+   <div id="projectname">BP
    </div>
   </td>
  </tr>
@@ -62,7 +62,6 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classmovement__analyzer-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -75,41 +74,79 @@ $(function() {
 
 <p><code>#include &lt;<a class="el" href="movement__analyzer_8hpp_source.html">movement_analyzer.hpp</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:aadd7b5127a011d8a78f962932500ccb4"><td class="memItemLeft" align="right" valign="top"><a id="aadd7b5127a011d8a78f962932500ccb4"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmovement__analyzer.html#aadd7b5127a011d8a78f962932500ccb4">direction</a> : int { <b>right</b> = -1
-, <b>unknown</b> = 0
-, <b>left</b> = 1
- }</td></tr>
-<tr class="memdesc:aadd7b5127a011d8a78f962932500ccb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supported horizontal movement directions and their corresponding values. <br /></td></tr>
-<tr class="separator:aadd7b5127a011d8a78f962932500ccb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a706f6a2c4663d106208079df2f7de3dd"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmovement__analyzer.html#a706f6a2c4663d106208079df2f7de3dd">movement_analyzer</a> (const cv::Mat &amp;frame, const cv::Rect2d &amp;<a class="el" href="classperson.html">person</a>)</td></tr>
+<tr class="memdesc:a706f6a2c4663d106208079df2f7de3dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="classmovement__analyzer.html#a706f6a2c4663d106208079df2f7de3dd">More...</a><br /></td></tr>
+<tr class="separator:a706f6a2c4663d106208079df2f7de3dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade3e1e4b63e378b994c90e21dd8ed09c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmovement__analyzer.html#ade3e1e4b63e378b994c90e21dd8ed09c">update</a> (const cv::Mat &amp;frame, const cv::Rect2d &amp;<a class="el" href="classperson.html">person</a>, std::size_t frame_no)</td></tr>
 <tr class="memdesc:ade3e1e4b63e378b994c90e21dd8ed09c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process given frame.  <a href="classmovement__analyzer.html#ade3e1e4b63e378b994c90e21dd8ed09c">More...</a><br /></td></tr>
 <tr class="separator:ade3e1e4b63e378b994c90e21dd8ed09c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7f4b59b97b4039ea82927a106fe0109"><td class="memItemLeft" align="right" valign="top"><a id="af7f4b59b97b4039ea82927a106fe0109"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmovement__analyzer.html#af7f4b59b97b4039ea82927a106fe0109">get_direction</a> () const</td></tr>
-<tr class="memdesc:af7f4b59b97b4039ea82927a106fe0109"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get detected direction. <br /></td></tr>
-<tr class="separator:af7f4b59b97b4039ea82927a106fe0109"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb81d329a27cae86a6f096fbe6238c5c"><td class="memItemLeft" align="right" valign="top"><a id="afb81d329a27cae86a6f096fbe6238c5c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmovement__analyzer.html#afb81d329a27cae86a6f096fbe6238c5c">vault_began</a> (std::size_t frame_no) const</td></tr>
-<tr class="memdesc:afb81d329a27cae86a6f096fbe6238c5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get information whether vault has begun before frame <code>frame_no</code>. <br /></td></tr>
-<tr class="separator:afb81d329a27cae86a6f096fbe6238c5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af420e64f9f6356662631a4711884cc87"><td class="memItemLeft" align="right" valign="top"><a id="af420e64f9f6356662631a4711884cc87"></a>
+direction&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmovement__analyzer.html#af420e64f9f6356662631a4711884cc87">get_direction</a> () const noexcept</td></tr>
+<tr class="memdesc:af420e64f9f6356662631a4711884cc87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get detected direction. <br /></td></tr>
+<tr class="separator:af420e64f9f6356662631a4711884cc87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9259735d066b1e15892b2e9bbbc220a"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmovement__analyzer.html#ad9259735d066b1e15892b2e9bbbc220a">vault_frames</a> (std::size_t frame_no) const</td></tr>
 <tr class="memdesc:ad9259735d066b1e15892b2e9bbbc220a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes how many frames passed from beginning of vault.  <a href="classmovement__analyzer.html#ad9259735d066b1e15892b2e9bbbc220a">More...</a><br /></td></tr>
 <tr class="separator:ad9259735d066b1e15892b2e9bbbc220a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af32d55d2aae66b07dafb1e9b6810b7bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmovement__analyzer.html#af32d55d2aae66b07dafb1e9b6810b7bf">draw</a> (cv::Mat &amp;frame) const</td></tr>
-<tr class="memdesc:af32d55d2aae66b07dafb1e9b6810b7bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw bounding boxes of currently tracked background parts.  <a href="classmovement__analyzer.html#af32d55d2aae66b07dafb1e9b6810b7bf">More...</a><br /></td></tr>
-<tr class="separator:af32d55d2aae66b07dafb1e9b6810b7bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9af61a3d887c286a3e3b1de99265c10"><td class="memItemLeft" align="right" valign="top">std::optional&lt; cv::Point2d &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmovement__analyzer.html#ad9af61a3d887c286a3e3b1de99265c10">frame_offset</a> (std::size_t frame_no, bool real) const</td></tr>
+<tr class="memdesc:ad9af61a3d887c286a3e3b1de99265c10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get offset of frame specified by its number.  <a href="classmovement__analyzer.html#ad9af61a3d887c286a3e3b1de99265c10">More...</a><br /></td></tr>
+<tr class="separator:ad9af61a3d887c286a3e3b1de99265c10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e78ed224e2f2830bfd80c498f912995"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmovement__analyzer.html#a1e78ed224e2f2830bfd80c498f912995">draw</a> (cv::Mat &amp;frame, std::size_t frame_no) const</td></tr>
+<tr class="memdesc:a1e78ed224e2f2830bfd80c498f912995"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw bounding boxes of currently tracked background parts.  <a href="classmovement__analyzer.html#a1e78ed224e2f2830bfd80c498f912995">More...</a><br /></td></tr>
+<tr class="separator:a1e78ed224e2f2830bfd80c498f912995"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handles movement of person's bounding box. </p>
-<p>Tracks parts of background on both sides of person and determines which direction is that person moving. Determines whether a vault has begun. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="af32d55d2aae66b07dafb1e9b6810b7bf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af32d55d2aae66b07dafb1e9b6810b7bf">&#9670;&nbsp;</a></span>draw()</h2>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a706f6a2c4663d106208079df2f7de3dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a706f6a2c4663d106208079df2f7de3dd">&#9670;&nbsp;</a></span>movement_analyzer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">movement_analyzer::movement_analyzer </td>
+          <td>(</td>
+          <td class="paramtype">const cv::Mat &amp;&#160;</td>
+          <td class="paramname"><em>frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const cv::Rect2d &amp;&#160;</td>
+          <td class="paramname"><em>person</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Default constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">frame</td><td>First frame, where person was detected. </td></tr>
+    <tr><td class="paramname">person</td><td>Bounding box of person in <code>frame</code>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a1e78ed224e2f2830bfd80c498f912995"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e78ed224e2f2830bfd80c498f912995">&#9670;&nbsp;</a></span>draw()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -121,8 +158,18 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
           <td class="memname">void movement_analyzer::draw </td>
           <td>(</td>
           <td class="paramtype">cv::Mat &amp;&#160;</td>
-          <td class="paramname"><em>frame</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramname"><em>frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>frame_no</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
         </tr>
       </table>
   </td>
@@ -136,9 +183,60 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">frame</td><td>Frame in which bounding boxes should be drawn. </td></tr>
+    <tr><td class="paramname">frame_no</td><td>Number of given frame. </td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="ad9af61a3d887c286a3e3b1de99265c10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9af61a3d887c286a3e3b1de99265c10">&#9670;&nbsp;</a></span>frame_offset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;cv::Point2d&gt; movement_analyzer::frame_offset </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>frame_no</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>real</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get offset of frame specified by its number. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">frame_no</td><td>Number of frame which offset should be computed. </td></tr>
+    <tr><td class="paramname">real</td><td>Returns valid offset if true, zero offset otherwise. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>offset of specified frame, invalid value if offset could not be computed.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Frame number 0 corresponds to first frame, in which person was detected. </dd>
+<dd>
+If real is false, frame offset is irrelevant.</dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classbackground__tracker.html#a1c0080360405507c4ff84111282de115" title="Get offset of frame specified by its number.">background_tracker::frame_offset</a>. </dd></dl>
 
 </div>
 </div>
@@ -183,7 +281,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </div><div class="memdoc">
 
 <p>Process given frame. </p>
-<p>Update valid trackers, check direction and whether vault began.</p>
+<p>Update valid trackers, update direction and check whether vault began in given frame.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">frame</td><td>Frame to be processed. </td></tr>
@@ -192,7 +290,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>false if both trackers failed (unable to determine person's movement direction), true if tracking of at least one background part is OK. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>false if both trackers failed (unable to determine person's movement direction), true if tracking of at least one background tracker is OK. </dd></dl>
 
 </div>
 </div>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['movement_5fanalyzer_23',['movement_analyzer',['../classmovement__analyzer.html',1,'']]]
+  ['frame_5fwise_5fparameter_66',['frame_wise_parameter',['../structframe__wise__parameter.html',1,'']]]
 ];

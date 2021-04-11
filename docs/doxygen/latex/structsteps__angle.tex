@@ -1,0 +1,74 @@
+\hypertarget{structsteps__angle}{}\doxysection{steps\+\_\+angle Struct Reference}
+\label{structsteps__angle}\index{steps\_angle@{steps\_angle}}
+Inheritance diagram for steps\+\_\+angle\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{structsteps__angle}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsteps__angle_aab9c77cf221275edd79e634745bbbc4a}\label{structsteps__angle_aab9c77cf221275edd79e634745bbbc4a}} 
+{\bfseries steps\+\_\+angle} (direction dir) noexcept
+\item 
+virtual void \mbox{\hyperlink{structsteps__angle_a80117846d84dc30ce2adf1aded2d32a9}{write\+\_\+value}} (std\+::ostream \&os, std\+::size\+\_\+t frame\+\_\+no, bool write\+\_\+unit) const noexcept
+\begin{DoxyCompactList}\small\item\em Write duration of step happening during frame {\ttfamily frame\+\_\+no}. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{structsteps__angle_a69fb7ed121919a71e7da3af63b1bc65d}{compute}} (const video\+\_\+body \&points) noexcept
+\begin{DoxyCompactList}\small\item\em Compute duration of each step based on detected body parts in whole video. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structsteps__angle_a69fb7ed121919a71e7da3af63b1bc65d}\label{structsteps__angle_a69fb7ed121919a71e7da3af63b1bc65d}} 
+\index{steps\_angle@{steps\_angle}!compute@{compute}}
+\index{compute@{compute}!steps\_angle@{steps\_angle}}
+\doxysubsubsection{\texorpdfstring{compute()}{compute()}}
+{\footnotesize\ttfamily virtual void steps\+\_\+angle\+::compute (\begin{DoxyParamCaption}\item[{const video\+\_\+body \&}]{points }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Compute duration of each step based on detected body parts in whole video. 
+
+Get numbers of frames where the lower ankle leaves locally lowest point and where the higher ankle leaves locally highest point. Keep low points, which are below center of previous low point and high point (the first one is kept every time). Compute duration between subsequent low points based on their frame numbers and frame rate of processed video.
+
+
+\begin{DoxyParams}{Parameters}
+{\em points} & Athlete\textquotesingle{}s body parts detected in the whole video.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+Ankle must leave local point of interest by more than 1 px (vertically). 
+\end{DoxyNote}
+
+
+Reimplemented from \mbox{\hyperlink{structsteps__duration_a6713637f86ad8bc0303b2f5dce06d4b9}{steps\+\_\+duration}}.
+
+\mbox{\Hypertarget{structsteps__angle_a80117846d84dc30ce2adf1aded2d32a9}\label{structsteps__angle_a80117846d84dc30ce2adf1aded2d32a9}} 
+\index{steps\_angle@{steps\_angle}!write\_value@{write\_value}}
+\index{write\_value@{write\_value}!steps\_angle@{steps\_angle}}
+\doxysubsubsection{\texorpdfstring{write\_value()}{write\_value()}}
+{\footnotesize\ttfamily virtual void steps\+\_\+angle\+::write\+\_\+value (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no,  }\item[{bool}]{write\+\_\+unit }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Write duration of step happening during frame {\ttfamily frame\+\_\+no}. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em os} & Output stream. \\
+\hline
+ & {\em frame\+\_\+no} & Number of frame for which this parameter\textquotesingle{}s value should be written. \\
+\hline
+ & {\em write\+\_\+unit} & True if unit is supposed to be written as well, false otherwise. \\
+\hline
+\end{DoxyParams}
+
+
+Reimplemented from \mbox{\hyperlink{structsteps__duration_ae8c734aeae19e6e0e3ca2438269f5487}{steps\+\_\+duration}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+parameters.\+hpp\end{DoxyCompactItemize}

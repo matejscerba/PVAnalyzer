@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['update_17',['update',['../classmovement__analyzer.html#ade3e1e4b63e378b994c90e21dd8ed09c',1,'movement_analyzer']]]
+  ['ok_30',['ok',['../classbody__detector.html#a237e9cb02069549a0bdfd2d025044f6ca444bcb3a3fcf8389296c49467f27e1d6',1,'body_detector']]]
 ];

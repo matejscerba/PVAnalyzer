@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>RP: body_detector Class Reference</title>
+<title>BP: body_detector Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">RP
+   <div id="projectname">BP
    </div>
   </td>
  </tr>
@@ -80,18 +80,22 @@ Public Types</h2></td></tr>
 <tr class="memitem:a237e9cb02069549a0bdfd2d025044f6c"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbody__detector.html#a237e9cb02069549a0bdfd2d025044f6c">result</a> { <a class="el" href="classbody__detector.html#a237e9cb02069549a0bdfd2d025044f6ca08b43519a7e36ee4c6c5615d1663bcfd">skip</a>
 , <a class="el" href="classbody__detector.html#a237e9cb02069549a0bdfd2d025044f6ca444bcb3a3fcf8389296c49467f27e1d6">ok</a>
 , <a class="el" href="classbody__detector.html#a237e9cb02069549a0bdfd2d025044f6cacb5e100e5a9a3e7f6d1fd97512215282">error</a>
+, <a class="el" href="classbody__detector.html#a237e9cb02069549a0bdfd2d025044f6caad921d60486366258809553a3db49a4a">unknown</a>
  }</td></tr>
 <tr class="memdesc:a237e9cb02069549a0bdfd2d025044f6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Supported return values for function <code>detect</code>.  <a href="classbody__detector.html#a237e9cb02069549a0bdfd2d025044f6c">More...</a><br /></td></tr>
 <tr class="separator:a237e9cb02069549a0bdfd2d025044f6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7a9018a1d50a13c80bde5c936df6be8d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbody__detector.html#a7a9018a1d50a13c80bde5c936df6be8d">body_detector</a> (std::size_t frame, const cv::Point &amp;position, std::size_t fps)</td></tr>
-<tr class="memdesc:a7a9018a1d50a13c80bde5c936df6be8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="classbody__detector.html#a7a9018a1d50a13c80bde5c936df6be8d">More...</a><br /></td></tr>
-<tr class="separator:a7a9018a1d50a13c80bde5c936df6be8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0b9477c3bb4e531733df9d979fbb144"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbody__detector.html#ae0b9477c3bb4e531733df9d979fbb144">body_detector</a> (std::size_t frame, const cv::Point &amp;position, double fps)</td></tr>
+<tr class="memdesc:ae0b9477c3bb4e531733df9d979fbb144"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="classbody__detector.html#ae0b9477c3bb4e531733df9d979fbb144">More...</a><br /></td></tr>
+<tr class="separator:ae0b9477c3bb4e531733df9d979fbb144"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e1c35278f2992294697556f1c45f8d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classbody__detector.html#a237e9cb02069549a0bdfd2d025044f6c">result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbody__detector.html#a6e1c35278f2992294697556f1c45f8d2">detect</a> (const cv::Mat &amp;frame, std::size_t frame_no)</td></tr>
 <tr class="memdesc:a6e1c35278f2992294697556f1c45f8d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detect athlete in given frame or track it if it was detected earlier.  <a href="classbody__detector.html#a6e1c35278f2992294697556f1c45f8d2">More...</a><br /></td></tr>
 <tr class="separator:a6e1c35278f2992294697556f1c45f8d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a195b6a0857240af61ec00bb6ce29ac83"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="classperson.html">person</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbody__detector.html#a195b6a0857240af61ec00bb6ce29ac83">get_athlete</a> () const</td></tr>
+<tr class="memdesc:a195b6a0857240af61ec00bb6ce29ac83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get valid athlete detected in processed video, invalid optional otherwise.  <a href="classbody__detector.html#a195b6a0857240af61ec00bb6ce29ac83">More...</a><br /></td></tr>
+<tr class="separator:a195b6a0857240af61ec00bb6ce29ac83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d9324897796303d27ffce6d9e04b246"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbody__detector.html#a7d9324897796303d27ffce6d9e04b246">draw</a> (cv::Mat &amp;frame, std::size_t frame_no) const</td></tr>
 <tr class="memdesc:a7d9324897796303d27ffce6d9e04b246"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw each person in frame.  <a href="classbody__detector.html#a7d9324897796303d27ffce6d9e04b246">More...</a><br /></td></tr>
 <tr class="separator:a7d9324897796303d27ffce6d9e04b246"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -128,13 +132,15 @@ Public Member Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a237e9cb02069549a0bdfd2d025044f6cacb5e100e5a9a3e7f6d1fd97512215282"></a>error&#160;</td><td class="fielddoc"><p>An error occured when frame was being processed. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="a237e9cb02069549a0bdfd2d025044f6caad921d60486366258809553a3db49a4a"></a>unknown&#160;</td><td class="fielddoc"><p>No information about result is available. </p>
+</td></tr>
 </table>
 
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a7a9018a1d50a13c80bde5c936df6be8d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7a9018a1d50a13c80bde5c936df6be8d">&#9670;&nbsp;</a></span>body_detector()</h2>
+<a id="ae0b9477c3bb4e531733df9d979fbb144"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0b9477c3bb4e531733df9d979fbb144">&#9670;&nbsp;</a></span>body_detector()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -157,7 +163,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>fps</em>&#160;</td>
         </tr>
         <tr>
@@ -274,6 +280,34 @@ Public Member Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a195b6a0857240af61ec00bb6ce29ac83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a195b6a0857240af61ec00bb6ce29ac83">&#9670;&nbsp;</a></span>get_athlete()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="classperson.html">person</a>&gt; body_detector::get_athlete </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get valid athlete detected in processed video, invalid optional otherwise. </p>
+<dl class="section return"><dt>Returns</dt><dd>person representing valid athlete, invalid optional if no valid athlete was detected. </dd></dl>
 
 </div>
 </div>
