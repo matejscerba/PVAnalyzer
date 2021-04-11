@@ -143,7 +143,7 @@ private:
         parameters.push_back(std::make_shared<steps_angle>(dir));
         parameters.push_back(std::make_shared<hips_velocity_loss>(takeoff));
         parameters.push_back(std::make_shared<shoulders_velocity_loss>(takeoff));
-        // parameters.push_back(std::make_shared<takeoff_angle>(takeoff));
+        parameters.push_back(std::make_shared<takeoff_angle>(takeoff));
 
         // Compute corresponding values.
         for (auto &param : parameters) {
@@ -151,6 +151,7 @@ private:
         }
         parameters.push_back(steps_dur);
 
+        std::sort(parameters.begin(), parameters.end());
     }
 
     std::optional<std::size_t> get_start(const video_body &points) noexcept {

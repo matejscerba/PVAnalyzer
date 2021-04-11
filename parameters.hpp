@@ -94,6 +94,10 @@ protected:
 
 };
 
+bool operator<(const std::shared_ptr<parameter> &lhs, const std::shared_ptr<parameter> &rhs) noexcept {
+    return (lhs && rhs && (lhs->name < rhs->name));
+}
+
 //////////////////////////////////////////////////////////////////////////////////////
 // single values parameters
 //////////////////////////////////////////////////////////////////////////////////////
@@ -202,14 +206,16 @@ public:
 
     virtual void compute(const video_body &points) noexcept {
         if (takeoff && (*takeoff >= takeoff_parameter_frames) && (points.size() > *takeoff + takeoff_parameter_frames)) {
-            frame_body first;
+            frame_body first = get_first_hips(points);
             frame_body during = points[*takeoff];
             frame_body after = points[*takeoff + takeoff_parameter_frames];
             frame_part p_first = (first[body_part::l_hip] + first[body_part::r_hip]) / 2.0;
             frame_part p_during = (during[body_part::l_hip] + during[body_part::r_hip]) / 2.0;
             frame_part p_after = (after[body_part::l_hip] + after[body_part::r_hip]) / 2.0;
             if (p_first && p_during && p_after) {
-                value = (1.0 - (p_after - p_during)->x / (p_during - p_first)->x) * 100.0;
+                double runup_angle = std::atan((p_first - p_during)->y / std::abs((p_first - p_during)->x));
+                double takeoff_angle = std::atan((p_during - p_after)->y / std::abs((p_during - p_after)->x));
+                value = (takeoff_angle - runup_angle) * 180.0 / M_PI;
             } else {
                 value = std::nullopt;
             }
@@ -223,6 +229,20 @@ public:
             os << *value << (write_unit ? unit : "");
         }
     }
+
+private:
+
+    frame_body get_first_hips(const video_body &points) const noexcept {
+        auto found = std::find_if(points.begin(), points.end(), [](const frame_body &body){
+            return body[body_part::l_hip] && body[body_part::r_hip];
+        });
+        if (found != points.end()) {
+            return *found;
+        } else {
+            return points[0];
+        }
+    }
+
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -279,7 +299,7 @@ public:
      * @param fps Frame rate of processed video.
      */
     steps_duration(double fps) noexcept
-        : multiple_values_parameter("Steps duration", vault_part::runup, " s"), fps(fps) {}
+        : multiple_values_parameter("Step duration", vault_part::runup, " s"), fps(fps) {}
 
     /**
      * @brief Compute duration of each step based on detected body parts in whole video.
@@ -411,7 +431,7 @@ struct steps_angle : steps_duration {
 public:
 
     steps_angle(direction dir) noexcept
-        : steps_duration("Steps angle", vault_part::runup, "°"), dir(dir) {}
+        : steps_duration("Step angle", vault_part::runup, "°"), dir(dir) {}
 
     virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
         auto found = std::find(step_frames.begin(), step_frames.end(), frame_no);
