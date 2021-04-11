@@ -86,15 +86,21 @@ std::optional<double> distance(const std::optional<cv::Point2d> &a, const std::o
     return std::nullopt;
 }
 
-std::optional<double> get_height(const frame_part &a, const frame_part &b, std::function<bool (double, double)> compare) noexcept {
+frame_part get_part(const frame_part &a, const frame_part &b, std::function<bool (double, double)> compare) noexcept {
     if (a && b) {
         if (compare(a->y, b->y))
-            return a->y;
-        return b->y;
+            return a;
+        return b;
     } else if (a) {
-        return a->y;
+        return a;
     } else if (b) {
-        return b->y;
+        return b;
     }
+    return std::nullopt;
+}
+
+std::optional<double> get_height(const frame_part &a, const frame_part &b, std::function<bool (double, double)> compare) noexcept {
+    frame_part p = get_part(a, b, compare);
+    if (p) return p->y;
     return std::nullopt;
 }

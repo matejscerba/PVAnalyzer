@@ -100,6 +100,9 @@ private:
         if (takeoff && culmination && takeoff <= frame_no && frame_no <= culmination) {
             res.push_back(parameter::vault_part::vault);
         }
+        if (culmination && frame_no > culmination) {
+            res.push_back(parameter::vault_part::invalid);
+        }
         return res;
     }
 

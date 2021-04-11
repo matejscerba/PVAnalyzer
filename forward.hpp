@@ -140,6 +140,8 @@ std::string body_part_name(const body_part part);
 
 std::optional<double> distance(const std::optional<cv::Point2d> &a, const std::optional<cv::Point2d> &b) noexcept;
 
+frame_part get_part(const frame_part &a, const frame_part &b, std::function<bool (double, double)> compare) noexcept;
+
 std::optional<double> get_height(const frame_part &a, const frame_part &b, std::function<bool (double, double)> compare) noexcept;
 
 //////////////////////////////////////////////////////////////////////////////////////

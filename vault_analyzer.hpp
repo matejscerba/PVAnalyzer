@@ -138,6 +138,7 @@ private:
             "Shoulders tilt", body_part::l_hip, body_part::r_hip, body_part::l_shoulder, body_part::r_shoulder, dir));
         auto steps_dur = std::make_shared<steps_duration>(fps);
         parameters.push_back(steps_dur);
+        parameters.push_back(std::make_shared<steps_angle>(dir));
 
         // Compute corresponding values.
         for (auto &param : parameters) {
@@ -222,9 +223,9 @@ private:
             output << std::endl << i;
             for (const auto &param : parameters) {
                 output << ",";
-                // if (i < param->size()) {
-                //     param->write_param(output, i, false);
-                // }
+                if (i < param->size()) {
+                    // param->write_param(output, i, false);
+                }
             }
         }
         output.close();

@@ -173,7 +173,7 @@ public:
      * 
      * @param fps Frame rate of processed video.
      */
-    steps_duration(double fps)
+    steps_duration(double fps) noexcept
         : multiple_values_parameter("Steps duration", vault_part::runup, " s"), fps(fps) {}
 
     /**
@@ -193,9 +193,9 @@ public:
         values.clear();
         step_frames.clear();
         std::greater<double> low;
-        std::vector<std::size_t> lows = get_frames(points, low);
+        std::vector<std::size_t> lows = get_frame_numbers(points.begin(), points.end(), low);
         std::less<double> high;
-        std::vector<std::size_t> highs = get_frames(points, high);
+        std::vector<std::size_t> highs = get_frame_numbers(points.begin(), points.end(), high);
         double center = 0;
         for (std::size_t i = 0; i < std::min(lows.size(), highs.size()); i++) {
             frame_body l_body = points[lows[i]];
@@ -223,9 +223,9 @@ public:
      */
     virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
         auto found = std::find(step_frames.begin(), step_frames.end(), frame_no);
-        if (found != step_frames.end()) {
-            std::ptrdiff_t idx = found - step_frames.begin();
-            if (idx) os << *values[idx - 1] << (write_unit ? unit : "");
+        if ((found != step_frames.end()) && (found != step_frames.begin())) {
+            std::ptrdiff_t idx = found - step_frames.begin() - 1;
+            os << *values[idx] << (write_unit ? unit : "");
         }
     }
 
@@ -240,7 +240,7 @@ public:
         return std::nullopt;
     }
 
-private:
+protected:
 
     /**
      * @brief Numbers of frames in which the lower ankle leaves locally lowest point.
@@ -253,6 +253,12 @@ private:
     double fps;
 
     /**
+     * @brief
+     */
+    steps_duration(const std::string name, const vault_part part, const std::string &&unit) noexcept
+        : multiple_values_parameter(name, part, std::move(unit)), fps(30) {}
+
+    /**
      * @brief Get numbers of frames in which ankle specified by `compare` reaches local point of interest.
      * 
      * `compare` returns true if given values are in correct order based on `compare`. Only ankle satisfying
@@ -260,17 +266,20 @@ private:
      * next frame is vertically in the opposit relation than `compare` by more than 1 px) the previous frame
      * number is added to vector that will be returned.
      * 
-     * @param points Detected body parts of athlete in the whole video.
+     * @param begin Const iterator to beginning of detected body parts of athlete in the whole video.
+     * @param end Const iterator to end of detected body parts of athlete in the whole video.
      * @param compare Binary comparison function.
      * @returns vector of frame numbers where ankles leave specified local point of interest.
      */
-    std::vector<std::size_t> get_frames(const video_body &points, std::function<bool (double, double)> compare) noexcept {
+    std::vector<std::size_t> get_frame_numbers( std::vector<frame_body>::const_iterator begin,
+                                                std::vector<frame_body>::const_iterator end,
+                                                std::function<bool (double, double)> compare) noexcept {
         std::vector<std::size_t> res;
         std::optional<double> last_height = std::nullopt;
         std::size_t index = 0;
         bool correct_diff = false;
-        for (const auto &body : points) {
-            std::optional<double> height = get_height(body[body_part::l_ankle], body[body_part::r_ankle], compare);
+        for (; begin != end; ++begin) {
+            std::optional<double> height = get_height((*begin)[body_part::l_ankle], (*begin)[body_part::r_ankle], compare);
             if (height && last_height) {
                 // Current and last value is valid.
                 if (correct_diff && !compare(*height, *last_height) && std::abs(*height - *last_height) > 1) {
@@ -288,6 +297,77 @@ private:
         return res;
     }
 
+};
+
+/**
+ * @brief
+ */
+struct steps_angle : steps_duration {
+public:
+
+    steps_angle(direction dir) noexcept
+        : steps_duration("Steps angle", vault_part::runup, "°"), dir(dir) {}
+
+    virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
+        auto found = std::find(step_frames.begin(), step_frames.end(), frame_no);
+        if (found != step_frames.end()) {
+            os << *values[found - step_frames.begin()] << (write_unit ? unit : "");
+        }
+    }
+
+    virtual void compute(const video_body &points) noexcept {
+        steps_duration::compute(points);
+        video_body reversed(points.rbegin(), points.rend());
+        std::vector<std::size_t> step_beg_frames = steps_duration::get_frame_numbers(reversed.begin(), reversed.end(), std::greater<double>());
+        for (auto &i : step_beg_frames) {
+            i = points.size() - i - 1;
+        }
+        std::vector<std::size_t> res;
+        for (std::size_t i = 0, j = step_frames.size(); i < step_beg_frames.size(); ++i) {
+            if (!j) break;
+            if (step_beg_frames[i] <= step_frames[j - 1]) {
+                --j;
+                res.push_back(step_beg_frames[i]);
+            }
+        }
+        step_frames = res;
+        values.clear();
+        for (auto i : step_frames) {
+            values.push_back(extract_value(points[i]));
+        }
+    }
+
+private:
+
+    /**
+     * @brief Direction of athlete's runup.
+     */
+    direction dir;
+
+    /**
+     * @brief Compute angle between ray and vertical axis.
+     * 
+     * @param body Body from which to extract value.
+     * @returns angle between ray specified by body parts and vertical axis.
+     * 
+     * @note Negative angle represents ray facing in the opposite direction than athlete's runup.
+     * @note Angle == 0 if ray faces directly upwards, degrees range is [-180,180].
+     */
+    virtual std::optional<double> extract_value(const frame_body &body) const noexcept {
+        std::optional<cv::Point2d> a = (body[body_part::l_hip] + body[body_part::r_hip]) / 2.0;
+        std::optional<cv::Point2d> b = get_part(body[body_part::l_ankle], body[body_part::r_ankle], std::greater<double>());
+        if (a && b) {
+            double y = a->y - b->y;
+            double d = 0;
+            if (dir == direction::left)
+                d = -1;
+            else if (dir == direction::right)
+                d = 1;
+            double x = d * (a->x - b->x);
+            return std::atan(x / y) * 180.0 / M_PI;
+        }
+        return std::nullopt;
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
