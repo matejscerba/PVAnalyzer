@@ -156,6 +156,34 @@ frame_part get_part(const frame_part &a, const frame_part &b, std::function<bool
 
 std::optional<double> get_height(const frame_part &a, const frame_part &b, std::function<bool (double, double)> compare) noexcept;
 
+/**
+ * @brief Get numbers of frames in which ankle specified by `compare` reaches local point of interest.
+ * 
+ * `compare` returns true if given values are in correct order based on `compare`. Only ankle satisfying
+ * `compare` for each frame is taken into consideration, once it leaves point of interest (next ankle in
+ * next frame is vertically in the opposit relation than `compare` by more than 1 px) the previous frame
+ * number is added to vector that will be returned.
+ * 
+ * @param begin Const iterator to beginning of detected body parts of athlete in the whole video.
+ * @param end Const iterator to end of detected body parts of athlete in the whole video.
+ * @param compare Binary comparison function.
+ * @returns vector of frame numbers where ankles leave specified local point of interest.
+ */
+std::vector<std::size_t> get_frame_numbers( std::vector<frame_body>::const_iterator begin,
+                                            std::vector<frame_body>::const_iterator end,
+                                            std::function<bool (double, double)> compare) noexcept;
+/**
+ * @brief Get frame numbers in which athlete's foot leaves ground.
+ * 
+ * Get numbers of frames where the lower ankle leaves locally lowest point and where
+ * the higher ankle leaves locally highest point. Keep low points, which are below
+ * center of previous low point and high point (the first one is kept every time).
+ * 
+ * @param points Athlete's body parts detected in the whole video.
+ * @returns numbers of frames in which athlete's lower foot leaves ground.
+ */
+std::vector<std::size_t> get_step_frames(const video_body &points) noexcept;
+
 //////////////////////////////////////////////////////////////////////////////////////
 // constants
 //////////////////////////////////////////////////////////////////////////////////////

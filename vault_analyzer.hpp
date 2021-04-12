@@ -155,9 +155,7 @@ private:
      * takeoff and culmination moments were found).
      */
     bool compute_parameters(const video_body &points) noexcept {
-        auto steps_dur = std::make_shared<steps_duration>(fps);
-        steps_dur->compute(points);
-        if (!get_moments_of_interest(steps_dur, points))
+        if (!find_moments_of_interest(points))
             return false;
 
         parameters.push_back(std::make_shared<hips_height>());
@@ -167,6 +165,7 @@ private:
             "Torso tilt", body_part::l_hip, body_part::r_hip, body_part::neck, body_part::neck, dir));
         parameters.push_back(std::make_shared<vertical_tilt>(
             "Shoulders tilt", body_part::l_hip, body_part::r_hip, body_part::l_shoulder, body_part::r_shoulder, dir));
+        parameters.push_back(std::make_shared<steps_duration>(fps));
         parameters.push_back(std::make_shared<steps_angle>(dir));
         parameters.push_back(std::make_shared<hips_velocity_loss>(takeoff));
         parameters.push_back(std::make_shared<shoulders_velocity_loss>(takeoff));
@@ -176,8 +175,6 @@ private:
         for (auto &param : parameters) {
             param->compute(points);
         }
-        // Steps duration was alreadycomputed.
-        parameters.push_back(steps_dur);
 
         // Sort parameters alphabetically.
         std::sort(parameters.begin(), parameters.end());
@@ -218,13 +215,16 @@ private:
     /**
      * @brief Find frame number in which athlete takes off.
      * 
-     * @param steps_duration Parameter determining duration of each step,
-     * last step is equivalent to takeoff.
+     * Takeoff is the same as last step.
+     * 
+     * @param points Athlete's body parts detected in the whole video.
      * @returns frame number in which athlete takes off, no value if no such
      * frame was found.
      */
-    std::optional<std::size_t> find_takeoff(std::shared_ptr<steps_duration> steps_duration) noexcept {
-        return steps_duration->get_takeoff();
+    std::optional<std::size_t> find_takeoff(const video_body &points) noexcept {
+        std::vector<std::size_t> steps = get_step_frames(points);
+        if (steps.size()) return steps.back();
+        return std::nullopt;
     }
 
     /**
@@ -253,16 +253,15 @@ private:
     /**
      * @brief Decide which frames represent start of attempt, takeoff and culmination above bar.
      * 
-     * @param steps_duration Parameter determining duration of each step.
      * @param points Athlete's body parts detected in the whole video.
      * @returns true if all moments were found, false otherwise.
      */
-    bool get_moments_of_interest(std::shared_ptr<steps_duration> steps_duration, const video_body &points) noexcept {
+    bool find_moments_of_interest(const video_body &points) noexcept {
         std::optional<std::size_t> val = find_start(points);
         if (val) start = *val;
         else return false;
         
-        val = find_takeoff(steps_duration);
+        val = find_takeoff(points);
         if (val) takeoff = *val;
         else return false;
         

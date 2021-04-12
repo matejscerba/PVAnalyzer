@@ -109,3 +109,51 @@ std::optional<double> get_height(const frame_part &a, const frame_part &b, std::
     if (p) return p->y;
     return std::nullopt;
 }
+
+std::vector<std::size_t> get_frame_numbers( std::vector<frame_body>::const_iterator begin,
+                                            std::vector<frame_body>::const_iterator end,
+                                            std::function<bool (double, double)> compare) noexcept {
+    std::vector<std::size_t> res;
+    std::optional<double> last_height = std::nullopt;
+    std::size_t index = 0;
+    bool correct_diff = false;
+    for (; begin != end; ++begin) {
+        std::optional<double> height = get_height((*begin)[body_part::l_ankle], (*begin)[body_part::r_ankle], compare);
+        if (height && last_height) {
+            // Current and last value is valid.
+            if (correct_diff && !compare(*height, *last_height) && std::abs(*height - *last_height) > 1) {
+                // Value was changing in the right direction, it stopped changing and is changing in the wrong direction.
+                correct_diff = false;
+                res.push_back(index - 1);
+            }
+            if (compare(*height, *last_height)) {
+                correct_diff = true;
+            }
+        }
+        last_height = height;
+        ++index;
+    }
+    return res;
+}
+
+std::vector<std::size_t> get_step_frames(const video_body &points) noexcept {
+    std::vector<std::size_t> res;
+    std::greater<double> low;
+    std::vector<std::size_t> lows = get_frame_numbers(points.begin(), points.end(), low);
+    std::less<double> high;
+    std::vector<std::size_t> highs = get_frame_numbers(points.begin(), points.end(), high);
+    double center = 0;
+    for (std::size_t i = 0; i < std::min(lows.size(), highs.size()); ++i) {
+        frame_body l_body = points[lows[i]];
+        frame_body h_body = points[highs[i]];
+        double l = *get_height(l_body[body_part::l_ankle], l_body[body_part::r_ankle], low);
+        double h = *get_height(h_body[body_part::l_ankle], h_body[body_part::r_ankle], high);
+        if (i > 0) {
+            if (high(l, center)) continue; // Low point is above center of previous points.
+            if (low(h, center)) continue;  // High point is below center of previous points.
+        }
+        center = (l + h) / 2.0;
+        res.push_back(lows[i]);
+    }
+    return res;
+}

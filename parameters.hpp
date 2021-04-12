@@ -107,17 +107,17 @@ struct single_value_parameter : parameter {
 public:
 
     /**
-     * @see parameter::size
-     */
-    virtual std::size_t size() const noexcept {
-        return 1;
-    }
-
-    /**
      * @see parameter::write_param
      */
     virtual void write_param(std::ostream &os, std::size_t value_no) const noexcept {
         if (value) os << *value;
+    }
+
+    /**
+     * @see parameter::size
+     */
+    virtual std::size_t size() const noexcept {
+        return 1;
     }
 
 protected:
@@ -387,10 +387,40 @@ protected:
 
 };
 
+struct steps_parameter : multiple_values_parameter {
+protected:
+
+    /**
+     * @brief Numbers of frames where step happens.
+     */
+    std::vector<std::size_t> step_frames;
+
+    /**
+     * @brief Frame rate of processed video.
+     */
+    double fps;
+
+    /**
+     * @brief Default constructor
+     * 
+     * Specifies parameter's name, vault part and unit as well as frame rate of processed video.
+     * 
+     * @param name Name of this parameter.
+     * @param part Part of vault for which this parameter is designated.
+     * @param unit String representation of this parameter's unit.
+     * @param fps Frame rate of processed video.
+     * 
+     * @note This constructor can be called by derived structs only.
+     */
+    steps_parameter(const std::string name, const vault_part part, const std::string &&unit, double fps = 30) noexcept
+        : multiple_values_parameter("Step duration", vault_part::runup, " s"), fps(fps) {}
+
+};
+
 /**
  * @brief Duration of each step in seconds.
  */
-struct steps_duration : multiple_values_parameter {
+struct steps_duration : steps_parameter {
 public:
 
     /**
@@ -401,41 +431,19 @@ public:
      * @param fps Frame rate of processed video.
      */
     steps_duration(double fps) noexcept
-        : multiple_values_parameter("Step duration", vault_part::runup, " s"), fps(fps) {}
+        : steps_parameter("Step duration", vault_part::runup, " s", fps) {}
 
     /**
      * @brief Compute duration of each step based on detected body parts in whole video.
      * 
-     * Get numbers of frames where the lower ankle leaves locally lowest point and where
-     * the higher ankle leaves locally highest point. Keep low points, which are below
-     * center of previous low point and high point (the first one is kept every time).
      * Compute duration between subsequent low points based on their frame numbers and
      * frame rate of processed video.
      * 
      * @param points Athlete's body parts detected in the whole video.
-     * 
-     * @note Ankle must leave local point of interest by more than 1 px (vertically).
      */
     virtual void compute(const video_body &points) noexcept {
         values.clear();
-        step_frames.clear();
-        std::greater<double> low;
-        std::vector<std::size_t> lows = get_frame_numbers(points.begin(), points.end(), low);
-        std::less<double> high;
-        std::vector<std::size_t> highs = get_frame_numbers(points.begin(), points.end(), high);
-        double center = 0;
-        for (std::size_t i = 0; i < std::min(lows.size(), highs.size()); ++i) {
-            frame_body l_body = points[lows[i]];
-            frame_body h_body = points[highs[i]];
-            double l = *get_height(l_body[body_part::l_ankle], l_body[body_part::r_ankle], low);
-            double h = *get_height(h_body[body_part::l_ankle], h_body[body_part::r_ankle], high);
-            if (i > 0) {
-                if (high(l, center)) continue; // Low point is above center of previous points.
-                if (low(h, center)) continue;  // High point is below center of previous points.
-            }
-            center = (l + h) / 2.0;
-            step_frames.push_back(lows[i]);
-        }
+        step_frames = get_step_frames(points);
         for (std::size_t i = 1; i < step_frames.size(); ++i) {
             values.push_back((step_frames[i] - step_frames[i - 1]) / fps);
         }
@@ -461,111 +469,70 @@ public:
         }
     }
 
-    /**
-     * @brief Get number of frame in which athlete takes off.
-     * 
-     * @returns number of frame in which last step ends, no value if no step was detected.
-     */
-    std::optional<std::size_t> get_takeoff() const noexcept {
-        if (step_frames.size())
-            return step_frames.back();
-        return std::nullopt;
-    }
-
-protected:
-
-    /**
-     * @brief Numbers of frames in which the lower ankle leaves locally lowest point.
-     */
-    std::vector<std::size_t> step_frames;
-
-    /**
-     * @brief Frame rate of processed video.
-     */
-    double fps;
+private:
 
     /**
      * @brief
      */
     steps_duration(const std::string name, const vault_part part, const std::string &&unit) noexcept
-        : multiple_values_parameter(name, part, std::move(unit)), fps(30) {}
-
-    /**
-     * @brief Get numbers of frames in which ankle specified by `compare` reaches local point of interest.
-     * 
-     * `compare` returns true if given values are in correct order based on `compare`. Only ankle satisfying
-     * `compare` for each frame is taken into consideration, once it leaves point of interest (next ankle in
-     * next frame is vertically in the opposit relation than `compare` by more than 1 px) the previous frame
-     * number is added to vector that will be returned.
-     * 
-     * @param begin Const iterator to beginning of detected body parts of athlete in the whole video.
-     * @param end Const iterator to end of detected body parts of athlete in the whole video.
-     * @param compare Binary comparison function.
-     * @returns vector of frame numbers where ankles leave specified local point of interest.
-     */
-    std::vector<std::size_t> get_frame_numbers( std::vector<frame_body>::const_iterator begin,
-                                                std::vector<frame_body>::const_iterator end,
-                                                std::function<bool (double, double)> compare) noexcept {
-        std::vector<std::size_t> res;
-        std::optional<double> last_height = std::nullopt;
-        std::size_t index = 0;
-        bool correct_diff = false;
-        for (; begin != end; ++begin) {
-            std::optional<double> height = get_height((*begin)[body_part::l_ankle], (*begin)[body_part::r_ankle], compare);
-            if (height && last_height) {
-                // Current and last value is valid.
-                if (correct_diff && !compare(*height, *last_height) && std::abs(*height - *last_height) > 1) {
-                    // Value was changing in the right direction, it stopped changing and is changing in the wrong direction.
-                    correct_diff = false;
-                    res.push_back(index - 1);
-                }
-                if (compare(*height, *last_height)) {
-                    correct_diff = true;
-                }
-            }
-            last_height = height;
-            ++index;
-        }
-        return res;
-    }
+        : steps_parameter(name, part, std::move(unit)) {}
 
 };
 
 /**
- * @brief
+ * @brief Angle of ray from hips center to lower ankle and vertical axis when athlete's foot reaches ground.
  */
-struct steps_angle : steps_duration {
+struct steps_angle : steps_parameter {
 public:
 
+    /**
+     * @brief Default constructor
+     * 
+     * Specifies parameter's name, vault part and unit as well as frame rate of processed video.
+     * 
+     * @param fps Frame rate of processed video.
+     */
     steps_angle(direction dir) noexcept
-        : steps_duration("Step angle", vault_part::runup, "°"), dir(dir) {}
+        : steps_parameter("Step angle", vault_part::runup, "°"), dir(dir) {}
 
+    /**
+     * @brief Compute leg angle for each step.
+     * 
+     * @param points Athlete's body parts detected in the whole video.
+     */
+    virtual void compute(const video_body &points) noexcept {
+        std::vector steps = get_step_frames(points);
+        video_body reversed(points.rbegin(), points.rend());
+        std::vector<std::size_t> step_beg_frames = get_frame_numbers(reversed.begin(), reversed.end(), std::greater<double>());
+        for (auto &i : step_beg_frames) {
+            i = points.size() - i - 1;
+        }
+        step_frames.clear();
+        std::vector<std::size_t> res;
+        for (std::size_t i = 0, j = steps.size(); i < step_beg_frames.size(); ++i) {
+            if (!j) break;
+            if (step_beg_frames[i] <= steps[j - 1]) {
+                --j;
+                step_frames.push_back(step_beg_frames[i]);
+            }
+        }
+        values.clear();
+        for (auto i : step_frames) {
+            values.push_back(extract_value(points[i]));
+        }
+    }
+
+    /**
+     * @brief Write leg angle if step happens in frame `frame_no`.
+     * 
+     * @param[out] os Output stream.
+     * @param frame_no Number of frame for which this parameter's value should be written.
+     * @param write_unit True if unit is supposed to be written as well, false otherwise.
+     */
     virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
         auto found = std::find(step_frames.begin(), step_frames.end(), frame_no);
         if (found != step_frames.end()) {
             os << *values[found - step_frames.begin()] << (write_unit ? unit : "");
-        }
-    }
-
-    virtual void compute(const video_body &points) noexcept {
-        steps_duration::compute(points);
-        video_body reversed(points.rbegin(), points.rend());
-        std::vector<std::size_t> step_beg_frames = steps_duration::get_frame_numbers(reversed.begin(), reversed.end(), std::greater<double>());
-        for (auto &i : step_beg_frames) {
-            i = points.size() - i - 1;
-        }
-        std::vector<std::size_t> res;
-        for (std::size_t i = 0, j = step_frames.size(); i < step_beg_frames.size(); ++i) {
-            if (!j) break;
-            if (step_beg_frames[i] <= step_frames[j - 1]) {
-                --j;
-                res.push_back(step_beg_frames[i]);
-            }
-        }
-        step_frames = res;
-        values.clear();
-        for (auto i : step_frames) {
-            values.push_back(extract_value(points[i]));
         }
     }
 
@@ -577,13 +544,12 @@ private:
     direction dir;
 
     /**
-     * @brief Compute angle between ray and vertical axis.
+     * @brief Compute angle between ray from center of hips to lower ankle and vertical axis.
      * 
      * @param body Body from which to extract value.
-     * @returns angle between ray specified by body parts and vertical axis.
+     * @returns angle between ray from center of hips to lower ankle and vertical axis.
      * 
      * @note Negative angle represents ray facing in the opposite direction than athlete's runup.
-     * @note Angle == 0 if ray faces directly upwards, degrees range is [-180,180].
      */
     virtual std::optional<double> extract_value(const frame_body &body) const noexcept {
         std::optional<cv::Point2d> a = (body[body_part::l_hip] + body[body_part::r_hip]) / 2.0;
@@ -615,31 +581,6 @@ struct frame_wise_parameter : multiple_values_parameter {
 public:
 
     /**
-     * @brief Write parameter's value for given frame number.
-     * 
-     * If value is valid, write it to output stream followed by unit if it is supposed to be written.
-     * Write nothing if unit is not supposed to be written and value is invalid. 
-     * Write question mark followed by unit if unit is supposed to be written and value is invalid.
-     * 
-     * @param[out] os Output stream.
-     * @param frame_no Number of frame for which this parameter's value should be written.
-     * @param write_unit True if unit is supposed to be written as well, false otherwise.
-     * 
-     * @note Writes message to standard output if `frame_no` is out of range of values' indices.
-     */
-    virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
-        if (frame_no < values.size()) {
-            if (values[frame_no]) {
-                os << *values[frame_no] << (write_unit ? unit : "");
-            } else if (write_unit) {
-                os << "?" << unit;
-            }
-        } else {
-            std::cout << "Unable to write parameter \"" << name << "\" for frame number " << frame_no << std::endl;
-        }
-    }
-
-    /**
      * @brief Compute this parameter's value for each frame and save them into `values`.
      * 
      * @param points Detected body parts to be processed.
@@ -649,6 +590,25 @@ public:
         std::transform(points.begin(), points.end(), std::back_inserter(values),
                        [this](const frame_body &body){ return this->extract_value(body); }
         );
+    }
+
+    /**
+     * @brief Write parameter's value for given frame number.
+     * 
+     * If value is valid, write it to output stream followed by unit if it is supposed to be written.
+     * Write nothing if unit is not supposed to be written and value is invalid. 
+     * Write question mark followed by unit if unit is supposed to be written and value is invalid.
+     * 
+     * @param[out] os Output stream.
+     * @param frame_no Number of frame for which this parameter's value should be written.
+     * @param write_unit True if unit is supposed to be written as well, false otherwise.
+     */
+    virtual void write_value(std::ostream &os, std::size_t frame_no, bool write_unit) const noexcept {
+        if (values[frame_no]) {
+            os << *values[frame_no] << (write_unit ? unit : "");
+        } else if (write_unit) {
+            os << "?" << unit;
+        }
     }
 
 protected:
