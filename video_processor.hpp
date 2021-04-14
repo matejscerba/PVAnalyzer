@@ -28,6 +28,85 @@ public:
      * @param filename Path to video file to be processed.
      */
     void process(const std::string &filename) {
+        // Prepare body detector.
+        double fps = 30;
+        body_detector detector(fps);
+
+        // Set default parameters.
+        // std::size_t frame_start = 0;
+        // cv::Point position;
+        // if (filename.find("kolin2.MOV") != std::string::npos) {
+        //     frame_start = 0;
+        //     position = cv::Point(805, 385);
+        // } else if (filename.find("kolin.mp4") != std::string::npos) {
+        //     frame_start = 96;
+        //     position = cv::Point(85, 275);
+        // }
+
+        if (!find_athlete(filename, detector)) {
+            std::cout << "Athete could not be found in video " << filename << std::endl;
+            return;
+        }
+        detect_athlete(filename, detector, fps);
+
+        cv::destroyAllWindows();
+
+        vault_analyzer analyzer;
+        person athlete = detector.get_athlete();
+        analyzer.analyze(athlete, filename, frames.size(), fps);
+
+        viewer v(frames, raw_frames, analyzer);
+        v.show();
+
+        // write("no_last_box.avi");
+    }
+
+private:
+
+    /// @brief Holds frames modified by processor.
+    std::vector<cv::Mat> frames;
+
+    /// @brief Holds frames unmodified by processor.
+    std::vector<cv::Mat> raw_frames;
+
+    bool find_athlete(const std::string &filename, body_detector &detector) noexcept {
+        // Try to open video.
+        cv::VideoCapture video;
+        if (!video.open(filename)) {
+            std::cout << "Error opening video " << filename << std::endl;
+            return false;
+        }
+
+        cv::Mat frame;
+        for (std::size_t frame_no = 0; ; frame_no++) {
+            video >> frame;
+
+            // Video ended.
+            if (frame.empty())
+                break;
+
+            detector.find(frame, frame_no);
+            // detector.draw(frame, frame_no);
+
+            // if (frame_no >= 80 || detector.is_found()) {
+            //     cv::imshow("frame", frame);
+            //     cv::waitKey();
+            // }
+
+            raw_frames.push_back(frame.clone());
+
+            // To be removed.
+            if (filename.find("kolin2.MOV") != std::string::npos) {
+                video >> frame; video >> frame; video >> frame;
+            }
+        }
+
+        video.release();
+
+        return detector.is_found();
+    }
+
+    void detect_athlete(const std::string &filename, body_detector &detector, double fps) noexcept {
         // Try to open video.
         cv::VideoCapture video;
         if (!video.open(filename)) {
@@ -35,27 +114,13 @@ public:
             return;
         }
 
-        // Set default parameters.
-        double fps = 30;
-        std::size_t frame_start = 0;
-        cv::Point position;
-        if (filename.find("kolin2.MOV") != std::string::npos) {
-            frame_start = 0;
-            position = cv::Point(805, 385);
-        } else if (filename.find("kolin.mp4") != std::string::npos) {
-            frame_start = 96;
-            position = cv::Point(85, 275);
-        }
+        detector.setup();
 
-        // Prepare body detector.
-        body_detector detector(frame_start, position, fps);
-
-        cv::Mat frame, raw_frame;
+        cv::Mat frame;
         body_detector::result res = body_detector::result::unknown;
         // Video is opened, processing frame by frame begins.
         for (std::size_t frame_no = 0; ; frame_no++) {
             video >> frame;
-            raw_frame = frame.clone();
 
             // Video ended.
             if (frame.empty())
@@ -76,8 +141,10 @@ public:
                 }
             }
 
-            raw_frames.push_back(raw_frame);
             frames.push_back(frame.clone());
+
+            cv::imshow("frame", frame);
+            cv::waitKey();
 
             // To be removed.
             if (filename.find("kolin2.MOV") != std::string::npos) {
@@ -85,38 +152,15 @@ public:
             }
         }
 
-        // Free resources.
         video.release();
-        cv::destroyAllWindows();
-
-        vault_analyzer analyzer;
-        std::optional<person> athlete = detector.get_athlete();
-        if (athlete) {
-            analyzer.analyze(*athlete, filename, frames.size(), fps);
-        } else {
-            std::cout << "Athlete could not be detected in given video" << std::endl;
-        }
-
-        viewer v(frames, raw_frames, analyzer);
-        v.show();
-
-        // write("no_last_box.avi");
     }
-
-private:
-
-    /// @brief Holds frames modified by processor.
-    std::vector<cv::Mat> frames;
-
-    /// @brief Holds frames unmodified by processor.
-    std::vector<cv::Mat> raw_frames;
 
     /**
      * @brief Write modified frames as a video to given file.
      * 
      * @param filename Path to file, where modified video should be saved.
      */
-    void write(const std::string &&filename) const {
+    void write(const std::string &filename) const {
         cv::VideoWriter writer(filename, cv::VideoWriter::fourcc('D','I','V','X'), 30, cv::Size(frames.back().cols, frames.back().rows));
         for (const auto &f : frames)
             writer.write(f);

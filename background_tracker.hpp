@@ -70,6 +70,8 @@ public:
      * @returns true if vault is beginning, false otherwise.
      */
     bool is_vault_beginning(double frame_height, double person_height) const noexcept {
+        if (!is_valid_direction())
+            return false;
         if (person_offsets.size() > vault_check_frames) {
             double size = person_height / frame_height;
             double runup_mean_delta = count_mean_delta(person_offsets.begin(), person_offsets.end() - vault_check_frames).y;
@@ -160,6 +162,7 @@ private:
                 int x = std::max(0, person.x + shift);
                 int width = std::min(person.x, person.width);
                 width = std::min(width, frame.cols - (person.x + shift));
+                width = std::max(10, width);
                 // Create new background inside frame.
                 bg = cv::Rect(
                     x, person.y,

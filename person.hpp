@@ -32,6 +32,7 @@ public:
     */
     person(std::size_t frame_no, const cv::Mat &frame, double fps, const cv::Rect &box, cv::dnn::Net &net)
         : vault_frames(fps * vault_duration), move_analyzer(frame, box) {
+            this->fps = fps;
             first_frame_no = frame_no;
             current_frame_no = frame_no;
             corners.push_back(get_corners(box));
@@ -67,6 +68,10 @@ public:
         return cv::norm(corners[frame_no - first_frame_no][corner::bl] - corners[frame_no - first_frame_no][corner::tl]);
     }
 
+    bool vault_began(std::size_t frame_no) const noexcept {
+        return move_analyzer.vault_frames(frame_no);
+    }
+
     /**
      * @brief Track person in next frame.
      * 
@@ -92,7 +97,9 @@ public:
             // TODO: crop frame and save it for future deep detection.
             // Append person's bounding box corners.
             corners.push_back(transform(get_corners(box), frame, frame_no, true));
-            return move_analyzer.update(frame, box, frame_no);
+            return is_inside(frame, frame_no)
+                && is_moving(frame_no)
+                && move_analyzer.update(frame, box, frame_no);
         }
 
         return false;
@@ -227,12 +234,18 @@ public:
         move_analyzer.draw(frame, idx);
     }
 
+    std::size_t get_first_frame() const noexcept {
+        return first_frame_no;
+    }
+
 private:
 
     friend class vault_analyzer;
 
     /// @brief Number of frames during vault.
-    const double vault_frames;
+    double vault_frames;
+
+    double fps;
 
     /// @brief Holds information, whether scaling was performed.
     bool scaling_performed = true;
@@ -416,6 +429,24 @@ private:
         } else {
             scaling_performed = false;
             return rect;
+        }
+    }
+
+    bool is_inside(const cv::Mat &frame, std::size_t frame_no) const noexcept {
+        for (const auto &corner : corners[frame_no - first_frame_no]) {
+            if (corner.x < 0.0 || corner.x > (double)frame.cols ||
+                corner.y < 0.0 || corner.y > (double)frame.rows) {
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    bool is_moving(std::size_t frame_no) const noexcept {
+        if ((double)frame_no - (double)first_frame_no < fps / 3.0) {
+            return true;
+        } else {
+            return move_analyzer.get_direction() != direction::unknown;
         }
     }
 
