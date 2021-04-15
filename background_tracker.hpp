@@ -65,19 +65,18 @@ public:
     /**
      * @brief Check if vault is beginning.
      * 
-     * @param frame_height Height of frame.
      * @param person_height Height of person in frame.
      * @returns true if vault is beginning, false otherwise.
      */
-    bool is_vault_beginning(double frame_height, double person_height) const noexcept {
+    bool is_vault_beginning(double person_height, double fps) const noexcept {
         if (!is_valid_direction())
             return false;
-        if (person_offsets.size() > vault_check_frames) {
-            double size = person_height / frame_height;
+        int vault_check_frames = (int)(vault_check_time * fps);
+        if (person_offsets.size() > 2 * vault_check_frames) {
             double runup_mean_delta = count_mean_delta(person_offsets.begin(), person_offsets.end() - vault_check_frames).y;
             double vault_mean_delta = count_mean_delta(person_offsets.end() - vault_check_frames, person_offsets.end()).y;
 
-            if ((vault_mean_delta - runup_mean_delta) * size / frame_height < vault_threshold)
+            if ((vault_mean_delta - runup_mean_delta) * person_height < vault_threshold)
                 return true;
         }
         return false;

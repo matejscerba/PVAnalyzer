@@ -49,11 +49,8 @@ public:
         }
         detect_athlete(filename, detector, fps);
 
-        cv::destroyAllWindows();
-
         vault_analyzer analyzer;
-        person athlete = detector.get_athlete();
-        analyzer.analyze(athlete, filename, frames.size(), fps);
+        analyzer.analyze(detector.get_athlete(), filename, frames.size(), fps);
 
         viewer v(frames, raw_frames, analyzer);
         v.show();
@@ -86,12 +83,6 @@ private:
                 break;
 
             detector.find(frame, frame_no);
-            // detector.draw(frame, frame_no);
-
-            // if (frame_no >= 80 || detector.is_found()) {
-            //     cv::imshow("frame", frame);
-            //     cv::waitKey();
-            // }
 
             raw_frames.push_back(frame.clone());
 
@@ -107,26 +98,14 @@ private:
     }
 
     void detect_athlete(const std::string &filename, body_detector &detector, double fps) noexcept {
-        // Try to open video.
-        cv::VideoCapture video;
-        if (!video.open(filename)) {
-            std::cout << "Error opening video " << filename << std::endl;
-            return;
-        }
-
         detector.setup();
 
         cv::Mat frame;
         body_detector::result res = body_detector::result::unknown;
-        // Video is opened, processing frame by frame begins.
-        for (std::size_t frame_no = 0; ; frame_no++) {
-            video >> frame;
-
-            // Video ended.
-            if (frame.empty())
-                break;
-
+        for (std::size_t frame_no = 0; frame_no < raw_frames.size(); ++frame_no) {
             std::cout << "Processing frame " << frame_no << std::endl;
+
+            frame = raw_frames[frame_no].clone();
 
             if (res != body_detector::result::error) {
                 // No error occured yet, process video further.
@@ -141,18 +120,8 @@ private:
                 }
             }
 
-            frames.push_back(frame.clone());
-
-            cv::imshow("frame", frame);
-            cv::waitKey();
-
-            // To be removed.
-            if (filename.find("kolin2.MOV") != std::string::npos) {
-                video >> frame; video >> frame; video >> frame;
-            }
+            frames.push_back(frame);
         }
-
-        video.release();
     }
 
     /**

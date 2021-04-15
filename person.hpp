@@ -31,7 +31,7 @@ public:
      * @param net Deep neural network used for detecting person's body parts.
     */
     person(std::size_t frame_no, const cv::Mat &frame, double fps, const cv::Rect &box, cv::dnn::Net &net)
-        : vault_frames(fps * vault_duration), move_analyzer(frame, box) {
+        : vault_frames(fps * vault_duration), move_analyzer(frame, box, fps) {
             this->fps = fps;
             first_frame_no = frame_no;
             current_frame_no = frame_no;
@@ -88,6 +88,8 @@ public:
             std::cout << "Unable to extract bounding box from frame before frame no. " << frame_no << std::endl;
             return false;
         }
+
+        // std::cout << "tracking" << std::endl;
 
         cv::Rect box;
         cv::Mat rotated = rotate(frame, frame_no);
@@ -164,6 +166,7 @@ public:
         }
         std::size_t idx = frame_no - first_frame_no;
         
+        // std::cout << "." << corners.size() << " " << idx << " " << frame_no << std::endl;
         if (corners.size() > idx) {
         // Rectangle which is tracked.
             cv::Point2d tl = corners[idx][corner::tl];
@@ -200,6 +203,7 @@ public:
             cv::line(frame, bl, tl, color, 1);
         }
 
+        // std::cout << "." << points.size() << " " << idx << " " << frame_no << std::endl;
         // Body parts if they were detected.
         if (points.size() > idx) {
             for (int n = 0; n < npairs; n++) {

@@ -21,9 +21,10 @@ public:
      * @param frame First frame, where person was detected.
      * @param person Bounding box of person in `frame`.
      */
-    movement_analyzer(const cv::Mat &frame, const cv::Rect2d &person) {
+    movement_analyzer(const cv::Mat &frame, const cv::Rect2d &person, double fps) {
         left_direction_tracker = background_tracker(frame, person, direction::left);
         right_direction_tracker = background_tracker(frame, person, direction::right);
+        this->fps = fps;
     }
 
     /**
@@ -41,7 +42,7 @@ public:
         bool res = false;
         if (left_direction_tracker) {
             if (left_direction_tracker->update(frame, person)) {
-                if (!_vault_began && left_direction_tracker->is_vault_beginning((double)frame.rows, person.height)) {
+                if (!_vault_began && left_direction_tracker->is_vault_beginning(person.height, fps)) {
                     _vault_began = frame_no;
                 }
                 res = true;
@@ -52,7 +53,7 @@ public:
         }
         if (right_direction_tracker) {
             if (right_direction_tracker->update(frame, person)) {
-                if (!_vault_began && right_direction_tracker->is_vault_beginning((double)frame.rows, person.height)) {
+                if (!_vault_began && right_direction_tracker->is_vault_beginning(person.height, fps)) {
                     _vault_began = frame_no;
                 }
                 res = true;
@@ -134,6 +135,8 @@ private:
     // TODO: rename to direction
     /// @brief Horizontal direction of person's movement.
     direction dir = direction::unknown;
+
+    double fps;
 
     /**
      * @brief Update person's movement direction based on background trackers.

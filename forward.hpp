@@ -230,10 +230,10 @@ const std::size_t pairs[14][2] = {
 /// @brief Minimal probability value to mark body part as valid.
 const double detection_threshold = 0.1;
 
-/// @brief How many frames to check to determine if vault began.
-const std::size_t vault_check_frames = 6;
+/// @brief How many seconds to check for vault beginning.
+const double vault_check_time = 0.2;
 
 /// @brief How much the person's coordinates must change in order to set `_vault_began` to true.
-const double vault_threshold = -0.55 / 720;
+const double vault_threshold = -2.5 * 137.0;
 
 const std::size_t takeoff_parameter_frames = 3;

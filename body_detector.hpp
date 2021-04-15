@@ -48,21 +48,17 @@ public:
     void find(const cv::Mat &frame, std::size_t frame_no) noexcept {
         std::cout << "Finding " << frame_no << std::endl;
         if (!athlete) {
-            std::cout << people.size() << " ";
             if (people.size()) {
                 people.remove_if([&frame, frame_no](person &p){ return !p.track(frame, frame_no); });
             }
-            std::cout << people.size() << " ";
             if (!people.size()) {
                 find_people(frame, frame_no);
             }
-            std::cout << people.size() << std::endl;
             auto found = std::find_if(people.begin(), people.end(), [frame_no](const person &p){
                 return p.vault_began(frame_no);
             });
             if (found != people.end()) {
                 athlete = std::make_optional(*found);
-                std::cout << "found" << std::endl;
             }
         }
     }
@@ -84,7 +80,6 @@ public:
      * @returns result of detection, whether frame was skipped, detected correctly or an error occured.
      */
     result detect(const cv::Mat &frame, std::size_t frame_no) {
-        std::cout << person_frame << std::endl;
         result res = result::ok;
         if (frame_no < person_frame) {
             res = result::skip;
@@ -104,9 +99,7 @@ public:
 
         // Detect body parts of all valid people in frame.
         if ((res != result::error) && (frame_no >= person_frame)) {
-            for (auto &p : people) {
-                p.detect(frame, frame_no);
-            }
+            athlete->detect(frame, frame_no);
         }
 
         return res;
@@ -118,7 +111,7 @@ public:
      * @returns person representing athlete.
      */
     person get_athlete() const {
-        return people.front();
+        return *athlete;
     }
 
     /**
@@ -128,8 +121,8 @@ public:
      * @param frame_no Number of given frame.
      */
     void draw(cv::Mat &frame, std::size_t frame_no) const {
-        for (const auto &p : people) {
-            p.draw(frame, frame_no);
+        if (athlete) {
+            athlete->draw(frame, frame_no);
         }
     }
 
