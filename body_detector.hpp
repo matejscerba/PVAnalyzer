@@ -59,6 +59,7 @@ public:
             });
             if (found != people.end()) {
                 athlete = std::make_optional(*found);
+                people.clear();
             }
         }
     }
@@ -121,9 +122,10 @@ public:
      * @param frame_no Number of given frame.
      */
     void draw(cv::Mat &frame, std::size_t frame_no) const {
-        if (athlete) {
+        for (const auto &p : people)
+            p.draw(frame, frame_no);
+        if (athlete)
             athlete->draw(frame, frame_no);
-        }
     }
 
 private:
@@ -151,7 +153,7 @@ private:
      * Person is removed from list if it is clear that the person is not the athlete.
      * Only the athlete should be in this list when video is coming to an end.
     */
-    std::list<person> people; // Only athlete is currently added to this list.
+    std::list<person> people;
 
     /**
      * @brief Binary comparison function.

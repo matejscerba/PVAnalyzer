@@ -325,6 +325,7 @@ private:
      * @brief Get first frame_body in which both hips are valid.
      * 
      * @param points Athlete's body parts detected in the whole video.
+     * 
      * @returns first frame_body in which both hips are valid.
      */
     frame_body get_first_hips(const video_body &points) const noexcept {
@@ -469,14 +470,6 @@ public:
         }
     }
 
-private:
-
-    /**
-     * @brief
-     */
-    steps_duration(const std::string name, const vault_part part, const std::string &&unit) noexcept
-        : steps_parameter(name, part, std::move(unit)) {}
-
 };
 
 /**
@@ -547,6 +540,7 @@ private:
      * @brief Compute angle between ray from center of hips to lower ankle and vertical axis.
      * 
      * @param body Body from which to extract value.
+     * 
      * @returns angle between ray from center of hips to lower ankle and vertical axis.
      * 
      * @note Negative angle represents ray facing in the opposite direction than athlete's runup.
@@ -654,6 +648,7 @@ private:
      * @brief Compute hips height from given body points in a single frame.
      * 
      * @param body Body from which to extract value.
+     * 
      * @returns y-coordinate of hips in frame given by body points.
      */
     virtual std::optional<double> extract_value(const frame_body &body) const noexcept {
@@ -698,6 +693,7 @@ private:
      * @brief Compute height of `b_part` from given body points in a single frame.
      * 
      * @param body Body from which to extract value.
+     * 
      * @returns y-coordinate of `b_part` in frame given by body points.
      */
     virtual std::optional<double> extract_value(const frame_body &body) const noexcept {
@@ -733,25 +729,19 @@ protected:
      * @brief Compute angle between ray and vertical axis.
      * 
      * @param body Body from which to extract value.
+     * 
      * @returns angle between ray specified by body parts and vertical axis.
      * 
      * @note Negative angle represents ray facing in the opposite direction than athlete's runup.
      * @note Angle == 0 if ray faces directly upwards, degrees range is [-180,180].
      */
     virtual std::optional<double> extract_value(const frame_body &body) const noexcept {
-        std::optional<cv::Point2d> a = (body[a1_part] + body[a2_part]) / 2.0;
-        std::optional<cv::Point2d> b = (body[b1_part] + body[b2_part]) / 2.0;
-        if (a && b) {
-            double y = a->y - b->y;
-            double d = 0;
-            if (dir == direction::left)
-                d = 1;
-            else if (dir == direction::right)
-                d = -1;
-            double x = d * (a->x - b->x);
-            return std::atan(x / y) * 180.0 / M_PI;
-        }
-        return std::nullopt;
+        double d = 0;
+        if (dir == direction::left)
+            d = 1;
+        else if (dir == direction::right)
+            d = -1;
+        return d * get_vertical_tilt_angle((body[a1_part] + body[a2_part]) / 2.0, (body[b1_part] + body[b2_part]) / 2.0);
     }
 
 private:
@@ -797,6 +787,7 @@ private:
      * @brief Compute angle between ray and horizontal axis using angle between ray and vertical axis.
      * 
      * @param body Body from which to extract value.
+     * 
      * @returns angle between ray specified by body parts and horizontal axis.
      * 
      * @note Negative angle represents ray facing downwards.

@@ -2,9 +2,11 @@
 
 #include <opencv2/opencv.hpp>
 
-#include <string>
+#include <cstddef>
 #include <iostream>
-#include <optional>
+#include <ostream>
+#include <string>
+#include <vector>
 
 #include "forward.hpp"
 #include "body_detector.hpp"
@@ -28,76 +30,105 @@ public:
      * @param filename Path to video file to be processed.
      */
     void process(const std::string &filename) {
-        // Prepare body detector.
+        std::vector<cv::Mat> raw_frames = extract_frames(filename);
+
         double fps = 30;
         body_detector detector(fps);
 
-        // Set default parameters.
-        // std::size_t frame_start = 0;
-        // cv::Point position;
-        // if (filename.find("kolin2.MOV") != std::string::npos) {
-        //     frame_start = 0;
-        //     position = cv::Point(805, 385);
-        // } else if (filename.find("kolin.mp4") != std::string::npos) {
-        //     frame_start = 96;
-        //     position = cv::Point(85, 275);
-        // }
-
-        if (!find_athlete(filename, detector)) {
+        std::vector<cv::Mat> found_frames;
+        if (!find_athlete(raw_frames, detector, found_frames)) {
             std::cout << "Athete could not be found in video " << filename << std::endl;
             return;
         }
-        detect_athlete(filename, detector, fps);
+        std::vector<cv::Mat> frames = detect_athlete(raw_frames, detector, fps);
 
+        // Analyze detected athlete.
         vault_analyzer analyzer;
         analyzer.analyze(detector.get_athlete(), filename, frames.size(), fps);
 
-        viewer v(frames, raw_frames, analyzer);
-        v.show();
-
-        // write("no_last_box.avi");
+        // Show result.
+        viewer v;
+        v.show(frames, raw_frames, analyzer);
     }
 
 private:
 
-    /// @brief Holds frames modified by processor.
-    std::vector<cv::Mat> frames;
+    /**
+     * @brief Extract frames from video given by its path.
+     * 
+     * @param filename Path to video.
+     * 
+     * @returns frames of video.
+     */
+    std::vector<cv::Mat> extract_frames(const std::string &filename) {
+        std::vector<cv::Mat> frames;
 
-    /// @brief Holds frames unmodified by processor.
-    std::vector<cv::Mat> raw_frames;
-
-    bool find_athlete(const std::string &filename, body_detector &detector) noexcept {
-        // Try to open video.
+        // Open video.
         cv::VideoCapture video;
         if (!video.open(filename)) {
             std::cout << "Error opening video " << filename << std::endl;
-            return false;
+            return frames;
         }
 
+        // Loop through video and save frames.
         cv::Mat frame;
-        for (std::size_t frame_no = 0; ; frame_no++) {
+        for (;;) {
             video >> frame;
 
             // Video ended.
-            if (frame.empty())
-                break;
+            if (frame.empty()) break;
 
-            detector.find(frame, frame_no);
+            // Save current frame.
+            frames.push_back(frame.clone());
 
-            raw_frames.push_back(frame.clone());
-
-            // To be removed.
+            // Skip frames of tested 120-fps video for efficiency reasons.
             if (filename.find("kolin2.MOV") != std::string::npos) {
                 video >> frame; video >> frame; video >> frame;
             }
         }
-
         video.release();
 
+        return frames;
+    }
+
+    /**
+     * @brief Find athlete in video given by frames.
+     * 
+     * @param raw_frames Frames of video to be processed.
+     * @param detector Detector used for finding athlete in video.
+     * @param[out] found_frames Frames with detections' drawings.
+     * 
+     * @returns whether athlete was found.
+     */
+    bool find_athlete(const std::vector<cv::Mat> &raw_frames, body_detector &detector, std::vector<cv::Mat> &found_frames) {
+        std::vector<cv::Mat> frames;
+        cv::Mat raw_frame, found_frame;
+        for (std::size_t frame_no = 0; frame_no < raw_frames.size(); ++frame_no) {
+            raw_frame = raw_frames[frame_no].clone();
+            found_frame = raw_frames[frame_no].clone();
+
+            // Try to find athlete in current frame and draw detections.
+            detector.find(raw_frame, frame_no);
+            detector.draw(found_frame, frame_no);
+
+            // Save unmodified and modified frames.
+            frames.push_back(raw_frame);
+            found_frames.push_back(found_frame);
+        }
         return detector.is_found();
     }
 
-    void detect_athlete(const std::string &filename, body_detector &detector, double fps) noexcept {
+    /**
+     * @brief Detect athlete and his body parts in video given by frames.
+     * 
+     * @param raw_frames Frames of video to be processed.
+     * @param detector Detector used for finding athlete in video.
+     * @param fps Frame rate of processed video.
+     * 
+     * @returns frames with detections' drawings.
+     */
+    std::vector<cv::Mat> detect_athlete(const std::vector<cv::Mat> &raw_frames, body_detector &detector, double fps) {
+        std::vector<cv::Mat> frames;
         detector.setup();
 
         cv::Mat frame;
@@ -110,30 +141,35 @@ private:
             if (res != body_detector::result::error) {
                 // No error occured yet, process video further.
 
-                // Detect body.
+                // Detect athlete's body in current frame.
                 res = detector.detect(frame, frame_no);
                 if (res == body_detector::result::ok) {
                     // Detection on given frame was valid.
 
-                    // Draw detections in frame.
+                    // Draw detections into frame.
                     detector.draw(frame, frame_no);
                 }
             }
 
+            // Save current modified frame.
             frames.push_back(frame);
         }
+        return frames;
     }
 
     /**
      * @brief Write modified frames as a video to given file.
      * 
      * @param filename Path to file, where modified video should be saved.
+     * @param frames Frames which will be used to create video.
      */
-    void write(const std::string &filename) const {
+    void write(const std::string &filename, const std::vector<cv::Mat> &frames) {
         cv::VideoWriter writer(filename, cv::VideoWriter::fourcc('D','I','V','X'), 30, cv::Size(frames.back().cols, frames.back().rows));
-        for (const auto &f : frames)
-            writer.write(f);
-        writer.release();
+        if (writer.isOpened()) {
+            for (const auto &f : frames)
+                writer.write(f);
+            writer.release();
+        }
     }
 
 };

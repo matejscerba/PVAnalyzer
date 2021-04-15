@@ -105,7 +105,8 @@ public:
      * @param person_frame_no Number of given frame.
     */
     void draw(cv::Mat &frame, std::size_t person_frame_no) const noexcept {
-        cv::rectangle(frame, backgrounds[person_frame_no].tl(), backgrounds[person_frame_no].br(), cv::Scalar(255, 0, 0), 2);
+        if (person_frame_no < backgrounds.size())
+            cv::rectangle(frame, backgrounds[person_frame_no].tl(), backgrounds[person_frame_no].br(), cv::Scalar(255, 0, 0), 2);
     }
 
 private:

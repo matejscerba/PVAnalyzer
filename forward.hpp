@@ -105,6 +105,11 @@ std::optional<cv::Point2d> operator-(const std::optional<cv::Point2d> &lhs, cons
 std::optional<cv::Point2d> operator/(const std::optional<cv::Point2d> &lhs, double rhs);
 
 /**
+ * @brief
+ */
+std::optional<double> operator*(double lhs, const std::optional<double> &rhs) noexcept;
+
+/**
  * @brief Add two video bodies together.
  * 
  * @returns result of appending `rhs` to `lhs`.
@@ -183,6 +188,8 @@ std::vector<std::size_t> get_frame_numbers( std::vector<frame_body>::const_itera
  * @returns numbers of frames in which athlete's lower foot leaves ground.
  */
 std::vector<std::size_t> get_step_frames(const video_body &points) noexcept;
+
+std::optional<double> get_vertical_tilt_angle(const frame_part &a, const frame_part &b) noexcept;
 
 //////////////////////////////////////////////////////////////////////////////////////
 // constants

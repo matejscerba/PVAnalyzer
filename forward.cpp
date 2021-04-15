@@ -25,6 +25,11 @@ video_body operator+(const video_body &&lhs, const video_body &&rhs) {
     return res;
 }
 
+std::optional<double> operator*(double lhs, const std::optional<double> &rhs) noexcept {
+    if (rhs) return lhs * (*rhs);
+    return std::nullopt;
+}
+
 std::vector<cv::Point2d> get_corners(const cv::Rect &rect) {
     return {
         rect.tl(), cv::Point2d(rect.br().x, rect.tl().y),
@@ -156,4 +161,13 @@ std::vector<std::size_t> get_step_frames(const video_body &points) noexcept {
         res.push_back(lows[i]);
     }
     return res;
+}
+
+std::optional<double> get_vertical_tilt_angle(const frame_part &a, const frame_part &b) noexcept {
+    if (a && b) {
+        double y = a->y - b->y;
+        double x = a->x - b->x;
+        return std::atan(x / y) * 180.0 / M_PI;
+    }
+    return std::nullopt;
 }
