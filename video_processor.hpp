@@ -29,7 +29,7 @@ public:
      * 
      * @param filename Path to video file to be processed.
      */
-    void process(const std::string &filename) {
+    void process(const std::string &filename) const noexcept {
         std::vector<cv::Mat> raw_frames = extract_frames(filename);
 
         double fps = 30;
@@ -41,6 +41,12 @@ public:
             return;
         }
         std::vector<cv::Mat> frames = detect_athlete(raw_frames, detector, fps);
+
+        std::string output_filename = "outputs/" + create_output_filename();
+        std::string ext = ".avi";
+        write(output_filename + "_raw_frames" + ext, raw_frames);
+        write(output_filename + "_found_frames" + ext, found_frames);
+        write(output_filename + "_frames" + ext, frames);
 
         // Analyze detected athlete.
         vault_analyzer analyzer;
@@ -60,7 +66,7 @@ private:
      * 
      * @returns frames of video.
      */
-    std::vector<cv::Mat> extract_frames(const std::string &filename) {
+    std::vector<cv::Mat> extract_frames(const std::string &filename) const noexcept {
         std::vector<cv::Mat> frames;
 
         // Open video.
@@ -100,7 +106,7 @@ private:
      * 
      * @returns whether athlete was found.
      */
-    bool find_athlete(const std::vector<cv::Mat> &raw_frames, body_detector &detector, std::vector<cv::Mat> &found_frames) {
+    bool find_athlete(const std::vector<cv::Mat> &raw_frames, body_detector &detector, std::vector<cv::Mat> &found_frames) const noexcept {
         std::vector<cv::Mat> frames;
         cv::Mat raw_frame, found_frame;
         for (std::size_t frame_no = 0; frame_no < raw_frames.size(); ++frame_no) {
@@ -127,7 +133,7 @@ private:
      * 
      * @returns frames with detections' drawings.
      */
-    std::vector<cv::Mat> detect_athlete(const std::vector<cv::Mat> &raw_frames, body_detector &detector, double fps) {
+    std::vector<cv::Mat> detect_athlete(const std::vector<cv::Mat> &raw_frames, body_detector &detector, double fps) const noexcept {
         std::vector<cv::Mat> frames;
         detector.setup();
 
@@ -158,17 +164,19 @@ private:
     }
 
     /**
-     * @brief Write modified frames as a video to given file.
+     * @brief Write frames as a video to given file.
      * 
      * @param filename Path to file, where modified video should be saved.
      * @param frames Frames which will be used to create video.
      */
-    void write(const std::string &filename, const std::vector<cv::Mat> &frames) {
-        cv::VideoWriter writer(filename, cv::VideoWriter::fourcc('D','I','V','X'), 30, cv::Size(frames.back().cols, frames.back().rows));
+    void write(const std::string &filename, const std::vector<cv::Mat> &frames) const noexcept {
+        cv::VideoWriter writer(filename, cv::VideoWriter::fourcc('D','I','V','X'), 30, cv::Size(frames.front().cols, frames.front().rows));
         if (writer.isOpened()) {
             for (const auto &f : frames)
                 writer.write(f);
             writer.release();
+        } else {
+            std::cout << "Video could not be written to file " << filename << std::endl;
         }
     }
 

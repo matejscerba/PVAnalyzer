@@ -4,7 +4,6 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <ctime>
 #include <fstream>
 #include <iomanip>
 #include <ios>
@@ -132,20 +131,6 @@ private:
      * @brief Number of frame in which athlete's hips are highest.
      */
     std::size_t culmination = 0;
-
-    /**
-     * @brief Create name for output file from current date.
-     * 
-     * Parameters' values will be written to that file.
-     * 
-     * @returns name for output file.
-     */
-    std::string create_output_filename() const noexcept {
-        std::time_t now = std::time(nullptr);
-        std::stringstream sstr;
-        sstr << std::put_time(std::localtime(&now), "%Y-%m-%d_%H-%M-%S");
-        return "parameters/" + sstr.str() + ".csv";
-    }
 
     /**
      * @brief Compute values of parameters to be analyzed.
@@ -284,7 +269,7 @@ private:
      */
     void write_parameters() const noexcept {
         std::ofstream output;
-        std::string o_filename = create_output_filename();
+        std::string o_filename = "parameters/" + create_output_filename() + ".csv";
         output.open(o_filename);
         if (!output.is_open()) {
             std::cout << "Output file \"" << o_filename << "\" could not be opened" << std::endl;

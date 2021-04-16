@@ -7,6 +7,8 @@
 #include <optional>
 #include <tuple>
 #include <ostream>
+#include <ctime>
+#include <sstream>
 
 /**
  * @brief File containing definitions of type aliases, constants and helper functions.
@@ -160,6 +162,13 @@ std::optional<double> distance(const std::optional<cv::Point2d> &a, const std::o
 frame_part get_part(const frame_part &a, const frame_part &b, std::function<bool (double, double)> compare) noexcept;
 
 std::optional<double> get_height(const frame_part &a, const frame_part &b, std::function<bool (double, double)> compare) noexcept;
+
+/**
+ * @brief Create name for output file from current date.
+ * 
+ * @returns name for output file.
+ */
+std::string create_output_filename() noexcept;
 
 /**
  * @brief Get numbers of frames in which ankle specified by `compare` reaches local point of interest.

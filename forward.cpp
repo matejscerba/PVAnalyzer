@@ -171,3 +171,10 @@ std::optional<double> get_vertical_tilt_angle(const frame_part &a, const frame_p
     }
     return std::nullopt;
 }
+
+std::string create_output_filename() noexcept {
+    std::time_t now = std::time(nullptr);
+    std::stringstream sstr;
+    sstr << std::put_time(std::localtime(&now), "%Y-%m-%d_%H-%M-%S");
+    return sstr.str();
+}
