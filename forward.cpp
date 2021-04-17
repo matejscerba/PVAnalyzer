@@ -50,6 +50,10 @@ std::optional<cv::Point2d> get_center(const std::optional<cv::Rect> &rect){
     return std::nullopt;
 }
 
+cv::Point get_center(const std::vector<cv::Point2d> &pts) noexcept {
+    return (pts[corner::tl] + pts[corner::br]) / 2.0;
+}
+
 std::optional<cv::Point2d> count_mean_delta(std::vector<std::optional<cv::Point2d>>::const_iterator begin, std::vector<std::optional<cv::Point2d>>::const_iterator end) noexcept {
     auto n = end - begin - 1;
     if (n > 0 && *(--end) && *begin) {

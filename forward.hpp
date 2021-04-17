@@ -145,6 +145,8 @@ cv::Point2d get_center(const cv::Rect &rect);
 
 std::optional<cv::Point2d> get_center(const std::optional<cv::Rect> &rect);
 
+cv::Point get_center(const std::vector<cv::Point2d> &pts) noexcept;
+
 /**
  * @brief Count mean of offset of given consecutive values in vector.
  * 

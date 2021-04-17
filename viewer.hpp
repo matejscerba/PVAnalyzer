@@ -42,10 +42,7 @@ public:
         
         std::cout << std::fixed << std::setprecision(2);
         for (;;) {
-            std::stringstream label;
-            label << "Frame " << frame_no << "/" << frames.size() - 1 << (drawing ? " with drawing" : "");
-            cv::destroyAllWindows();
-            cv::imshow(label.str(), drawing ? frames[frame_no] : raw_frames[frame_no]);
+            cv::imshow("window", drawing ? frames[frame_no] : raw_frames[frame_no]);
 
             write_parameters();
 

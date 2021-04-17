@@ -42,7 +42,7 @@ public:
         }
         std::vector<cv::Mat> frames = detect_athlete(raw_frames, detector, fps);
 
-        std::string output_filename = "outputs/" + create_output_filename();
+        std::string output_filename = "outputs/videos/" + create_output_filename();
         std::string ext = ".avi";
         write(output_filename + "_raw_frames" + ext, raw_frames);
         write(output_filename + "_found_frames" + ext, found_frames);
@@ -55,6 +55,7 @@ public:
         // Show result.
         viewer v;
         v.show(frames, raw_frames, analyzer);
+        cv::destroyAllWindows();
     }
 
 private:
@@ -155,6 +156,9 @@ private:
                     detector.draw(frame, frame_no);
                 }
             }
+
+            // cv::imshow("frame", frame);
+            // cv::waitKey();
 
             // Save current modified frame.
             frames.push_back(frame);
