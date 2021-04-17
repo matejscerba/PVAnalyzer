@@ -38,17 +38,14 @@ public:
      * @param fps Frame rate of processed video.
      */
     void analyze(const person &athlete, const std::string &filename, std::size_t frames, double fps) noexcept {
-        std::size_t before = athlete.first_frame_no;
-        std::size_t after = frames - (athlete.first_frame_no + athlete.get_points().size());
+        std::size_t after = frames - athlete.get_points().size();
         points_frame =
-            video_body(before, frame_body(npoints, std::nullopt)) +
             athlete.get_points() +
             video_body(after, frame_body(npoints, std::nullopt));
         points_real =
-            video_body(before, frame_body(npoints, std::nullopt)) +
             athlete.get_points(true) +
             video_body(after, frame_body(npoints, std::nullopt));
-
+        std::cout << points_frame.size() << std::endl;
         dir = athlete.move_analyzer.get_direction();
         this->filename = filename;
         this->fps = fps;

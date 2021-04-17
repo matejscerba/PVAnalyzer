@@ -31,41 +31,52 @@ public:
      * @param net Deep neural network used for detecting person's body parts.
     */
     person(std::size_t frame_no, const cv::Mat &frame, double fps, const cv::Rect &box, cv::dnn::Net &net)
-        : vault_frames(fps * vault_duration), move_analyzer(frame, box, fps) {
+        : move_analyzer(frame_no, frame, box, fps) {
+            std::cout << "b";
+            angles = std::vector<double>(frame_no, 0.0);
+            std::cout << "b";
+            corners = person_corners(frame_no, std::nullopt);
+            std::cout << "b";
+            scaled_corners = person_corners(frame_no, std::nullopt);
+            std::cout << "b";
+            cropped_frames = std::vector<std::optional<cv::Mat>>(frame_no, std::nullopt);
+            std::cout << "b";
+            points = video_body(frame_no, frame_body(npoints, std::nullopt));
+            std::cout << "b";
             this->fps = fps;
-            first_frame_no = frame_no;
-            current_frame_no = frame_no;
+            std::cout << "b";
             corners.push_back(get_corners(box));
+            std::cout << "b";
             this->net = net;
+            std::cout << "b";
             tracker = cv::TrackerCSRT::create();
+            std::cout << "b";
             tracker->init(frame, box);
+            std::cout << "b";
     }
 
     /**
      * @param frame_no Number of frame where to get bounding box.
      * @returns bounding box of this person in current frame.
      */
-    cv::Rect bbox(std::size_t frame_no) const {
-        // Check whether person exists in given frame.
-        if (frame_no < first_frame_no) {
-            std::cout << "Unable to extract bounding box from frame no. " << frame_no << std::endl;
-            return cv::Rect();
+    std::optional<cv::Rect> bbox(std::size_t frame_no) const {
+        if (corners[frame_no]) {
+            return cv::Rect(
+                cv::Point((*corners[frame_no])[corner::tl]),
+                cv::Point((*corners[frame_no])[corner::br])
+            );
         }
-        std::size_t idx = frame_no - first_frame_no;
-        return cv::Rect(
-            cv::Point(corners[idx][corner::tl]),
-            cv::Point(corners[idx][corner::br])
-        );
+        return std::nullopt;
     }
 
     /// @returns width of this person's bounding box in given frame.
     double width(std::size_t frame_no) const {
-        return cv::norm(corners[frame_no - first_frame_no][corner::tr] - corners[frame_no - first_frame_no][corner::tl]);
+        return cv::norm((*corners[frame_no])[corner::tr] - (*corners[frame_no])[corner::tl]);
     }
 
     /// @returns height of this person's bounding box in given frame.
     double height(std::size_t frame_no) const {
-        return cv::norm(corners[frame_no - first_frame_no][corner::bl] - corners[frame_no - first_frame_no][corner::tl]);
+        return cv::norm((*corners[frame_no])[corner::bl] - (*corners[frame_no])[corner::tl]);
     }
 
     bool vault_began(std::size_t frame_no) const noexcept {
@@ -82,15 +93,6 @@ public:
      * @returns true if detection was OK, false if an error occured.
     */
     bool track(const cv::Mat &frame, std::size_t frame_no) {
-        // Check whether person can be tracked in given frame
-        // (person must exist at least one frame before the currently processed one).
-        if (frame_no < first_frame_no + 1) {
-            std::cout << "Unable to extract bounding box from frame before frame no. " << frame_no << std::endl;
-            return false;
-        }
-
-        // std::cout << "tracking" << std::endl;
-
         cv::Rect box;
         cv::Mat rotated = rotate(frame, frame_no);
 
@@ -117,13 +119,8 @@ public:
      * @param frame_no Number of given frame.
     */
     void detect(const cv::Mat &frame, std::size_t frame_no) {
-        // Check whether person exists in given frame.
-        if (frame_no < first_frame_no) {
-            std::cout << "Unable to detect body parts in frame no. " << frame_no << std::endl;
-            return;
-        }
         // Crop person from frame.
-        cv::Mat input = get_person_frame(corners[frame_no - first_frame_no], frame, frame_no);
+        cv::Mat input = get_person_frame((*corners[frame_no]), frame, frame_no);
         // Process cropped frame.
         cv::Mat blob = cv::dnn::blobFromImage(input, 1.0 / 255, cv::Size(), cv::Scalar(), false, false, CV_32F);
         net.setInput(blob);
@@ -159,20 +156,13 @@ public:
      * @param frame_no Number of given frame.
     */
     void draw(cv::Mat &frame, std::size_t frame_no) const {
-        // Check whether person exists in given frame.
-        if (frame_no < first_frame_no) {
-            std::cout << "Unable to draw frame no. " << frame_no << std::endl;
-            return;
-        }
-        std::size_t idx = frame_no - first_frame_no;
         
-        // std::cout << "." << corners.size() << " " << idx << " " << frame_no << std::endl;
-        if (corners.size() > idx) {
+        if (corners.size() > frame_no) {
         // Rectangle which is tracked.
-            cv::Point2d tl = corners[idx][corner::tl];
-            cv::Point2d tr = corners[idx][corner::tr];
-            cv::Point2d bl = corners[idx][corner::bl];
-            cv::Point2d br = corners[idx][corner::br];
+            cv::Point2d tl = (*corners[frame_no])[corner::tl];
+            cv::Point2d tr = (*corners[frame_no])[corner::tr];
+            cv::Point2d bl = (*corners[frame_no])[corner::bl];
+            cv::Point2d br = (*corners[frame_no])[corner::br];
 
             cv::Scalar color(0, 0, 255);
             if (move_analyzer.vault_frames(frame_no))
@@ -184,14 +174,14 @@ public:
             cv::line(frame, bl, tl, color, 1);
 
             // Scaled rectangle.
-            tl = corners[idx][corner::tl]
-                + (1.0 - scale_factor) * 0.5 * (corners[idx][corner::br] - corners[idx][corner::tl]);
-            tr = corners[idx][corner::tr]
-                + (1.0 - scale_factor) * 0.5 * (corners[idx][corner::bl] - corners[idx][corner::tr]);
-            bl = corners[idx][corner::bl]
-                - (1.0 - scale_factor) * 0.5 * (corners[idx][corner::bl] - corners[idx][corner::tr]);
-            br = corners[idx][corner::br]
-                - (1.0 - scale_factor) * 0.5 * (corners[idx][corner::br] - corners[idx][corner::tl]);
+            tl = (*corners[frame_no])[corner::tl]
+                + (1.0 - scale_factor) * 0.5 * ((*corners[frame_no])[corner::br] - (*corners[frame_no])[corner::tl]);
+            tr = (*corners[frame_no])[corner::tr]
+                + (1.0 - scale_factor) * 0.5 * ((*corners[frame_no])[corner::bl] - (*corners[frame_no])[corner::tr]);
+            bl = (*corners[frame_no])[corner::bl]
+                - (1.0 - scale_factor) * 0.5 * ((*corners[frame_no])[corner::bl] - (*corners[frame_no])[corner::tr]);
+            br = (*corners[frame_no])[corner::br]
+                - (1.0 - scale_factor) * 0.5 * ((*corners[frame_no])[corner::br] - (*corners[frame_no])[corner::tl]);
 
             color = cv::Scalar(0, 0, 127);
             if (move_analyzer.vault_frames(frame_no))
@@ -205,12 +195,12 @@ public:
 
         // std::cout << "." << points.size() << " " << idx << " " << frame_no << std::endl;
         // Body parts if they were detected.
-        if (points.size() > idx) {
+        if (points.size() > frame_no) {
             for (int n = 0; n < npairs; n++) {
                 std::size_t a_idx = pairs[n][0];
                 std::size_t b_idx = pairs[n][1];
-                std::optional<cv::Point2d> a = points[idx][a_idx];
-                std::optional<cv::Point2d> b = points[idx][b_idx];
+                std::optional<cv::Point2d> a = points[frame_no][a_idx];
+                std::optional<cv::Point2d> b = points[frame_no][b_idx];
 
                 // Check if points `a` and `b` are valid.
                 if (a && b) {
@@ -235,24 +225,21 @@ public:
         }
 
         // Movement analyzer.
-        move_analyzer.draw(frame, idx);
+        move_analyzer.draw(frame, frame_no);
     }
 
     std::size_t get_first_frame() const noexcept {
-        return first_frame_no;
+        auto found = std::find_if(corners.begin(), corners.end(), [](const std::optional<std::vector<cv::Point2d>> &cs){
+            return cs != std::nullopt;
+        });
+        return found - corners.begin();
     }
 
 private:
 
     friend class vault_analyzer;
 
-    /// @brief Number of frames during vault.
-    double vault_frames;
-
     double fps;
-
-    /// @brief Holds information, whether scaling was performed.
-    bool scaling_performed = true;
 
     /// @brief Deep neural network used for detecting person's body parts.
     cv::dnn::Net net;
@@ -260,11 +247,11 @@ private:
     /// @brief Tracker used to track person in frames.
     cv::Ptr<cv::Tracker> tracker;
 
-    /// @brief Number of first frame in which person is detected.
-    std::size_t first_frame_no;
+    std::vector<double> angles;
 
-    /// @brief Number of currently processed frame.
-    std::size_t current_frame_no;
+    person_corners scaled_corners;
+
+    std::vector<std::optional<cv::Mat>> cropped_frames;
 
     /**
      * @brief Corners of bounding boxes of person in each frame.
@@ -307,7 +294,7 @@ private:
         int w = output.size[3];
 
         // Scale by `scaling_factor` if last rectangle was scaled.
-        double factor = scaling_performed ? scale_factor : 1;
+        double factor = 1;
         double sx = factor * width(frame_no) / (double)w;
         double sy = factor * height(frame_no) / (double)h;
 
@@ -327,13 +314,13 @@ private:
                 p->x *= sx; p->y *= sy; // Scale point so it fits original frame.
 
                 // Move point `p` so it is in correct position in frame.
-                p = corners[frame_no - first_frame_no][corner::tl]
-                    + (1.0 - scale_factor) * 0.5 * (corners[frame_no - first_frame_no][corner::br] - corners[frame_no - first_frame_no][corner::tl])
-                    + p->x * (corners[frame_no - first_frame_no][corner::tr] - corners[frame_no - first_frame_no][corner::tl]) / width(frame_no)
-                    + p->y * (corners[frame_no - first_frame_no][corner::bl] - corners[frame_no - first_frame_no][corner::tl]) / height(frame_no);
+                p = (*corners[frame_no])[corner::tl]
+                    + (1.0 - scale_factor) * 0.5 * ((*corners[frame_no])[corner::br] - (*corners[frame_no])[corner::tl])
+                    + p->x * ((*corners[frame_no])[corner::tr] - (*corners[frame_no])[corner::tl]) / width(frame_no)
+                    + p->y * ((*corners[frame_no])[corner::bl] - (*corners[frame_no])[corner::tl]) / height(frame_no);
             }
 
-            points[frame_no - first_frame_no][n] = p;
+            points[frame_no][n] = p;
         }
     }
 
@@ -386,14 +373,15 @@ private:
      * @param frame_no Number of frame used to determine angle of rotation.
      */
     double get_angle(std::size_t frame_no) const {
-        std::size_t frames = move_analyzer.vault_frames(frame_no);
-        direction dir = move_analyzer.get_direction();
-        double d = 0;
-        if (dir == direction::left)
-            d = 1;
-        else if (dir == direction::right)
-            d = -1;
-        return d * 180.0 * std::min(1.0, (double)frames / (double)vault_frames);
+        return 0;
+        // std::size_t frames = move_analyzer.vault_frames(frame_no);
+        // direction dir = move_analyzer.get_direction();
+        // double d = 0;
+        // if (dir == direction::left)
+        //     d = 1;
+        // else if (dir == direction::right)
+        //     d = -1;
+        // return d * 180.0 * std::min(1.0, (double)frames / (double)vault_frames);
     }
 
     /**
@@ -421,23 +409,24 @@ private:
      * @note If scaled rectangle does not fit inside frame, scaling is not performed.
     */
     cv::Rect scale(const cv::Rect &rect, const cv::Mat &frame) {
-        cv::Point center(rect.x + rect.width / 2, rect.y + rect.height / 2);
-        cv::Point diag = center - rect.tl();
-        cv::Point tl = center - scale_factor * diag;
-        cv::Point br = center + scale_factor * diag;
+        // cv::Point center(rect.x + rect.width / 2, rect.y + rect.height / 2);
+        // cv::Point diag = center - rect.tl();
+        // cv::Point tl = center - scale_factor * diag;
+        // cv::Point br = center + scale_factor * diag;
 
-        if (tl.x >= 0 && tl.y >= 0 && br.x <= frame.cols && br.y <= frame.rows) {
-            // Make sure it fits inside frame.
-            scaling_performed = true; // Remember if scaling was performed.
-            return cv::Rect(tl, br);
-        } else {
-            scaling_performed = false;
-            return rect;
-        }
+        // if (tl.x >= 0 && tl.y >= 0 && br.x <= frame.cols && br.y <= frame.rows) {
+        //     // Make sure it fits inside frame.
+        //     return cv::Rect(tl, br);
+        // } else {
+        //     scaling_performed = false;
+        //     return rect;
+        // }
+        return rect;
     }
 
     bool is_inside(const cv::Mat &frame, std::size_t frame_no) const noexcept {
-        for (const auto &corner : corners[frame_no - first_frame_no]) {
+        if (!corners[frame_no]) return false;
+        for (const auto &corner : (*corners[frame_no])) {
             if (corner.x < 0.0 || corner.x > (double)frame.cols ||
                 corner.y < 0.0 || corner.y > (double)frame.rows) {
                     return false;
@@ -447,7 +436,7 @@ private:
     }
 
     bool is_moving(std::size_t frame_no) const noexcept {
-        if ((double)frame_no - (double)first_frame_no < fps / 3.0) {
+        if ((double)frame_no - (double)get_first_frame() < fps / 3.0) {
             return true;
         } else {
             return move_analyzer.get_direction() != direction::unknown;

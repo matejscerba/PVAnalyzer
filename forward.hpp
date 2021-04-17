@@ -28,7 +28,7 @@ typedef std::vector<frame_part> frame_body;
 typedef std::vector<frame_body> video_body;
 
 /// @brief Represents corners of person's bounding box in all frames where person was detected.
-typedef std::vector<std::vector<cv::Point2d>> person_corners;
+typedef std::vector<std::optional<std::vector<cv::Point2d>>> person_corners;
 
 //////////////////////////////////////////////////////////////////////////////////////
 // enums
@@ -143,6 +143,8 @@ cv::Point get_center(const cv::Mat &frame);
  */
 cv::Point2d get_center(const cv::Rect &rect);
 
+std::optional<cv::Point2d> get_center(const std::optional<cv::Rect> &rect);
+
 /**
  * @brief Count mean of offset of given consecutive values in vector.
  * 
@@ -150,7 +152,7 @@ cv::Point2d get_center(const cv::Rect &rect);
  * @param end Iterator specifying end of values to be processed.
  * @returns mean of offsets of given consecutive values.
 */
-cv::Point2d count_mean_delta(std::vector<cv::Point2d>::const_iterator begin, std::vector<cv::Point2d>::const_iterator end) noexcept;
+std::optional<cv::Point2d> count_mean_delta(std::vector<std::optional<cv::Point2d>>::const_iterator begin, std::vector<std::optional<cv::Point2d>>::const_iterator end) noexcept;
 
 /**
  * @brief

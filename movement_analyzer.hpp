@@ -21,10 +21,14 @@ public:
      * @param frame First frame, where person was detected.
      * @param person Bounding box of person in `frame`.
      */
-    movement_analyzer(const cv::Mat &frame, const cv::Rect2d &person, double fps) {
-        left_direction_tracker = background_tracker(frame, person, direction::left);
-        right_direction_tracker = background_tracker(frame, person, direction::right);
+    movement_analyzer(std::size_t frame_no, const cv::Mat &frame, const cv::Rect2d &person, double fps) {
+        std::cout << "c";
+        left_direction_tracker = background_tracker(frame, frame_no, person, direction::left);
+        std::cout << "c";
+        right_direction_tracker = background_tracker(frame, frame_no, person, direction::right);
+        std::cout << "c";
         this->fps = fps;
+        std::cout << "c";
     }
 
     /**

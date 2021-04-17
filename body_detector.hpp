@@ -38,39 +38,60 @@ public:
      * 
      * @param fps Frame rate of processed video.
      */
-    body_detector(double fps) : hog() {
-            hog.setSVMDetector(cv::HOGDescriptor::getDefaultPeopleDetector());
-            net = cv::dnn::readNet(protofile, caffemodel);
-            this->fps = fps;
-            athlete = std::nullopt;
+    body_detector(double fps) {
+        hog = cv::HOGDescriptor();
+        hog.setSVMDetector(cv::HOGDescriptor::getDefaultPeopleDetector());
+        net = cv::dnn::readNet(protofile, caffemodel);
+        this->fps = fps;
+        athlete = std::nullopt;
     }
 
+    /**
+     * @brief Find athlete in given frame.
+     * 
+     * If athlete was not found, update people detected in previous frames, remove 
+     * invalid people. Detect people in frame if all people were removed, select
+     * person, whose vault has begun and mark that person as athlete.
+     * 
+     * @param frame Frame to be processed.
+     * @param frame_no Number of frame to be processed.
+     */
     void find(const cv::Mat &frame, std::size_t frame_no) noexcept {
-        std::cout << "Finding " << frame_no << std::endl;
+        std::cout << "Finding athlete in frame " << frame_no << std::endl;
         if (!athlete) {
+            std::cout << people.size() << " ";
             if (people.size()) {
                 people.remove_if([&frame, frame_no](person &p){ return !p.track(frame, frame_no); });
             }
+            std::cout << people.size() << " ";
             if (!people.size()) {
                 find_people(frame, frame_no);
             }
+            std::cout << people.size() << " ";
             auto found = std::find_if(people.begin(), people.end(), [frame_no](const person &p){
                 return p.vault_began(frame_no);
             });
+            std::cout << people.size() << " ";
             if (found != people.end()) {
                 athlete = std::make_optional(*found);
                 people.clear();
             }
+            std::cout << std::endl;
         }
     }
 
+    /**
+     * @brief Check whether athlete was found.
+     * 
+     * @returns true if athlete was found.
+     */
     bool is_found() const noexcept {
         return athlete != std::nullopt;
     }
 
     void setup() noexcept {
         person_frame = athlete->get_first_frame();
-        person_position = get_center(athlete->bbox(person_frame));
+        person_position = *get_center(athlete->bbox(person_frame));
     }
 
     /**
@@ -81,29 +102,25 @@ public:
      * @returns result of detection, whether frame was skipped, detected correctly or an error occured.
      */
     result detect(const cv::Mat &frame, std::size_t frame_no) {
-        result res = result::ok;
         if (frame_no < person_frame) {
-            res = result::skip;
+            return result::skip;
         } else if (frame_no == person_frame) {
             // Detect person in frame.
-            if (!detect_current(frame, frame_no)) {
+            if (detect_current(frame, frame_no)) {
+                athlete->detect(frame, frame_no);
+            } else {
                 std::cout << "detection failed" << std::endl;
-                res = result::error;
+                return result::error;
             }
         } else if (frame_no > person_frame) {
-            // Try to track every person in frame, if it fails, remove such person from `people`.
-            // people.remove_if([&frame, frame_no](person &p){ return !p.track(frame, frame_no); });
-            if (!athlete->track(frame, frame_no)) {
-                res = result::error;
+            if (athlete->track(frame, frame_no)) {
+                athlete->detect(frame, frame_no);
+            } else {
+                return result::error;
             }
         }
 
-        // Detect body parts of all valid people in frame.
-        if ((res != result::error) && (frame_no >= person_frame)) {
-            athlete->detect(frame, frame_no);
-        }
-
-        return res;
+        return result::ok;
     }
 
     /**
@@ -196,11 +213,15 @@ private:
     }
 
     void find_people(const cv::Mat &frame, std::size_t frame_no) noexcept {
+        std::cout << "a";
         std::vector<cv::Rect> detections;
+        std::cout << "a";
         hog.detectMultiScale(frame, detections, 0, cv::Size(4, 4), cv::Size(), 1.05, 2, true);
+        std::cout << "a";
         for (const auto &detection : detections) {
             people.emplace_back(frame_no, frame, fps, detection, net);
         }
+        std::cout << "a";
     }
 
     /**

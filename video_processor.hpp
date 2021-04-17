@@ -157,9 +157,13 @@ private:
                 }
             }
 
+            cv::imshow("frame", frame);
+            cv::waitKey();
+
             // Save current modified frame.
             frames.push_back(frame);
         }
+        cv::destroyAllWindows();
         return frames;
     }
 
