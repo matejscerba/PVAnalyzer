@@ -36,11 +36,12 @@ public:
         body_detector detector(fps);
 
         std::vector<cv::Mat> found_frames;
-        if (!find_athlete(raw_frames, detector, found_frames)) {
-            std::cout << "Athete could not be found in video " << filename << std::endl;
+        std::optional<person> athlete = detector.find_athlete(raw_frames, found_frames);
+        if (!athlete) {
+            std::cout << "Athlete could not be found in video " << filename << std::endl;
             return;
         }
-        std::vector<cv::Mat> frames = detect_athlete(raw_frames, detector, fps);
+        std::vector<cv::Mat> frames = athlete->detect(raw_frames);
 
         std::string output_filename = "outputs/videos/" + create_output_filename();
         std::string ext = ".avi";
@@ -50,7 +51,7 @@ public:
 
         // Analyze detected athlete.
         vault_analyzer analyzer;
-        analyzer.analyze(detector.get_athlete(), filename, frames.size(), fps);
+        analyzer.analyze(*athlete, filename, frames.size(), fps);
 
         // Show result.
         viewer v;
@@ -107,23 +108,20 @@ private:
      * 
      * @returns whether athlete was found.
      */
-    bool find_athlete(const std::vector<cv::Mat> &raw_frames, body_detector &detector, std::vector<cv::Mat> &found_frames) const noexcept {
-        std::vector<cv::Mat> frames;
-        cv::Mat raw_frame, found_frame;
-        for (std::size_t frame_no = 0; frame_no < raw_frames.size(); ++frame_no) {
-            raw_frame = raw_frames[frame_no].clone();
-            found_frame = raw_frames[frame_no].clone();
+    // bool find_athlete(const std::vector<cv::Mat> &raw_frames, body_detector &detector, std::vector<cv::Mat> &found_frames) const noexcept {
+    //     cv::Mat found_frame;
+    //     for (std::size_t frame_no = 0; frame_no < raw_frames.size(); ++frame_no) {
+    //         found_frame = raw_frames[frame_no].clone();
 
-            // Try to find athlete in current frame and draw detections.
-            detector.find(raw_frame, frame_no);
-            detector.draw(found_frame, frame_no);
+    //         // Try to find athlete in current frame and draw detections.
+    //         detector.find(found_frame, frame_no);
+    //         detector.draw(found_frame, frame_no);
 
-            // Save unmodified and modified frames.
-            frames.push_back(raw_frame);
-            found_frames.push_back(found_frame);
-        }
-        return detector.is_found();
-    }
+    //         // Save unmodified and modified frames.
+    //         found_frames.push_back(found_frame);
+    //     }
+    //     return detector.is_found();
+    // }
 
     /**
      * @brief Detect athlete and his body parts in video given by frames.
@@ -134,38 +132,38 @@ private:
      * 
      * @returns frames with detections' drawings.
      */
-    std::vector<cv::Mat> detect_athlete(const std::vector<cv::Mat> &raw_frames, body_detector &detector, double fps) const noexcept {
-        std::vector<cv::Mat> frames;
+    // std::vector<cv::Mat> detect_athlete(const std::vector<cv::Mat> &raw_frames, body_detector &detector, double fps) const noexcept {
+    //     std::vector<cv::Mat> frames;
 
-        cv::Mat frame;
-        body_detector::result res = body_detector::result::unknown;
-        for (std::size_t frame_no = 0; frame_no < raw_frames.size(); ++frame_no) {
-            std::cout << "Processing frame " << frame_no << std::endl;
+    //     cv::Mat frame;
+    //     body_detector::result res = body_detector::result::unknown;
+    //     for (std::size_t frame_no = 0; frame_no < raw_frames.size(); ++frame_no) {
+    //         std::cout << "Processing frame " << frame_no << std::endl;
 
-            frame = raw_frames[frame_no].clone();
+    //         frame = raw_frames[frame_no].clone();
 
-            if (res != body_detector::result::error) {
-                // No error occured yet, process video further.
+    //         if (res != body_detector::result::error) {
+    //             // No error occured yet, process video further.
 
-                // Detect athlete's body in current frame.
-                res = detector.detect(frame, frame_no);
-                if (res == body_detector::result::ok) {
-                    // Detection on given frame was valid.
+    //             // Detect athlete's body in current frame.
+    //             res = detector.detect(frame, frame_no);
+    //             if (res == body_detector::result::ok) {
+    //                 // Detection on given frame was valid.
 
-                    // Draw detections into frame.
-                    detector.draw(frame, frame_no);
-                }
-            }
+    //                 // Draw detections into frame.
+    //                 detector.draw(frame, frame_no);
+    //             }
+    //         }
 
-            // cv::imshow("frame", frame);
-            // cv::waitKey();
+    //         // cv::imshow("frame", frame);
+    //         // cv::waitKey();
 
-            // Save current modified frame.
-            frames.push_back(frame);
-        }
-        cv::destroyAllWindows();
-        return frames;
-    }
+    //         // Save current modified frame.
+    //         frames.push_back(frame);
+    //     }
+    //     cv::destroyAllWindows();
+    //     return frames;
+    // }
 
     /**
      * @brief Write frames as a video to given file.
