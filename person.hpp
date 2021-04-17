@@ -30,29 +30,14 @@ public:
      * @param box Bounding box of this person in `frame`.
      * @param net Deep neural network used for detecting person's body parts.
     */
-    person(std::size_t frame_no, const cv::Mat &frame, double fps, const cv::Rect &box, cv::dnn::Net &net)
-        : move_analyzer(frame_no, frame, box, fps) {
-            std::cout << "b";
-            angles = std::vector<double>(frame_no, 0.0);
-            std::cout << "b";
-            corners = person_corners(frame_no, std::nullopt);
-            std::cout << "b";
-            scaled_corners = person_corners(frame_no, std::nullopt);
-            std::cout << "b";
-            cropped_frames = std::vector<std::optional<cv::Mat>>(frame_no, std::nullopt);
-            std::cout << "b";
-            points = video_body(frame_no, frame_body(npoints, std::nullopt));
-            std::cout << "b";
-            this->fps = fps;
-            std::cout << "b";
-            corners.push_back(get_corners(box));
-            std::cout << "b";
-            this->net = net;
-            std::cout << "b";
-            tracker = cv::TrackerCSRT::create();
-            std::cout << "b";
-            tracker->init(frame, box);
-            std::cout << "b";
+    person(std::size_t frame_no, const cv::Rect &box, double fps, cv::dnn::Net &net) noexcept {
+        valid_tracker = false;
+        move_analyzer = std::nullopt;
+        this->first_frame = frame_no;
+        this->first_bbox = box;
+        this->fps = fps;
+        this->net = net;
+        tracker = cv::TrackerCSRT::create();
     }
 
     /**
@@ -79,10 +64,6 @@ public:
         return cv::norm((*corners[frame_no])[corner::bl] - (*corners[frame_no])[corner::tl]);
     }
 
-    bool vault_began(std::size_t frame_no) const noexcept {
-        return move_analyzer.vault_frames(frame_no);
-    }
-
     /**
      * @brief Track person in next frame.
      * 
@@ -93,20 +74,37 @@ public:
      * @returns true if detection was OK, false if an error occured.
     */
     bool track(const cv::Mat &frame, std::size_t frame_no) {
-        cv::Rect box;
-        cv::Mat rotated = rotate(frame, frame_no);
-
-        // Update tracker.
-        if (tracker->update(rotated, box)) {
-            // TODO: crop frame and save it for future deep detection.
-            // Append person's bounding box corners.
-            corners.push_back(transform(get_corners(box), frame, frame_no, true));
-            return is_inside(frame, frame_no)
-                && is_moving(frame_no)
-                && move_analyzer.update(frame, box, frame_no);
+        if (frame_no < first_frame) {
+            angles.push_back(0.0);
+            corners.push_back(std::nullopt);
+            scaled_corners.push_back(std::nullopt);
+            cropped_frames.push_back(std::nullopt);
+            points.push_back(frame_body(npoints, std::nullopt));
+        } else if (frame_no == first_frame) {
+            tracker->init(frame, first_bbox);
+            move_analyzer = movement_analyzer(frame_no, frame, first_bbox, fps);
+            cv::Rect scaled = scale(first_bbox, frame);
+            angles.push_back(0.0);
+            corners.push_back(get_corners(first_bbox));
+            scaled_corners.push_back(get_corners(scaled));
+            cropped_frames.push_back(frame(scaled).clone());
+            points.push_back(frame_body(npoints, std::nullopt));
+        } else {
+            cv::Rect bbox;
+            cv::Mat rotated = rotate(frame);
+            if (tracker->update(frame, bbox) && is_inside(get_corners(bbox), frame)) {
+                cv::Rect scaled = scale(bbox, frame);
+                angles.push_back(0.0);
+                corners.push_back(get_corners(bbox));
+                scaled_corners.push_back(get_corners(scaled));
+                cropped_frames.push_back(frame(scaled).clone());
+                points.push_back(frame_body(npoints, std::nullopt));
+                return move_analyzer->update(frame, bbox, frame_no);
+            } else {
+                return false;
+            }
         }
-
-        return false;
+        return true;
     }
 
     /**
@@ -119,12 +117,15 @@ public:
      * @param frame_no Number of given frame.
     */
     void detect(const cv::Mat &frame, std::size_t frame_no) {
+        std::optional<cv::Mat> output = std::nullopt;
         // Crop person from frame.
-        cv::Mat input = get_person_frame((*corners[frame_no]), frame, frame_no);
-        // Process cropped frame.
-        cv::Mat blob = cv::dnn::blobFromImage(input, 1.0 / 255, cv::Size(), cv::Scalar(), false, false, CV_32F);
-        net.setInput(blob);
-        cv::Mat output = net.forward();
+        if (cropped_frames[frame_no]) {
+            cv::Mat input = *cropped_frames[frame_no];
+            // Process cropped frame.
+            cv::Mat blob = cv::dnn::blobFromImage(input, 1.0 / 255, cv::Size(), cv::Scalar(), false, false, CV_32F);
+            net.setInput(blob);
+            output = net.forward();
+        }
         extract_points(output, frame_no);
     }
 
@@ -136,10 +137,10 @@ public:
      */
     video_body get_points(bool real = false) const {
         video_body res;
-        for (std::size_t i = 0; i < points.size(); i++) {
+        for (std::size_t i = 0; i < points.size(); ++i) {
             frame_body transformed;
             std::transform(points[i].begin(), points[i].end(), std::back_inserter(transformed),
-                           [i, this, real](const frame_part &p) { return p + this->move_analyzer.frame_offset(i, real); }
+                           [i, this, real](const frame_part &p) { return p + this->move_analyzer->frame_offset(i, real); }
             );
             res.push_back(std::move(transformed));
         }
@@ -157,7 +158,7 @@ public:
     */
     void draw(cv::Mat &frame, std::size_t frame_no) const {
         
-        if (corners.size() > frame_no) {
+        if (corners.size() > frame_no && corners[frame_no]) {
         // Rectangle which is tracked.
             cv::Point2d tl = (*corners[frame_no])[corner::tl];
             cv::Point2d tr = (*corners[frame_no])[corner::tr];
@@ -165,7 +166,7 @@ public:
             cv::Point2d br = (*corners[frame_no])[corner::br];
 
             cv::Scalar color(0, 0, 255);
-            if (move_analyzer.vault_frames(frame_no))
+            if (move_analyzer->vault_frames(frame_no))
                 color = cv::Scalar(0, 255, 0);
 
             cv::line(frame, tl, tr, color, 1);
@@ -184,7 +185,7 @@ public:
                 - (1.0 - scale_factor) * 0.5 * ((*corners[frame_no])[corner::br] - (*corners[frame_no])[corner::tl]);
 
             color = cv::Scalar(0, 0, 127);
-            if (move_analyzer.vault_frames(frame_no))
+            if (move_analyzer->vault_frames(frame_no))
                 color = cv::Scalar(0, 127, 0);
 
             cv::line(frame, tl, tr, color, 1);
@@ -225,19 +226,19 @@ public:
         }
 
         // Movement analyzer.
-        move_analyzer.draw(frame, frame_no);
-    }
-
-    std::size_t get_first_frame() const noexcept {
-        auto found = std::find_if(corners.begin(), corners.end(), [](const std::optional<std::vector<cv::Point2d>> &cs){
-            return cs != std::nullopt;
-        });
-        return found - corners.begin();
+        if (move_analyzer)
+            move_analyzer->draw(frame, frame_no);
     }
 
 private:
 
     friend class vault_analyzer;
+
+    std::size_t first_frame;
+
+    cv::Rect first_bbox;
+
+    bool valid_tracker;
 
     double fps;
 
@@ -275,7 +276,15 @@ private:
     video_body points;
 
     /// @brief Analyzes this person's movement.
-    movement_analyzer move_analyzer;
+    std::optional<movement_analyzer> move_analyzer;
+
+    void update_properties(const cv::Mat &frame, const cv::Rect &bbox) noexcept {
+        cv::Rect scaled = scale(bbox, frame);
+        angles.push_back(get_angle());
+        corners.push_back(transform(get_corners(bbox), frame, true));
+        scaled_corners.push_back(transform(get_corners(scaled), frame, true));
+        cropped_frames.push_back(frame(scaled).clone());
+    }
 
     /**
      * @brief Save detected body parts to `points`.
@@ -287,40 +296,40 @@ private:
      *     box of this person in current frame.
      * @param frame_no Number of frame in which to process `output`.
     */
-    void extract_points(cv::Mat &output, std::size_t frame_no) {
-        points.push_back(frame_body(npoints));
-        
-        int h = output.size[2];
-        int w = output.size[3];
+    void extract_points(std::optional<cv::Mat> &output, std::size_t frame_no) {
+        if (output) {
+            int h = output->size[2];
+            int w = output->size[3];
 
-        // Scale by `scaling_factor` if last rectangle was scaled.
-        double factor = 1;
-        double sx = factor * width(frame_no) / (double)w;
-        double sy = factor * height(frame_no) / (double)h;
+            // Scale by `scaling_factor` if last rectangle was scaled.
+            double factor = 1;
+            double sx = factor * width(frame_no) / (double)w;
+            double sy = factor * height(frame_no) / (double)h;
 
-        // Get points from output.
-        for (int n = 0; n < npoints; n++) {
-            cv::Mat probMat(h, w, CV_32F, output.ptr(0, n));
+            // Get points from output.
+            for (int n = 0; n < npoints; n++) {
+                cv::Mat probMat(h, w, CV_32F, output->ptr(0, n));
 
-            // Get point in output with maximum probability of "being point `n`".
-            frame_part p = std::nullopt;
-            cv::Point max;
-            double prob;
-            cv::minMaxLoc(probMat, 0, &prob, 0, &max);
+                // Get point in output with maximum probability of "being point `n`".
+                frame_part p = std::nullopt;
+                cv::Point max;
+                double prob;
+                cv::minMaxLoc(probMat, 0, &prob, 0, &max);
 
-            // Check point probability against a threshold
-            if (prob > detection_threshold) {
-                p = max;
-                p->x *= sx; p->y *= sy; // Scale point so it fits original frame.
+                // Check point probability against a threshold
+                if (prob > detection_threshold) {
+                    p = max;
+                    p->x *= sx; p->y *= sy; // Scale point so it fits original frame.
 
-                // Move point `p` so it is in correct position in frame.
-                p = (*corners[frame_no])[corner::tl]
-                    + (1.0 - scale_factor) * 0.5 * ((*corners[frame_no])[corner::br] - (*corners[frame_no])[corner::tl])
-                    + p->x * ((*corners[frame_no])[corner::tr] - (*corners[frame_no])[corner::tl]) / width(frame_no)
-                    + p->y * ((*corners[frame_no])[corner::bl] - (*corners[frame_no])[corner::tl]) / height(frame_no);
+                    // Move point `p` so it is in correct position in frame.
+                    p = (*corners[frame_no])[corner::tl]
+                        + (1.0 - scale_factor) * 0.5 * ((*corners[frame_no])[corner::br] - (*corners[frame_no])[corner::tl])
+                        + p->x * ((*corners[frame_no])[corner::tr] - (*corners[frame_no])[corner::tl]) / width(frame_no)
+                        + p->y * ((*corners[frame_no])[corner::bl] - (*corners[frame_no])[corner::tl]) / height(frame_no);
+                }
+
+                points[frame_no][n] = p;
             }
-
-            points[frame_no][n] = p;
         }
     }
 
@@ -336,9 +345,8 @@ private:
     */
     std::vector<cv::Point2d> transform(const std::vector<cv::Point2d> &src,
                                        const cv::Mat &frame,
-                                       std::size_t frame_no,
                                        bool back = false) const {
-        double angle = get_angle(frame_no);
+        double angle = get_angle();
         if (back) angle *= -1;
         cv::Mat rotation = cv::getRotationMatrix2D(get_center(frame), angle, 1.0);
         std::vector<cv::Point2d> res;
@@ -347,32 +355,11 @@ private:
     }
 
     /**
-     * @brief Crop frame so that it contains its whole body.
-     * 
-     * Frame must be rotated so that person's bounding box is not rotated and can
-     * be cropped from frame.
-     * 
-     * @param corners Corners of person's unscaled bounding box in unrotated frame.
-     * @param frame Frame that is supposed to be cropped.
-     * @param frame_no Number of given frame.
-     * @returns part of `frame`, that contains whole person.
-    */
-    cv::Mat get_person_frame(const std::vector<cv::Point2d> &corners, const cv::Mat &frame, std::size_t frame_no) {
-        cv::Mat rotated = rotate(frame, frame_no);
-        std::vector<cv::Point2d> transformed = transform(corners, frame, frame_no);
-        cv::Rect bbox(
-            transformed[corner::tl], transformed[corner::br]
-        );
-        cv::Rect2d scaled = scale(bbox, frame);
-        return rotated(scaled).clone();
-    }
-
-    /**
      * @brief Compute angle from given number of frame.
      * 
      * @param frame_no Number of frame used to determine angle of rotation.
      */
-    double get_angle(std::size_t frame_no) const {
+    double get_angle() const {
         return 0;
         // std::size_t frames = move_analyzer.vault_frames(frame_no);
         // direction dir = move_analyzer.get_direction();
@@ -391,8 +378,8 @@ private:
      * @param frame_no Number of frame to be rotated.
      * @returns rotated frame.
      */
-    cv::Mat rotate(const cv::Mat &frame, std::size_t frame_no) const {
-        double angle = get_angle(frame_no);
+    cv::Mat rotate(const cv::Mat &frame) const {
+        double angle = get_angle();
         cv::Mat rotation = cv::getRotationMatrix2D(get_center(frame), angle, 1.0);
         cv::Mat rotated;
         cv::warpAffine(frame, rotated, rotation, frame.size());
@@ -423,24 +410,4 @@ private:
         // }
         return rect;
     }
-
-    bool is_inside(const cv::Mat &frame, std::size_t frame_no) const noexcept {
-        if (!corners[frame_no]) return false;
-        for (const auto &corner : (*corners[frame_no])) {
-            if (corner.x < 0.0 || corner.x > (double)frame.cols ||
-                corner.y < 0.0 || corner.y > (double)frame.rows) {
-                    return false;
-            }
-        }
-        return true;
-    }
-
-    bool is_moving(std::size_t frame_no) const noexcept {
-        if ((double)frame_no - (double)get_first_frame() < fps / 3.0) {
-            return true;
-        } else {
-            return move_analyzer.get_direction() != direction::unknown;
-        }
-    }
-
 };

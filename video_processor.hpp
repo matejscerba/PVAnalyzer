@@ -135,7 +135,6 @@ private:
      */
     std::vector<cv::Mat> detect_athlete(const std::vector<cv::Mat> &raw_frames, body_detector &detector, double fps) const noexcept {
         std::vector<cv::Mat> frames;
-        detector.setup();
 
         cv::Mat frame;
         body_detector::result res = body_detector::result::unknown;
@@ -156,9 +155,6 @@ private:
                     detector.draw(frame, frame_no);
                 }
             }
-
-            cv::imshow("frame", frame);
-            cv::waitKey();
 
             // Save current modified frame.
             frames.push_back(frame);

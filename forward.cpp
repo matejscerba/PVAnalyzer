@@ -183,3 +183,13 @@ std::string create_output_filename() noexcept {
     sstr << std::put_time(std::localtime(&now), "%Y-%m-%d_%H-%M-%S");
     return sstr.str();
 }
+
+bool is_inside(const std::vector<cv::Point2d> &corners, const cv::Mat &frame) noexcept {
+    for (const auto &corner : corners) {
+        if (corner.x < 0.0 || corner.x > (double)frame.cols ||
+            corner.y < 0.0 || corner.y > (double)frame.rows) {
+                return false;
+        }
+    }
+    return true;
+}

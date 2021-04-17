@@ -24,23 +24,14 @@ public:
      * @param dir Assumed direction of person's movement.
      */
     background_tracker(const cv::Mat &frame, std::size_t frame_no, const cv::Rect &person, direction dir) noexcept {
-        std::cout << "d";
         backgrounds = std::vector<std::optional<cv::Rect>>(frame_no, std::nullopt);
-        std::cout << "d";
         background_offsets = std::vector<std::optional<cv::Point2d>>(frame_no, std::nullopt);
-        std::cout << "d";
         person_offsets = std::vector<std::optional<cv::Point2d>>(frame_no, std::nullopt);
-        std::cout << "d";
         frame_offsets = std::vector<std::optional<cv::Point2d>>(frame_no, std::nullopt);
-        std::cout << "d";
         this->dir = dir;
-        std::cout << "d";
         valid_direction_threshold = person.width;
-        std::cout << "d";
         tracker = cv::TrackerCSRT::create();
-        std::cout << "d";
         update(frame, person);
-        std::cout << "d";
     }
 
     /**

@@ -45,8 +45,8 @@ public:
         points_real =
             athlete.get_points(true) +
             video_body(after, frame_body(npoints, std::nullopt));
-        std::cout << points_frame.size() << std::endl;
-        dir = athlete.move_analyzer.get_direction();
+
+        dir = athlete.move_analyzer->get_direction();
         this->filename = filename;
         this->fps = fps;
 

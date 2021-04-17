@@ -202,6 +202,8 @@ std::vector<std::size_t> get_step_frames(const video_body &points) noexcept;
 
 std::optional<double> get_vertical_tilt_angle(const frame_part &a, const frame_part &b) noexcept;
 
+bool is_inside(const std::vector<cv::Point2d> &corners, const cv::Mat &frame) noexcept;
+
 //////////////////////////////////////////////////////////////////////////////////////
 // constants
 //////////////////////////////////////////////////////////////////////////////////////
