@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "movement_analyzer.hpp"
+#include "parts_detector.hpp"
 
 /**
  * @brief Represents person through whole video.
@@ -33,33 +34,27 @@ public:
     person(std::size_t frame_no, const cv::Rect &box, double fps) noexcept {
         valid_tracker = false;
         move_analyzer = std::nullopt;
+        last_angle = 0.0;
         this->first_frame = frame_no;
         this->first_bbox = box;
         this->fps = fps;
-        net = cv::dnn::readNet(protofile, caffemodel);
         tracker = cv::TrackerCSRT::create();
+        parts_dtor = parts_detector();
     }
 
     std::vector<cv::Mat> detect(const std::vector<cv::Mat> &raw_frames) {
         std::vector<cv::Mat> frames;
 
         cv::Mat frame;
-        bool res = true;
         for (std::size_t frame_no = 0; frame_no < raw_frames.size(); ++frame_no) {
             std::cout << "Processing frame " << frame_no << std::endl;
 
             frame = raw_frames[frame_no].clone();
 
-            if (res) {
-                // No error occured yet, process video further.
-
-                // Detect athlete's body in current frame.
-                if (track(frame, frame_no)) {
-                    deep_detect(frame, frame_no);
-                    draw(frame, frame_no);
-                } else {
-                    res = false;
-                }
+            // Detect athlete's body in current frame.
+            if (track(frame, frame_no)) {
+                update_points(parts_dtor.deep_detect(cropped_frames[frame_no]));
+                draw(frame, frame_no);
             }
 
             // cv::imshow("frame", frame);
@@ -83,10 +78,7 @@ private:
 
     double fps;
 
-    double last_angle = 0.0;
-
-    /// @brief Deep neural network used for detecting person's body parts.
-    cv::dnn::Net net;
+    double last_angle;
 
     /// @brief Tracker used to track person in frames.
     cv::Ptr<cv::Tracker> tracker;
@@ -108,60 +100,12 @@ private:
     */
     person_corners corners;
 
-    /**
-     * @brief Body parts of person in each frame.
-     * 
-     * Body parts are saved in similar way as corners, after accessing body parts
-     * for certain frame, indices correspond to `pairs`.
-     */
     video_body points;
+
+    parts_detector parts_dtor;
 
     /// @brief Analyzes this person's movement.
     std::optional<movement_analyzer> move_analyzer;
-
-    /**
-     * @brief Save detected body parts to `points`.
-     * 
-     * Process output of deep neural network used to detect body parts
-     * and save correct values to points.
-     * 
-     * @param output Result given by `net.forward()` applied on scaled bounding
-     *     box of this person in current frame.
-     * @param frame_no Number of frame in which to process `output`.
-    */
-    void extract_points(std::optional<cv::Mat> &output, std::size_t frame_no) {
-        if (output) {
-            int h = output->size[2];
-            int w = output->size[3];
-
-            double sx = width(frame_no) / (double)w;
-            double sy = height(frame_no) / (double)h;
-
-            // Get points from output.
-            for (int n = 0; n < npoints; n++) {
-                cv::Mat probMat(h, w, CV_32F, output->ptr(0, n));
-
-                // Get point in output with maximum probability of "being point `n`".
-                frame_part p = std::nullopt;
-                cv::Point max;
-                double prob;
-                cv::minMaxLoc(probMat, 0, &prob, 0, &max);
-
-                // Check point probability against a threshold
-                if (prob > detection_threshold) {
-                    p = max;
-                    p->x *= sx; p->y *= sy; // Scale point so it fits original frame.
-
-                    // Move point `p` so it is in correct position in frame.
-                    p = (*scaled_corners[frame_no])[corner::tl]
-                        + p->x * ((*scaled_corners[frame_no])[corner::tr] - (*scaled_corners[frame_no])[corner::tl]) / width(frame_no)
-                        + p->y * ((*scaled_corners[frame_no])[corner::bl] - (*scaled_corners[frame_no])[corner::tl]) / height(frame_no);
-                }
-
-                points[frame_no][n] = p;
-            }
-        }
-    }
 
     /**
      * @brief Compute position of given points after transformation.
@@ -176,12 +120,16 @@ private:
     std::vector<cv::Point2d> transform(const std::vector<cv::Point2d> &src,
                                        const cv::Mat &frame,
                                        bool back = false) {
-        double angle = get_angle();
-        if (back) angle *= -1;
-        cv::Point center = get_center(*corners.back());
-        cv::Mat rotation = cv::getRotationMatrix2D(center, angle, 1.0);
         std::vector<cv::Point2d> res;
-        cv::transform(src, res, rotation);
+        if (corners.size() && corners.back()) {
+            double angle = get_angle();
+            if (back) angle *= -1;
+            cv::Point center = get_center(*corners.back());
+            cv::Mat rotation = cv::getRotationMatrix2D(center, angle, 1.0);
+            cv::transform(src, res, rotation);
+        } else {
+            res = src;
+        }
         return res;
     }
 
@@ -191,12 +139,14 @@ private:
      * @param frame_no Number of frame used to determine angle of rotation.
      */
     double get_angle() {
-        frame_body body = points.back();
-        std::optional<double> angle = get_vertical_tilt_angle(
-            (body[body_part::l_hip] + body[body_part::r_hip]) / 2.0,
-            body[body_part::head]
-        );
-        last_angle = angle ? - *angle : last_angle;
+        if (points.size()) {
+            frame_body body = points.back();
+            std::optional<double> angle = get_vertical_tilt_angle(
+                (body[body_part::l_hip] + body[body_part::r_hip]) / 2.0,
+                body[body_part::head]
+            );
+            last_angle = angle ? - *angle : last_angle;
+        }
         return last_angle;
     }
 
@@ -208,11 +158,15 @@ private:
      * @returns rotated frame.
      */
     cv::Mat rotate(const cv::Mat &frame) {
-        double angle = get_angle();
-        cv::Point center = get_center(*corners.back());
-        cv::Mat rotation = cv::getRotationMatrix2D(center, angle, 1.0);
         cv::Mat rotated;
-        cv::warpAffine(frame, rotated, rotation, frame.size());
+        if (corners.size() && corners.back()) {
+            double angle = get_angle();
+            cv::Point center = get_center(*corners.back());
+            cv::Mat rotation = cv::getRotationMatrix2D(center, angle, 1.0);
+            cv::warpAffine(frame, rotated, rotation, frame.size());
+        } else {
+            rotated = frame;
+        }
         return rotated;
     }
 
@@ -255,13 +209,40 @@ private:
     }
 
     /// @returns width of this person's bounding box in given frame.
-    double width(std::size_t frame_no) const {
-        return cv::norm((*scaled_corners[frame_no])[corner::tr] - (*scaled_corners[frame_no])[corner::tl]);
-    }
+    // double width(std::size_t frame_no) const {
+    //     return cv::norm((*scaled_corners[frame_no])[corner::tr] - (*scaled_corners[frame_no])[corner::tl]);
+    // }
 
     /// @returns height of this person's bounding box in given frame.
-    double height(std::size_t frame_no) const {
-        return cv::norm((*scaled_corners[frame_no])[corner::bl] - (*scaled_corners[frame_no])[corner::tl]);
+    // double height(std::size_t frame_no) const {
+    //     return cv::norm((*scaled_corners[frame_no])[corner::bl] - (*scaled_corners[frame_no])[corner::tl]);
+    // }
+
+    void update_properties(const cv::Mat &frame, const cv::Rect &bbox) noexcept {
+        if (valid_tracker) {
+            cv::Rect scaled = scale(bbox, frame);
+            corners.push_back(transform(get_corners(bbox), frame, true));
+            scaled_corners.push_back(transform(get_corners(scaled), frame, true));
+            cropped_frames.push_back(frame(scaled).clone());
+        } else {
+            corners.push_back(std::nullopt);
+            scaled_corners.push_back(std::nullopt);
+            cropped_frames.push_back(std::nullopt);
+        }
+        points.push_back(frame_body(npoints, std::nullopt));
+
+    }
+
+    void update_points(frame_body &&body) noexcept {
+        cv::Mat rotation = cv::getRotationMatrix2D(cv::Point(), -last_angle, 1.0);
+        std::for_each(body.begin(), body.end(), [this, rotation](frame_part &p){
+            if (p) {
+                std::vector<cv::Point2d> res;
+                cv::transform(std::vector<cv::Point2d>{*p}, res, rotation);
+                p = (*(this->scaled_corners.back()))[corner::tl] + res.front();
+            }
+        });
+        points.back() = std::move(body);
     }
 
     /**
@@ -274,38 +255,19 @@ private:
      * @returns true if detection was OK, false if an error occured.
     */
     bool track(const cv::Mat &frame, std::size_t frame_no) {
-        if (frame_no < first_frame) {
-            corners.push_back(std::nullopt);
-            scaled_corners.push_back(std::nullopt);
-            cropped_frames.push_back(std::nullopt);
-            points.push_back(frame_body(npoints, std::nullopt));
-        } else if (frame_no == first_frame) {
-            tracker->init(frame, first_bbox);
-            move_analyzer = movement_analyzer(frame_no, frame, first_bbox, fps);
-            cv::Rect scaled = scale(first_bbox, frame);
-            corners.push_back(get_corners(first_bbox));
-            scaled_corners.push_back(get_corners(scaled));
-            cropped_frames.push_back(frame(scaled).clone());
-            points.push_back(frame_body(npoints, std::nullopt));
+        cv::Rect bbox = first_bbox;
+        cv::Mat rotated = rotate(frame);
+        if (frame_no == first_frame) {
+            tracker->init(rotated, bbox);
+            move_analyzer = movement_analyzer(frame_no, rotated, bbox, fps);
+            valid_tracker = true;
+        } else if (valid_tracker && tracker->update(rotated, bbox) && is_inside(get_corners(bbox), rotated)) {
+            valid_tracker = move_analyzer->update(frame, bbox, frame_no);
         } else {
-            cv::Rect bbox;
-            cv::Mat rotated = rotate(frame);
-            // cv::imshow("frame", frame);
-            // cv::imshow("rotated", rotated);
-            if (tracker->update(rotated, bbox) && is_inside(get_corners(bbox), rotated)) {
-                cv::Rect scaled = scale(bbox, rotated);
-                corners.push_back(transform(get_corners(bbox), rotated, true));
-                scaled_corners.push_back(transform(get_corners(scaled), rotated, true));
-                cropped_frames.push_back(rotated(scaled).clone());
-                points.push_back(frame_body(npoints, std::nullopt));
-                // cv::imshow("cropped", rotated(scaled));
-                // cv::waitKey();
-                return move_analyzer->update(frame, bbox, frame_no);
-            } else {
-                return false;
-            }
+            valid_tracker = false;
         }
-        return true;
+        update_properties(rotated, bbox);
+        return valid_tracker;
     }
 
     /**
@@ -317,18 +279,6 @@ private:
      * @param frame Frame which to crop and detect body parts on.
      * @param frame_no Number of given frame.
     */
-    void deep_detect(const cv::Mat &frame, std::size_t frame_no) {
-        std::optional<cv::Mat> output = std::nullopt;
-        // Crop person from frame.
-        if (cropped_frames[frame_no]) {
-            cv::Mat input = *cropped_frames[frame_no];
-            // Process cropped frame.
-            cv::Mat blob = cv::dnn::blobFromImage(input, 1.0 / 255, cv::Size(), cv::Scalar(), false, false, CV_32F);
-            net.setInput(blob);
-            output = net.forward();
-        }
-        extract_points(output, frame_no);
-    }
 
     /**
      * @brief Get point of all body parts of person.

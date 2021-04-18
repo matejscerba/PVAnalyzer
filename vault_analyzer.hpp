@@ -39,19 +39,15 @@ public:
      */
     void analyze(const person &athlete, const std::string &filename, std::size_t frames, double fps) noexcept {
         std::size_t after = frames - athlete.get_points().size();
-        points_frame =
-            athlete.get_points() +
-            video_body(after, frame_body(npoints, std::nullopt));
-        points_real =
-            athlete.get_points(true) +
-            video_body(after, frame_body(npoints, std::nullopt));
+        points_frame = athlete.get_points();
+        points_real = athlete.get_points(true);
 
         dir = athlete.move_analyzer->get_direction();
         this->filename = filename;
         this->fps = fps;
 
-        if (compute_parameters(points_real))
-            write_parameters();
+        // if (compute_parameters(points_real))
+        //     write_parameters();
     }
 
     /**

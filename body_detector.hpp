@@ -9,7 +9,7 @@
 #include <list>
 #include <optional>
 
-#include "person_checker.hpp"
+#include "movement_analyzer.hpp"
 #include "person.hpp"
 
 /**
@@ -51,6 +51,76 @@ public:
 
 private:
 
+    class person_candidate {
+    public:
+
+        person_candidate(std::size_t frame_no, const cv::Mat &frame, double fps, const cv::Rect &box)
+            : move_analyzer(frame_no, frame, box, fps) {
+                this->fps = fps;
+                first_frame = frame_no;
+                tracker = cv::TrackerCSRT::create();
+                tracker->init(frame, box);
+                bboxes.push_back(box);
+        }
+
+        bool track(const cv::Mat &frame, std::size_t frame_no) {
+            cv::Rect box;
+            // Update tracker.
+            if (tracker->update(frame, box)) {
+                bboxes.push_back(box);
+                return is_inside(get_corners(box), frame)
+                    && is_moving(frame_no)
+                    && move_analyzer.update(frame, box, frame_no);
+            }
+
+            return false;
+        }
+
+        std::size_t get_first_frame() const noexcept {
+            return first_frame;
+        }
+
+        cv::Rect get_first_bbox() const noexcept {
+            return bboxes.front();
+        }
+
+        bool vault_began(std::size_t frame_no) const noexcept {
+            return move_analyzer.vault_frames(frame_no);
+        }
+
+        void draw(cv::Mat &frame, std::size_t frame_no) const noexcept {
+            if (bboxes.size() > frame_no) {
+                cv::Scalar color(0, 0, 255);
+                if (move_analyzer.vault_frames(frame_no))
+                    color = cv::Scalar(0, 255, 0);
+                
+                cv::rectangle(frame, bboxes[frame_no].tl(), bboxes[frame_no].br(), cv::Scalar(255, 0, 0), 2);
+                move_analyzer.draw(frame, frame_no);
+            }
+        }
+
+    private:
+
+        double fps;
+
+        std::size_t first_frame;
+
+        cv::Ptr<cv::Tracker> tracker;
+
+        std::vector<cv::Rect> bboxes;
+
+        movement_analyzer move_analyzer;
+
+        bool is_moving(std::size_t frame_no) const noexcept {
+            if ((double)frame_no - (double)first_frame < fps / 3.0) {
+                return true;
+            } else {
+                return move_analyzer.get_direction() != direction::unknown;
+            }
+        }
+
+    };
+
     /// @brief Holds instance, which takes care of detecting people in frame.
     cv::HOGDescriptor hog;
 
@@ -69,9 +139,8 @@ private:
      * @brief List of detected people.
      * 
      * Person is removed from list if it is clear that the person is not the athlete.
-     * Only the athlete should be in this list when video is coming to an end.
     */
-    std::list<person_checker> people;
+    std::list<person_candidate> people;
 
     /**
      * @brief Find athlete in given frame.
@@ -87,12 +156,12 @@ private:
         std::cout << "Finding athlete in frame " << frame_no << std::endl;
         if (!athlete) {
             if (people.size()) {
-                people.remove_if([&frame, frame_no](person_checker &p){ return !p.track(frame, frame_no); });
+                people.remove_if([&frame, frame_no](person_candidate &p){ return !p.track(frame, frame_no); });
             }
             if (!people.size()) {
                 find_people(frame, frame_no);
             }
-            auto found = std::find_if(people.begin(), people.end(), [frame_no](const person_checker &p){
+            auto found = std::find_if(people.begin(), people.end(), [frame_no](const person_candidate &p){
                 return p.vault_began(frame_no);
             });
             if (found != people.end()) {
@@ -103,40 +172,6 @@ private:
     }
 
     /**
-     * @brief Check whether athlete was found.
-     * 
-     * @returns true if athlete was found.
-     */
-    // bool is_found() const noexcept {
-    //     return athlete != std::nullopt;
-    // }
-
-    /**
-     * @brief Detect athlete in given frame or track it if it was detected earlier.
-     * 
-     * @param frame Frame, in which athlete should be detected.
-     * @param frame_no Number of given frame.
-     * @returns result of detection, whether frame was skipped, detected correctly or an error occured.
-     */
-    // result detect(const cv::Mat &frame, std::size_t frame_no) {
-    //     if (athlete->track(frame, frame_no)) {
-    //         athlete->detect(frame, frame_no);
-    //     } else {
-    //         return result::error;
-    //     }
-    //     return result::ok;
-    // }
-
-    /**
-     * @brief Get valid athlete detected in processed video, invalid optional otherwise.
-     * 
-     * @returns person representing athlete.
-     */
-    // person get_athlete() const {
-    //     return *athlete;
-    // }
-
-    /**
      * @brief Draw each person in frame.
      * 
      * @param frame Frame where to draw people.
@@ -145,8 +180,6 @@ private:
     void draw(cv::Mat &frame, std::size_t frame_no) const {
         for (const auto &p : people)
             p.draw(frame, frame_no);
-        // if (athlete)
-        //     athlete->draw(frame, frame_no);
     }
 
     void find_people(const cv::Mat &frame, std::size_t frame_no) noexcept {
