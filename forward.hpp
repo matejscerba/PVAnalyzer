@@ -110,15 +110,21 @@ model_point operator-(const model_point &p);
 
 std::optional<cv::Point2d> operator-(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs);
 
+model_point operator-(const model_point &lhs, const model_point &rhs);
+
 /**
  * @brief
  */
 std::optional<cv::Point2d> operator/(const std::optional<cv::Point2d> &lhs, double rhs);
 
+model_point operator/(const model_point &lhs, double rhs);
+
 /**
  * @brief
  */
 std::optional<double> operator*(double lhs, const std::optional<double> &rhs) noexcept;
+
+model_point operator*(double lhs, const model_point &rhs);
 
 /**
  * @brief Add two video bodies together.
@@ -174,9 +180,11 @@ std::string body_part_name(const body_part part);
 
 std::optional<double> distance(const std::optional<cv::Point2d> &a, const std::optional<cv::Point2d> &b) noexcept;
 
-frame_part get_part(const frame_part &a, const frame_part &b, std::function<bool (double, double)> compare) noexcept;
+std::optional<double> distance(const model_point &a, const model_point &b) noexcept;
 
-std::optional<double> get_height(const frame_part &a, const frame_part &b, std::function<bool (double, double)> compare) noexcept;
+model_point get_part(const model_point &a, const model_point &b, std::function<bool (double, double)> compare) noexcept;
+
+std::optional<double> get_height(const model_point &a, const model_point &b, std::function<bool (double, double)> compare) noexcept;
 
 /**
  * @brief Create name for output file from current date.
@@ -198,8 +206,8 @@ std::string create_output_filename() noexcept;
  * @param compare Binary comparison function.
  * @returns vector of frame numbers where ankles leave specified local point of interest.
  */
-std::vector<std::size_t> get_frame_numbers( std::vector<frame_body>::const_iterator begin,
-                                            std::vector<frame_body>::const_iterator end,
+std::vector<std::size_t> get_frame_numbers( std::vector<model_body>::const_iterator begin,
+                                            std::vector<model_body>::const_iterator end,
                                             std::function<bool (double, double)> compare) noexcept;
 /**
  * @brief Get frame numbers in which athlete's foot leaves ground.
@@ -211,7 +219,9 @@ std::vector<std::size_t> get_frame_numbers( std::vector<frame_body>::const_itera
  * @param points Athlete's body parts detected in the whole video.
  * @returns numbers of frames in which athlete's lower foot leaves ground.
  */
-std::vector<std::size_t> get_step_frames(const video_body &points) noexcept;
+std::vector<std::size_t> get_step_frames(const model_video_body &points) noexcept;
+
+std::optional<double> get_vertical_tilt_angle(const model_point &a, const model_point &b) noexcept;
 
 std::optional<double> get_vertical_tilt_angle(const frame_part &a, const frame_part &b) noexcept;
 

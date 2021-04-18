@@ -45,40 +45,39 @@ public:
 
         std::string output_filename = "outputs/videos/" + create_output_filename();
         std::string ext = ".avi";
-        // write(output_filename + "_raw_frames" + ext, raw_frames);
-        // write(output_filename + "_found_frames" + ext, found_frames);
-        // write(output_filename + "_frames" + ext, frames);
+        write(output_filename + "_raw_frames" + ext, raw_frames);
+        write(output_filename + "_found_frames" + ext, found_frames);
+        write(output_filename + "_frames" + ext, frames);
 
         model m(*athlete, filename);
         if (save) m.save();
 
-        // Analyze detected athlete.
-        // vault_analyzer analyzer;
-        // analyzer.analyze(m, filename, fps);
-
-        // Show result.
-        // viewer v;
-        // v.show(frames, raw_frames, analyzer);
-        // cv::destroyAllWindows();
+        analyze(m, filename, fps, raw_frames, frames);
     }
 
-    // void process_model(const std::string &filename) const noexcept {
-    //     video_body points;
-    //     std::vector<std::optional<cv::Point2d>> offsets;
-    //     std::string video_filename;
-    //     double fps;
-    //     if (model::load(points, offsets, video_filename, fps)) {
-    //         vault_analyzer analyzer;
-    //         analyzer.analyze(points, offsets, video_filename, fps);
-
-    //         std::vector<cv::Mat> raw_frames = extract_frames(video_filename);
-    //         std::vector<cv::Mat> frames = extract_frames(video_filename);
-    //         viewer v;
-    //         v.show(frames, raw_frames, analyzer);
-    //     }
-    // }
+    void process_model(const std::string &filename) const noexcept {
+        model m(filename);
+        std::string video_filename;
+        double fps;
+        if (m.load(video_filename, fps)) {
+            std::vector<cv::Mat> raw_frames = extract_frames(video_filename);
+            std::vector<cv::Mat> frames = m.draw(raw_frames);
+            analyze(m, video_filename, fps, raw_frames, frames);
+        }
+    }
 
 private:
+
+    void analyze(const model &m, const std::string filename, double fps, const std::vector<cv::Mat> &raw_frames, const std::vector<cv::Mat> &frames) const {
+        // Analyze detected athlete.
+        vault_analyzer analyzer;
+        analyzer.analyze(m, filename, fps);
+
+        // Show result.
+        viewer v;
+        v.show(frames, raw_frames, analyzer);
+        cv::destroyAllWindows();
+    }
 
     /**
      * @brief Extract frames from video given by its path.

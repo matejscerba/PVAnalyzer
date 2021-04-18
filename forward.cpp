@@ -24,7 +24,16 @@ std::optional<cv::Point2d> operator-(const std::optional<cv::Point2d> &lhs, cons
     return std::nullopt;
 }
 
+model_point operator-(const model_point &lhs, const model_point &rhs) {
+    return lhs + (- rhs);
+}
+
 std::optional<cv::Point2d> operator/(const std::optional<cv::Point2d> &lhs, double rhs) {
+    if (lhs) return *lhs / rhs;
+    return std::nullopt;
+}
+
+model_point operator/(const model_point &lhs, double rhs) {
     if (lhs) return *lhs / rhs;
     return std::nullopt;
 }
@@ -34,6 +43,12 @@ video_body operator+(const video_body &&lhs, const video_body &&rhs) {
     res.insert(res.end(), rhs.begin(), rhs.end());
     return res;
 }
+
+model_point operator*(double lhs, const model_point &rhs) {
+    if (rhs) return lhs * (*rhs);
+    return std::nullopt;
+}
+
 
 std::optional<double> operator*(double lhs, const std::optional<double> &rhs) noexcept {
     if (rhs) return lhs * (*rhs);
@@ -48,7 +63,6 @@ std::ostream& operator<<(std::ostream& os, const model_point &p) {
     }
     return os;
 }
-
 
 std::vector<cv::Point2d> get_corners(const cv::Rect &rect) {
     return {
@@ -120,14 +134,24 @@ std::string body_part_name(const body_part part) {
 
 std::optional<double> distance(const std::optional<cv::Point2d> &a, const std::optional<cv::Point2d> &b) noexcept {
     if (a && b) {
-        return std::sqrt((a->x - b->x) * (a->x - b->x) + (a->y - b->y) * (a->y - b-> y));
+        return std::sqrt((a->x - b->x) * (a->x - b->x) + (a->y - b->y) * (a->y - b->y));
     }
     return std::nullopt;
 }
 
-frame_part get_part(const frame_part &a, const frame_part &b, std::function<bool (double, double)> compare) noexcept {
+std::optional<double> distance(const model_point &a, const model_point &b) noexcept {
     if (a && b) {
-        if (compare(a->y, b->y))
+        return std::sqrt(
+            (a->x - b->x) * (a->x - b->x) +
+            (a->y - b->y) * (a->y - b->y) +
+            (a->z - b->z) * (a->z - b->z));
+    }
+    return std::nullopt;
+}
+
+model_point get_part(const model_point &a, const model_point &b, std::function<bool (double, double)> compare) noexcept {
+    if (a && b) {
+        if (compare(a->z, b->z))
             return a;
         return b;
     } else if (a) {
@@ -138,14 +162,14 @@ frame_part get_part(const frame_part &a, const frame_part &b, std::function<bool
     return std::nullopt;
 }
 
-std::optional<double> get_height(const frame_part &a, const frame_part &b, std::function<bool (double, double)> compare) noexcept {
-    frame_part p = get_part(a, b, compare);
-    if (p) return p->y;
+std::optional<double> get_height(const model_point &a, const model_point &b, std::function<bool (double, double)> compare) noexcept {
+    model_point p = get_part(a, b, compare);
+    if (p) return p->z;
     return std::nullopt;
 }
 
-std::vector<std::size_t> get_frame_numbers( std::vector<frame_body>::const_iterator begin,
-                                            std::vector<frame_body>::const_iterator end,
+std::vector<std::size_t> get_frame_numbers( std::vector<model_body>::const_iterator begin,
+                                            std::vector<model_body>::const_iterator end,
                                             std::function<bool (double, double)> compare) noexcept {
     std::vector<std::size_t> res;
     std::optional<double> last_height = std::nullopt;
@@ -170,16 +194,16 @@ std::vector<std::size_t> get_frame_numbers( std::vector<frame_body>::const_itera
     return res;
 }
 
-std::vector<std::size_t> get_step_frames(const video_body &points) noexcept {
+std::vector<std::size_t> get_step_frames(const model_video_body &points) noexcept {
     std::vector<std::size_t> res;
-    std::greater<double> low;
+    std::less<double> low;
     std::vector<std::size_t> lows = get_frame_numbers(points.begin(), points.end(), low);
-    std::less<double> high;
+    std::greater<double> high;
     std::vector<std::size_t> highs = get_frame_numbers(points.begin(), points.end(), high);
     double center = 0;
     for (std::size_t i = 0; i < std::min(lows.size(), highs.size()); ++i) {
-        frame_body l_body = points[lows[i]];
-        frame_body h_body = points[highs[i]];
+        model_body l_body = points[lows[i]];
+        model_body h_body = points[highs[i]];
         double l = *get_height(l_body[body_part::l_ankle], l_body[body_part::r_ankle], low);
         double h = *get_height(h_body[body_part::l_ankle], h_body[body_part::r_ankle], high);
         if (i > 0) {
@@ -190,6 +214,15 @@ std::vector<std::size_t> get_step_frames(const video_body &points) noexcept {
         res.push_back(lows[i]);
     }
     return res;
+}
+
+std::optional<double> get_vertical_tilt_angle(const model_point &a, const model_point &b) noexcept {
+    if (a && b) {
+        double y = a->z - b->z;
+        double x = a->x - b->x;
+        return std::atan(x / y) * 180.0 / M_PI;
+    }
+    return std::nullopt;
 }
 
 std::optional<double> get_vertical_tilt_angle(const frame_part &a, const frame_part &b) noexcept {

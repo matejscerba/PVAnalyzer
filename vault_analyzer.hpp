@@ -38,15 +38,16 @@ public:
      * @param fps Frame rate of processed video.
      */
     void analyze(const model &athlete, const std::string &filename, double fps) noexcept {
-        // points_frame = athlete.get_frame_points();
-        // points_real = athlete.get_real_points();
+        points_frame = athlete.get_frame_points();
+        points_real = athlete.get_real_points();
 
-        // dir = athlete.get_direction();
-        // this->filename = filename;
-        // this->fps = fps;
+        dir = athlete.get_direction();
+        this->filename = filename;
+        this->fps = fps;
 
-        // if (compute_parameters(points_real))
-        //     write_parameters();
+        if (compute_parameters(points_real)) {
+            write_parameters();
+        }
     }
 
     // void analyze(   const video_body &points,
@@ -99,12 +100,12 @@ private:
     /**
      * @brief Body parts of person in each frame (not transformed).
      */
-    video_body points_frame;
+    model_video_body points_frame;
 
     /**
      * @brief Body parts of person in each frame transformed into real life coordinates.
      */
-    video_body points_real;
+    model_video_body points_real;
     
     /**
      * @brief Path to analyzed video.
@@ -148,7 +149,7 @@ private:
      * @returns true if computation was successful (if beginning of attampt,
      * takeoff and culmination moments were found).
      */
-    bool compute_parameters(const video_body &points) noexcept {
+    bool compute_parameters(const model_video_body &points) noexcept {
         if (!find_moments_of_interest(points))
             return false;
 
@@ -187,11 +188,11 @@ private:
      * 
      * @note Returns last frame in which ankles are static.
      */
-    std::optional<std::size_t> find_start(const video_body &points) noexcept {
+    std::optional<std::size_t> find_start(const model_video_body &points) noexcept {
         std::size_t index = 0;
         // Values in previous frame.
-        frame_part left = std::nullopt;
-        frame_part right = std::nullopt;
+        model_point left = std::nullopt;
+        model_point right = std::nullopt;
         for (const auto &body : points) {
             std::optional<double> dist = distance(body[body_part::l_ankle], left);
             if (dist && *dist > 1) break;
@@ -215,7 +216,7 @@ private:
      * @returns frame number in which athlete takes off, no value if no such
      * frame was found.
      */
-    std::optional<std::size_t> find_takeoff(const video_body &points) noexcept {
+    std::optional<std::size_t> find_takeoff(const model_video_body &points) noexcept {
         std::vector<std::size_t> steps = get_step_frames(points);
         if (steps.size()) return steps.back();
         return std::nullopt;
@@ -228,15 +229,15 @@ private:
      * @returns frame number in which athlete's hips are highest, no value if no such
      * frame was found.
      */
-    std::optional<std::size_t> find_culmination(const video_body &points) noexcept {
+    std::optional<std::size_t> find_culmination(const model_video_body &points) noexcept {
         std::optional<double> highest;
         std::size_t highest_idx;
         bool found = false;
         for (std::size_t i = 0; i < points.size(); ++i) {
             if (points[i][body_part::l_hip] && points[i][body_part::r_hip]) {
                 found = true;
-                double current = (points[i][body_part::l_hip]->y + points[i][body_part::r_hip]->y) / 2;
-                highest = highest ? std::min(current, *highest) : current;
+                double current = (points[i][body_part::l_hip]->z + points[i][body_part::r_hip]->z) / 2;
+                highest = highest ? std::max(current, *highest) : current;
                 highest_idx = (highest == current ? i : highest_idx);
             }
         }
@@ -250,7 +251,7 @@ private:
      * @param points Athlete's body parts detected in the whole video.
      * @returns true if all moments were found, false otherwise.
      */
-    bool find_moments_of_interest(const video_body &points) noexcept {
+    bool find_moments_of_interest(const model_video_body &points) noexcept {
         std::optional<std::size_t> val = find_start(points);
         if (val) start = *val;
         else return false;

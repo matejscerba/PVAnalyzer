@@ -4,15 +4,22 @@
 
 #include "forward.hpp"
 #include "person.hpp"
+#include "drawer.hpp"
 
 struct model {
 public:
 
     model(const person &athlete, const std::string &video_filename) noexcept {
+        this->model_filename = "";
         this->video_filename = video_filename;
         compute_frame_points(athlete.get_points());
         compute_frame_offsets(athlete.get_offsets());
         compute_real_points();
+    }
+
+    model(const std::string &filename) noexcept {
+        this->model_filename = filename;
+        this->video_filename = "";
     }
 
     void save() const noexcept {
@@ -26,7 +33,7 @@ public:
         }
 
         output << video_filename << std::endl;
-        for (std::size_t frame_no; frame_no < frame_points.size(); ++frame_no) {
+        for (std::size_t frame_no = 0; frame_no < frame_points.size(); ++frame_no) {
             output << frame_no << std::endl << frame_offsets[frame_no] << std::endl;
             for (const auto &p : frame_points[frame_no]) {
                 output << p << std::endl;
@@ -35,16 +42,76 @@ public:
         output.close();
     }
 
-    video_body get_frame_points() const noexcept {
-        return video_body();
+    model_video_body get_frame_points() const noexcept {
+        return frame_points;
+    }
+
+    model_video_body get_real_points() const noexcept {
+        return real_points;
     }
 
     direction get_direction() const noexcept {
-        return direction::left;
+        auto first = std::find_if(frame_offsets.begin(), frame_offsets.end(), [](const model_point &p) {
+            return p;
+        });
+        auto last = std::find_if(frame_offsets.rbegin(), frame_offsets.rend(), [](const model_point &p) {
+            return p;
+        });
+        if (first != frame_offsets.end()) {
+            if ((*first)->x > (*last)->x) {
+                return direction::left;
+            } else if ((*first)->x < (*last)->x) {
+                return direction::right;
+            }
+        }
+        return direction::unknown;
+    }
+
+    bool load(std::string &video_filename, double &fps) noexcept {
+        frame_points.clear();
+        real_points.clear();
+        frame_offsets.clear();
+
+        std::ifstream input;
+        input.open(model_filename);
+        if (!input.is_open()) {
+            std::cout << "Model file \"" << model_filename << "\" could not be opened." << std::endl;
+            return false;
+        }
+
+        fps = 30;
+        std::string line;
+        std::getline(input, video_filename);
+        for (;;) {
+            if (!std::getline(input, line) || line == "") {
+                break;
+            }
+            if (line.find(",") == std::string::npos) {
+                // Frame number is expected.
+            } else {
+                frame_offsets.push_back(parse_point(std::move(line)));
+                read_body(input);
+            }
+        }
+        input.close();
+        compute_real_points();
+        return true;
+    }
+
+    std::vector<cv::Mat> draw(const std::vector<cv::Mat> &frames) const noexcept {
+        std::vector<cv::Mat> res;
+        cv::Mat frame;
+        for (std::size_t frame_no = 0; frame_no < frames.size(); ++frame_no) {
+            frame = frames[frame_no].clone();
+            drawer::draw(frame, frame_points[frame_no]);
+            res.push_back(frame);
+        }
+        return res;
     }
 
 private:
 
+    std::string model_filename;
     std::string video_filename;
 
     model_video_body frame_points;
@@ -94,6 +161,33 @@ private:
             }
             real_points.push_back(std::move(b));
         }
+    }
+
+    model_point parse_point(std::string &&s) const noexcept {
+        if (s != "" && s[0] != ',') {
+            std::replace(s.begin(), s.end(), ',', ' ');
+            std::stringstream sstr(s);
+            std::string value;
+            sstr >> value;
+            double x = std::stod(value);
+            sstr >> value;
+            double y = std::stod(value);
+            sstr >> value;
+            double z = std::stod(value);
+            return cv::Point3d(x, y, z);
+        } else {
+            return std::nullopt;
+        }
+    }
+
+    void read_body(std::ifstream &input) noexcept {
+        std::string line;
+        model_body b;
+        for (std::size_t i = 0; i < npoints; ++i) {
+            std::getline(input, line);
+            b.push_back(parse_point(std::move(line)));
+        }
+        frame_points.push_back(b);
     }
 
 };
