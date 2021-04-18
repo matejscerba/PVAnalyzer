@@ -66,9 +66,36 @@ public:
         return frames;
     }
 
-private:
+    /**
+     * @brief Get point of all body parts of person.
+     * 
+     * @param real Transforms detected points into real life coordinates if true.
+     * @returns detected body parts in part of video where person was detected.
+     */
+    video_body get_points(bool real = false) const {
+        video_body res;
+        for (std::size_t i = 0; i < points.size(); ++i) {
+            frame_body transformed;
+            std::transform(points[i].begin(), points[i].end(), std::back_inserter(transformed),
+                           [i, this, real](const frame_part &p) { return p + this->move_analyzer->frame_offset(i, real); }
+            );
+            res.push_back(std::move(transformed));
+        }
+        return res;
+    }
 
-    friend class vault_analyzer;
+    std::vector<std::optional<cv::Point2d>> get_offsets() const noexcept {
+        std::vector<std::optional<cv::Point2d>> res;
+        for (std::size_t i = 0; i < points.size(); ++i)
+            res.push_back(move_analyzer->frame_offset(i));
+        return res;
+    }
+
+    direction get_direction() const {
+        return move_analyzer->get_direction();
+    }
+
+private:
 
     std::size_t first_frame;
 
@@ -279,24 +306,6 @@ private:
      * @param frame Frame which to crop and detect body parts on.
      * @param frame_no Number of given frame.
     */
-
-    /**
-     * @brief Get point of all body parts of person.
-     * 
-     * @param real Transforms detected points into real life coordinates if true.
-     * @returns detected body parts in part of video where person was detected.
-     */
-    video_body get_points(bool real = false) const {
-        video_body res;
-        for (std::size_t i = 0; i < points.size(); ++i) {
-            frame_body transformed;
-            std::transform(points[i].begin(), points[i].end(), std::back_inserter(transformed),
-                           [i, this, real](const frame_part &p) { return p + this->move_analyzer->frame_offset(i, real); }
-            );
-            res.push_back(std::move(transformed));
-        }
-        return res;
-    }
 
     /**
      * @brief Draw this person in `frame`.

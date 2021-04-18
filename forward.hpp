@@ -18,6 +18,11 @@
 // typedefs
 //////////////////////////////////////////////////////////////////////////////////////
 
+typedef std::optional<cv::Point3d> model_point;
+typedef std::vector<model_point> model_body;
+typedef std::vector<model_body> model_video_body;
+typedef std::vector<model_point> model_offsets;
+
 /// @brief Represents person's body part in frame, can be invalid.
 typedef std::optional<cv::Point2d> frame_part;
 
@@ -99,6 +104,10 @@ enum class vault_part {
  */
 std::optional<cv::Point2d> operator+(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs);
 
+model_point operator+(const model_point &lhs, const model_point &rhs);
+
+model_point operator-(const model_point &p);
+
 std::optional<cv::Point2d> operator-(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs);
 
 /**
@@ -117,6 +126,8 @@ std::optional<double> operator*(double lhs, const std::optional<double> &rhs) no
  * @returns result of appending `rhs` to `lhs`.
  */
 video_body operator+(const video_body &&lhs, const video_body &&rhs);
+
+std::ostream& operator<<(std::ostream& os, const model_point &p);
 
 /**
  * @brief Extract corners from rectangle.

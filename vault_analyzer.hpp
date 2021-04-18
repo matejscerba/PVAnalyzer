@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "parameters.hpp"
-#include "person.hpp"
+#include "model.hpp"
 
 /**
  * @brief Analyzes detections made when processing video.
@@ -37,18 +37,34 @@ public:
      * @param frames Number of frames in video.
      * @param fps Frame rate of processed video.
      */
-    void analyze(const person &athlete, const std::string &filename, std::size_t frames, double fps) noexcept {
-        std::size_t after = frames - athlete.get_points().size();
-        points_frame = athlete.get_points();
-        points_real = athlete.get_points(true);
+    void analyze(const model &athlete, const std::string &filename, double fps) noexcept {
+        // points_frame = athlete.get_frame_points();
+        // points_real = athlete.get_real_points();
 
-        dir = athlete.move_analyzer->get_direction();
-        this->filename = filename;
-        this->fps = fps;
+        // dir = athlete.get_direction();
+        // this->filename = filename;
+        // this->fps = fps;
 
         // if (compute_parameters(points_real))
         //     write_parameters();
     }
+
+    // void analyze(   const video_body &points,
+    //                 const std::vector<std::optional<cv::Point2d>> &frame_offsets,
+    //                 const std::string &filename, double fps) noexcept {
+
+    //     points_frame = points;
+    //     points_real.clear();
+    //     for (std::size_t i = 0; i < points.size(); ++i) {
+    //         frame_body body;
+    //         for (std::size_t j = 0; j < npoints; ++j) {
+    //             body.push_back(frame_offsets[i] + points[i][j]);
+    //         }
+    //         points_real.push_back(std::move(body));
+    //     }
+    //     this->filename = filename;
+    //     this->fps = fps;
+    // }
 
     /**
      * @brief Get parameters including their values.

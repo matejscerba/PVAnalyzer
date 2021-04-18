@@ -99,7 +99,7 @@ public:
      * 
      * @see background_tracker::frame_offset.
      */
-    std::optional<cv::Point2d> frame_offset(std::size_t frame_no, bool real) const {
+    std::optional<cv::Point2d> frame_offset(std::size_t frame_no, bool real = true) const {
         if (!real) return cv::Point2d();
         if (left_direction_tracker)
             return left_direction_tracker->frame_offset(frame_no);

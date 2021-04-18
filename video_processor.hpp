@@ -29,7 +29,7 @@ public:
      * 
      * @param filename Path to video file to be processed.
      */
-    void process(const std::string &filename) const noexcept {
+    void process_video(const std::string &filename, bool save = true) const noexcept {
         std::vector<cv::Mat> raw_frames = extract_frames(filename);
 
         double fps = 30;
@@ -49,15 +49,34 @@ public:
         // write(output_filename + "_found_frames" + ext, found_frames);
         // write(output_filename + "_frames" + ext, frames);
 
+        model m(*athlete, filename);
+        if (save) m.save();
+
         // Analyze detected athlete.
-        vault_analyzer analyzer;
-        analyzer.analyze(*athlete, filename, frames.size(), fps);
+        // vault_analyzer analyzer;
+        // analyzer.analyze(m, filename, fps);
 
         // Show result.
-        viewer v;
-        v.show(frames, raw_frames, analyzer);
-        cv::destroyAllWindows();
+        // viewer v;
+        // v.show(frames, raw_frames, analyzer);
+        // cv::destroyAllWindows();
     }
+
+    // void process_model(const std::string &filename) const noexcept {
+    //     video_body points;
+    //     std::vector<std::optional<cv::Point2d>> offsets;
+    //     std::string video_filename;
+    //     double fps;
+    //     if (model::load(points, offsets, video_filename, fps)) {
+    //         vault_analyzer analyzer;
+    //         analyzer.analyze(points, offsets, video_filename, fps);
+
+    //         std::vector<cv::Mat> raw_frames = extract_frames(video_filename);
+    //         std::vector<cv::Mat> frames = extract_frames(video_filename);
+    //         viewer v;
+    //         v.show(frames, raw_frames, analyzer);
+    //     }
+    // }
 
 private:
 

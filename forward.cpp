@@ -9,6 +9,16 @@ std::optional<cv::Point2d> operator+(const std::optional<cv::Point2d> &lhs, cons
     return std::nullopt;
 }
 
+model_point operator+(const model_point &lhs, const model_point &rhs) {
+    if (lhs && rhs) return *lhs + *rhs;
+    return std::nullopt;
+}
+
+model_point operator-(const model_point &p) {
+    if (p) return - *p;
+    return std::nullopt;
+}
+
 std::optional<cv::Point2d> operator-(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs) {
     if (lhs && rhs) return *lhs - *rhs;
     return std::nullopt;
@@ -29,6 +39,16 @@ std::optional<double> operator*(double lhs, const std::optional<double> &rhs) no
     if (rhs) return lhs * (*rhs);
     return std::nullopt;
 }
+
+std::ostream& operator<<(std::ostream& os, const model_point &p) {
+    if (p) {
+        os << p->x << "," << p->y << "," << p->z;
+    } else {
+        os << ",,";
+    }
+    return os;
+}
+
 
 std::vector<cv::Point2d> get_corners(const cv::Rect &rect) {
     return {
