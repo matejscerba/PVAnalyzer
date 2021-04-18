@@ -67,7 +67,7 @@ public:
         return direction::unknown;
     }
 
-    bool load(std::string &video_filename, double &fps) noexcept {
+    bool load(std::string &video_filename) noexcept {
         frame_points.clear();
         real_points.clear();
         frame_offsets.clear();
@@ -79,7 +79,6 @@ public:
             return false;
         }
 
-        fps = 30;
         std::string line;
         std::getline(input, video_filename);
         for (;;) {

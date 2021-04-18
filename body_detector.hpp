@@ -89,12 +89,12 @@ private:
         }
 
         void draw(cv::Mat &frame, std::size_t frame_no) const noexcept {
-            if (bboxes.size() > frame_no) {
+            if (bboxes.size() > frame_no - first_frame) {
                 cv::Scalar color(0, 0, 255);
                 if (move_analyzer.vault_frames(frame_no))
                     color = cv::Scalar(0, 255, 0);
                 
-                cv::rectangle(frame, bboxes[frame_no].tl(), bboxes[frame_no].br(), cv::Scalar(255, 0, 0), 2);
+                cv::rectangle(frame, bboxes[frame_no - first_frame].tl(), bboxes[frame_no - first_frame].br(), color, 2);
                 move_analyzer.draw(frame, frame_no);
             }
         }

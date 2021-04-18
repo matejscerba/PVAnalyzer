@@ -30,9 +30,9 @@ public:
      * @param filename Path to video file to be processed.
      */
     void process_video(const std::string &filename, bool save = true) const noexcept {
-        std::vector<cv::Mat> raw_frames = extract_frames(filename);
+        double fps;
+        std::vector<cv::Mat> raw_frames = extract_frames(filename, fps);
 
-        double fps = 30;
         body_detector detector(fps);
 
         std::vector<cv::Mat> found_frames;
@@ -58,20 +58,20 @@ public:
     void process_model(const std::string &filename) const noexcept {
         model m(filename);
         std::string video_filename;
-        double fps;
-        if (m.load(video_filename, fps)) {
-            std::vector<cv::Mat> raw_frames = extract_frames(video_filename);
+        if (m.load(video_filename)) {
+            double fps;
+            std::vector<cv::Mat> raw_frames = extract_frames(video_filename, fps);
             std::vector<cv::Mat> frames = m.draw(raw_frames);
-            analyze(m, video_filename, fps, raw_frames, frames);
+            analyze(m, video_filename, fps, raw_frames, frames, false);
         }
     }
 
 private:
 
-    void analyze(const model &m, const std::string filename, double fps, const std::vector<cv::Mat> &raw_frames, const std::vector<cv::Mat> &frames) const {
+    void analyze(const model &m, const std::string filename, double fps, const std::vector<cv::Mat> &raw_frames, const std::vector<cv::Mat> &frames, bool save = true) const {
         // Analyze detected athlete.
         vault_analyzer analyzer;
-        analyzer.analyze(m, filename, fps);
+        analyzer.analyze(m, filename, fps, save);
 
         // Show result.
         viewer v;
@@ -86,7 +86,7 @@ private:
      * 
      * @returns frames of video.
      */
-    std::vector<cv::Mat> extract_frames(const std::string &filename) const noexcept {
+    std::vector<cv::Mat> extract_frames(const std::string &filename, double &fps) const noexcept {
         std::vector<cv::Mat> frames;
 
         // Open video.
@@ -95,6 +95,8 @@ private:
             std::cout << "Error opening video " << filename << std::endl;
             return frames;
         }
+
+        fps = video.get(cv::CAP_PROP_FPS);
 
         // Loop through video and save frames.
         cv::Mat frame;
