@@ -53,7 +53,6 @@ public:
 
             // Detect athlete's body in current frame.
             if (track(frame, frame_no)) {
-                update_points(parts_dtor.deep_detect(cropped_frames[frame_no]));
                 draw(frame, frame_no);
             }
 
@@ -138,15 +137,11 @@ private:
      * @brief Compute position of given points after transformation.
      * 
      * @param src Vector of given points.
-     * @param frame Frame in which points are detected.
-     * @param frame_no Number of given frame.
      * @param back Indicator whether to transform points in the opposite rotation.
      * @returns vector of points after rotation specified `frame_no` (used to compute
      *     rotation angle), in the opposite direction if `back` is true.
     */
-    std::vector<cv::Point2d> transform(const std::vector<cv::Point2d> &src,
-                                       const cv::Mat &frame,
-                                       bool back = false) {
+    std::vector<cv::Point2d> transform(const std::vector<cv::Point2d> &src, bool back = false) {
         std::vector<cv::Point2d> res;
         if (corners.size() && corners.back()) {
             double angle = get_angle();
@@ -236,28 +231,27 @@ private:
     }
 
     /// @returns width of this person's bounding box in given frame.
-    // double width(std::size_t frame_no) const {
-    //     return cv::norm((*scaled_corners[frame_no])[corner::tr] - (*scaled_corners[frame_no])[corner::tl]);
-    // }
+    double last_width() const {
+        return cv::norm((*corners.back())[corner::tr] - (*corners.back())[corner::tl]);
+    }
 
     /// @returns height of this person's bounding box in given frame.
-    // double height(std::size_t frame_no) const {
-    //     return cv::norm((*scaled_corners[frame_no])[corner::bl] - (*scaled_corners[frame_no])[corner::tl]);
-    // }
+    double last_height() const {
+        return cv::norm((*corners.back())[corner::bl] - (*corners.back())[corner::tl]);
+    }
 
     void update_properties(const cv::Mat &frame, const cv::Rect &bbox) noexcept {
         if (valid_tracker) {
             cv::Rect scaled = scale(bbox, frame);
-            corners.push_back(transform(get_corners(bbox), frame, true));
-            scaled_corners.push_back(transform(get_corners(scaled), frame, true));
+            scaled_corners.push_back(transform(get_corners(scaled), true));
             cropped_frames.push_back(frame(scaled).clone());
+            corners.push_back(transform(get_corners(bbox), true));
         } else {
-            corners.push_back(std::nullopt);
             scaled_corners.push_back(std::nullopt);
             cropped_frames.push_back(std::nullopt);
+            corners.push_back(std::nullopt);
         }
         points.push_back(frame_body(npoints, std::nullopt));
-
     }
 
     void update_points(frame_body &&body) noexcept {
@@ -283,7 +277,8 @@ private:
     */
     bool track(const cv::Mat &frame, std::size_t frame_no) {
         cv::Rect bbox = first_bbox;
-        cv::Mat rotated = rotate(frame);
+        cv::Mat unrotated = frame.clone();
+        cv::Mat rotated = rotate(unrotated);
         if (frame_no == first_frame) {
             tracker->init(rotated, bbox);
             move_analyzer = movement_analyzer(frame_no, rotated, bbox, fps);
@@ -294,7 +289,27 @@ private:
             valid_tracker = false;
         }
         update_properties(rotated, bbox);
+        if (valid_tracker) {
+            update_points(parts_dtor.deep_detect(cropped_frames[frame_no]));
+            // cv::imshow("tracked", rotated(bbox));
+            // rotated = rotate(unrotated); // Rotated by same angle as next frame will be.
+            // bbox = rotate_last_bbox();
+            // cv::imshow("to_init", rotated(bbox));
+            // cv::waitKey();
+            // if (is_inside(get_corners(bbox), rotated))
+            //     tracker->init(rotated, bbox);
+        }
         return valid_tracker;
+    }
+
+    cv::Rect rotate_last_bbox() noexcept {
+        cv::Point2d last_center = get_center(*corners.back());
+        cv::Point2d rotated = transform(std::vector<cv::Point2d>{last_center}).front();
+        cv::Point2d size(last_width(), last_height());
+        return cv::Rect(
+            rotated - size / 2,
+            rotated + size / 2
+        );
     }
 
     /**

@@ -134,17 +134,14 @@ std::string body_part_name(const body_part part) {
 
 std::optional<double> distance(const std::optional<cv::Point2d> &a, const std::optional<cv::Point2d> &b) noexcept {
     if (a && b) {
-        return std::sqrt((a->x - b->x) * (a->x - b->x) + (a->y - b->y) * (a->y - b->y));
+        return cv::norm(*a - *b);
     }
     return std::nullopt;
 }
 
 std::optional<double> distance(const model_point &a, const model_point &b) noexcept {
     if (a && b) {
-        return std::sqrt(
-            (a->x - b->x) * (a->x - b->x) +
-            (a->y - b->y) * (a->y - b->y) +
-            (a->z - b->z) * (a->z - b->z));
+        return cv::norm(*a - *b);
     }
     return std::nullopt;
 }
