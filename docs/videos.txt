@@ -1,0 +1,17 @@
+Stejný skok z obou stran, stejné vzdálenosti na kolmici k rozběhu v místě odrazu
+Stejný skok z různých úhlů - pozice kamery bude na úrovni odrazu, 5 metrů před ním a 5 metrů za ním
+Podobný skok z jiné vzdálenosti od rozběhu
+Skoky různých atletů
+
+Proběhnutí - atlet proběhne na doskočiště, takže se "odrazí" - program by ho měl ve videu najít sám
+Průchod - prosté pověšení se na tyč, bez zvratu (otočení se vzhůru nohama)
+Zvrat - atlet se na tyči otočí vzhůru nohama a v této pozici dopadne na doskočiště
+Skok na rovné tyči (i průchod a zvrat) - kratší rozběh
+Rozběh na falešný šuplík - rozběh s tyčí vedle rozběžiště, naznačení odrazu, tyč se při odrazu šoupe po tartanu
+
+Skok daleký
+Skok vysoký
+Odrazy - střídají se nohy a místo kroku běhu se atlet odrazí, podobné trojskoku
+Běh - atleta program zřejmě nenajde, atlet se totiž neodrazí, Buď zadám pozici atleta ručně nebo upravím program tak, aby za validního atleta považoval buď osobu, která se odrazí nebo její tracking neselže do konce videa
+
+Poznamenat si: Délka rozběhu, výška laťky, délka tyče, použitá kamera, parametry videa (rozlišení + fps), pozice kamery, případně jen parametry, které s daným tréninkovým prvkem souvisí
