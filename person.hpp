@@ -56,8 +56,8 @@ public:
                 draw(frame, frame_no);
             }
 
-            // cv::imshow("frame", frame);
-            // cv::waitKey();
+            cv::imshow("frame", frame);
+            cv::waitKey();
 
             // Save current modified frame.
             frames.push_back(frame);
@@ -252,16 +252,14 @@ private:
 
     void update_properties(const cv::Mat &frame, const cv::Rect &bbox) noexcept {
         if (valid_tracker) {
-            cv::Rect scaled = scale(bbox, frame);
-            scaled_corners.push_back(transform(get_corners(scaled), true));
             // cropped_frames.push_back(frame(scaled).clone());
             // cv::imshow("in_update", *cropped_frames.back());
             corners.push_back(transform(get_corners(bbox), true));
         } else {
-            scaled_corners.push_back(std::nullopt);
             // cropped_frames.push_back(std::nullopt);
             corners.push_back(std::nullopt);
         }
+        scaled_corners.push_back(std::nullopt);
         points.push_back(frame_body(npoints, std::nullopt));
     }
 
@@ -309,6 +307,7 @@ private:
             for (std::size_t i = 0; i < SHIFTS.size(); ++i) {
                 // Rect
                 cv::Mat r;
+                std::vector<cv::Point2d> scaled_corns;
                 double angle = get_angle() + SHIFTS[i];
                 cv::Point center = get_center(*corners.back());
                 cv::Mat rotation = cv::getRotationMatrix2D(center, angle, 1.0);
@@ -326,6 +325,8 @@ private:
                             part = res.front();
                         }
                     });
+                    cv::transform(get_corners(scaled_rect), scaled_corns, back_rot);
+                    scaled_corners.back() = scaled_corns;
                     points.back() = detected;
                 }
                 if (max_parts == npoints) break;
@@ -343,6 +344,8 @@ private:
                             part = res.front();
                         }
                     });
+                    cv::transform(get_corners(scaled_rect), scaled_corns, back_rot);
+                    scaled_corners.back() = scaled_corns;
                     points.back() = detected;
                 }
                 if (max_parts == npoints) break;
