@@ -64,6 +64,17 @@ std::ostream& operator<<(std::ostream& os, const model_point &p) {
     return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const frame_body &body) {
+    for (const auto part : body) {
+        if (part) {
+            os << *part << " ";
+        } else {
+            os << "? ";
+        }
+    }
+    return os;
+}
+
 std::vector<cv::Point2d> get_corners(const cv::Rect &rect) {
     return {
         rect.tl(), cv::Point2d(rect.br().x, rect.tl().y),

@@ -161,15 +161,16 @@ private:
      * @param frame_no Number of frame used to determine angle of rotation.
      */
     double get_angle() {
+        double res = 0;
         if (points.size()) {
             frame_body body = points.back();
             std::optional<double> angle = get_vertical_tilt_angle(
                 (body[body_part::l_hip] + body[body_part::r_hip]) / 2.0,
                 body[body_part::head]
             );
-            last_angle = angle ? - *angle : last_angle;
+            res = angle ? - *angle : last_angle;
         }
-        return last_angle;
+        return res;
     }
 
     /**
@@ -179,10 +180,11 @@ private:
      * @param frame_no Number of frame to be rotated.
      * @returns rotated frame.
      */
-    cv::Mat rotate(const cv::Mat &frame) {
+    cv::Mat rotate(const cv::Mat &frame, double shift = 0.0) {
         cv::Mat rotated;
         if (corners.size() && corners.back()) {
-            double angle = get_angle();
+            double angle = get_angle() + shift;
+            if (shift == 0.0) last_angle = angle;
             cv::Point center = get_center(*corners.back());
             cv::Mat rotation = cv::getRotationMatrix2D(center, angle, 1.0);
             cv::warpAffine(frame, rotated, rotation, frame.size());
@@ -206,16 +208,24 @@ private:
         cv::Point diag = center - rect.tl();
         cv::Point tl = center - scale_factor * diag;
         cv::Point br = center + scale_factor * diag;
-        int x = center.x;
-        int y = center.y;
-        int dx = diag.x;
-        int dy = diag.y;
         int top = std::max(0, tl.y);
         int right = std::min(frame.cols, br.x);
         int bottom = std::min(frame.rows, br.y);
         int left = std::max(0, tl.x);
         return cv::Rect(left, top, right - left, bottom - top);
     }
+
+    cv::Rect scale_square(const cv::Rect &rect, const cv::Mat &frame) {
+        cv::Point center = get_center(rect);
+        cv::Point diag = center - rect.tl();
+        int diff = std::max(diag.x, diag.y);
+        int top = std::max(0, center.y - diff);
+        int right = std::min(frame.cols, center.x + diff);
+        int bottom = std::min(frame.rows, center.y + diff);
+        int left = std::max(0, center.x - diff);
+        return cv::Rect(left, top, right - left, bottom - top);
+    }
+
     /**
      * @param frame_no Number of frame where to get bounding box.
      * @returns bounding box of this person in current frame.
@@ -244,18 +254,19 @@ private:
         if (valid_tracker) {
             cv::Rect scaled = scale(bbox, frame);
             scaled_corners.push_back(transform(get_corners(scaled), true));
-            cropped_frames.push_back(frame(scaled).clone());
+            // cropped_frames.push_back(frame(scaled).clone());
+            // cv::imshow("in_update", *cropped_frames.back());
             corners.push_back(transform(get_corners(bbox), true));
         } else {
             scaled_corners.push_back(std::nullopt);
-            cropped_frames.push_back(std::nullopt);
+            // cropped_frames.push_back(std::nullopt);
             corners.push_back(std::nullopt);
         }
         points.push_back(frame_body(npoints, std::nullopt));
     }
 
-    void update_points(frame_body &&body) noexcept {
-        cv::Mat rotation = cv::getRotationMatrix2D(cv::Point(), -last_angle, 1.0);
+    void update_points(frame_body &body, double shift) noexcept {
+        cv::Mat rotation = cv::getRotationMatrix2D(cv::Point(), -last_angle - shift, 1.0);
         std::for_each(body.begin(), body.end(), [this, rotation](frame_part &p){
             if (p) {
                 std::vector<cv::Point2d> res;
@@ -263,7 +274,7 @@ private:
                 p = (*(this->scaled_corners.back()))[corner::tl] + res.front();
             }
         });
-        points.back() = std::move(body);
+        points.back() = body;
     }
 
     /**
@@ -277,8 +288,7 @@ private:
     */
     bool track(const cv::Mat &frame, std::size_t frame_no) {
         cv::Rect bbox = first_bbox;
-        cv::Mat unrotated = frame.clone();
-        cv::Mat rotated = rotate(unrotated);
+        cv::Mat rotated = rotate(frame);
         if (frame_no == first_frame) {
             tracker->init(rotated, bbox);
             move_analyzer = movement_analyzer(frame_no, rotated, bbox, fps);
@@ -290,27 +300,75 @@ private:
         }
         update_properties(rotated, bbox);
         if (valid_tracker) {
-            update_points(parts_dtor.deep_detect(cropped_frames[frame_no]));
-            // cv::imshow("tracked", rotated(bbox));
-            // rotated = rotate(unrotated); // Rotated by same angle as next frame will be.
-            // bbox = rotate_last_bbox();
-            // cv::imshow("to_init", rotated(bbox));
-            // cv::waitKey();
-            // if (is_inside(get_corners(bbox), rotated))
-            //     tracker->init(rotated, bbox);
+            cv::Point2d size(last_width(), last_height());
+            cv::Point2d center = get_center(*corners.back());
+            cv::Point2d tl = center - size / 2;
+            cv::Point2d br = center + size / 2;
+            cv::Rect rect(tl, br);
+            int max_parts = -1;
+            for (std::size_t i = 0; i < SHIFTS.size(); ++i) {
+                // Rect
+                cv::Mat r;
+                double angle = get_angle() + SHIFTS[i];
+                cv::Point center = get_center(*corners.back());
+                cv::Mat rotation = cv::getRotationMatrix2D(center, angle, 1.0);
+                cv::Mat back_rot = cv::getRotationMatrix2D(center, -angle, 1.0);
+                cv::warpAffine(frame, r, rotation, frame.size());
+                cv::Rect2d scaled_rect = scale(rect, r);
+                frame_body detected = parts_dtor.deep_detect(r(scaled_rect));
+                if (check(detected) > max_parts) {
+                    max_parts = check(detected);
+                    std::for_each(detected.begin(), detected.end(), [scaled_rect, back_rot](frame_part &part) {
+                        if (part) {
+                            *part += scaled_rect.tl();
+                            std::vector<cv::Point2d> res;
+                            cv::transform(std::vector<cv::Point2d>{*part}, res, back_rot);
+                            part = res.front();
+                        }
+                    });
+                    points.back() = detected;
+                }
+                if (max_parts == npoints) break;
+                if (move_analyzer->vault_frames(frame_no)) continue;
+                // Square
+                scaled_rect = scale_square(scaled_rect, r);
+                detected = parts_dtor.deep_detect(r(scaled_rect));
+                if (check(detected) > max_parts) {
+                    max_parts = check(detected);
+                    std::for_each(detected.begin(), detected.end(), [scaled_rect, back_rot](frame_part &part){
+                        if (part) {
+                            *part += scaled_rect.tl();
+                            std::vector<cv::Point2d> res;
+                            cv::transform(std::vector<cv::Point2d>{*part}, res, back_rot);
+                            part = res.front();
+                        }
+                    });
+                    points.back() = detected;
+                }
+                if (max_parts == npoints) break;
+                // TODO: Update properties.
+            }
         }
         return valid_tracker;
     }
 
-    cv::Rect rotate_last_bbox() noexcept {
-        cv::Point2d last_center = get_center(*corners.back());
-        cv::Point2d rotated = transform(std::vector<cv::Point2d>{last_center}).front();
-        cv::Point2d size(last_width(), last_height());
-        return cv::Rect(
-            rotated - size / 2,
-            rotated + size / 2
-        );
+    int check(const frame_body &body) const noexcept {
+        int res = 0;
+        for (const auto &part : body) {
+            if (part) ++res;
+        }
+        return res;
     }
+
+    // cv::Rect rotate_last_bbox() noexcept {
+    //     cv::Point2d last_center = get_center(*corners.back());
+    //     cv::Point2d rotated = transform(std::vector<cv::Point2d>{last_center}).front();
+    //     cv::Point2d size(last_width(), last_height());
+    //     return cv::Rect(
+    //         rotated - size / 2,
+    //         rotated + size / 2
+    //     );
+    // }
 
     /**
      * @brief Detect body parts of this person inside given frame.

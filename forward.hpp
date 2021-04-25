@@ -135,6 +135,8 @@ video_body operator+(const video_body &&lhs, const video_body &&rhs);
 
 std::ostream& operator<<(std::ostream& os, const model_point &p);
 
+std::ostream& operator<<(std::ostream& os, const frame_body &body);
+
 /**
  * @brief Extract corners from rectangle.
  * 
@@ -280,3 +282,5 @@ const double vault_check_time = 0.2;
 const double vault_threshold = -2.5 * 137.0;
 
 const std::size_t takeoff_parameter_frames = 3;
+
+const std::vector<double> SHIFTS{ 0, -20, 20 };
