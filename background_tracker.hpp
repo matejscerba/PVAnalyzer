@@ -113,6 +113,13 @@ public:
             cv::rectangle(frame, backgrounds[frame_no]->tl(), backgrounds[frame_no]->br(), cv::Scalar(255, 0, 0), 2);
     }
 
+    cv::Point2d last_person_movement() const noexcept {
+        if (person_offsets.size() > 1 && person_offsets.back() && person_offsets[person_offsets.size() - 2]) {
+            return *person_offsets.back() - *person_offsets[person_offsets.size() - 2];
+        }
+        return cv::Point2d();
+    }
+
 private:
 
     /// @brief Tracker used to track background.

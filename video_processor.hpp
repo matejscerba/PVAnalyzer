@@ -39,20 +39,20 @@ public:
         std::optional<person> athlete = detector.find_athlete(raw_frames, found_frames);
         std::string output_filename = "outputs/videos/" + create_output_filename();
         std::string ext = ".avi";
-        write(output_filename + "_raw_frames" + ext, raw_frames);
-        write(output_filename + "_found_frames" + ext, found_frames);
+        // write(output_filename + "_raw_frames" + ext, raw_frames);
+        // write(output_filename + "_found_frames" + ext, found_frames);
         if (!athlete) {
             std::cout << "Athlete could not be found in video " << filename << std::endl;
             return;
         }
         std::vector<cv::Mat> frames = athlete->detect(raw_frames);
 
-        write(output_filename + "_frames" + ext, frames);
+        // write(output_filename + "_frames" + ext, frames);
 
         model m(*athlete, filename);
-        if (save) m.save();
+        // if (save) m.save();
 
-        analyze(m, filename, fps, raw_frames, frames);
+        // analyze(m, filename, fps, raw_frames, frames);
     }
 
     void process_model(const std::string &filename) const noexcept {

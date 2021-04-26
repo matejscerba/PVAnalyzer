@@ -25,11 +25,17 @@ public:
         return center;
     }
 
+    cv::Point2d last_body_size() const noexcept {
+        return last_size;
+    }
+
 private:
 
     cv::dnn::Net net;
 
     cv::Point2d center;
+
+    cv::Point2d last_size;
 
     frame_body extract_points(const cv::Mat &frame, cv::Mat &output) {
         frame_body res(npoints, std::nullopt);
@@ -56,6 +62,30 @@ private:
             }
 
             res[n] = p;
+        }
+        bool valid = false;
+        double top;
+        double right;
+        double bottom;
+        double left;
+        for (const auto &p : res) {
+            if (p) {
+                if (valid) {
+                    top = std::min(top, p->y);
+                    right = std::max(right, p->x);
+                    bottom = std::max(bottom, p->y);
+                    left = std::min(left, p->x);
+                } else {
+                    top = p->y;
+                    right = p->x;
+                    bottom = p->y;
+                    left = p->x;
+                    valid = true;
+                }
+            }
+        }
+        if (valid) {
+            last_size = cv::Point2d(right - left, bottom - top);
         }
         return res;
     }
