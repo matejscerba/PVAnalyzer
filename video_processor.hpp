@@ -47,7 +47,7 @@ public:
         }
         std::vector<cv::Mat> frames = athlete->detect(raw_frames);
 
-        // write(output_filename + "_frames" + ext, frames);
+        write(output_filename + "_frames" + ext, frames);
 
         model m(*athlete, filename);
         // if (save) m.save();

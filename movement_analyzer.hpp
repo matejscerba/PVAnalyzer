@@ -71,14 +71,14 @@ public:
         return dir;
     }
 
-    cv::Point2d last_movement() const noexcept {
-        if (dir == direction::unknown) return cv::Point2d();
-        if (left_direction_tracker)
-            return left_direction_tracker->last_person_movement();
-        if (right_direction_tracker)
-            return right_direction_tracker->last_person_movement();
-        return cv::Point2d();
-    }
+    // cv::Point2d last_movement() const noexcept {
+    //     if (dir == direction::unknown) return cv::Point2d();
+    //     if (left_direction_tracker)
+    //         return left_direction_tracker->last_person_movement();
+    //     if (right_direction_tracker)
+    //         return right_direction_tracker->last_person_movement();
+    //     return cv::Point2d();
+    // }
 
     /**
      * @brief Computes how many frames passed from beginning of vault.

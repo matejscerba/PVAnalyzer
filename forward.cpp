@@ -258,3 +258,12 @@ bool is_inside(const std::vector<cv::Point2d> &corners, const cv::Mat &frame) no
     }
     return true;
 }
+
+double width(const std::vector<cv::Point2d> &corners) noexcept {
+    return cv::norm(corners[corner::tl] - corners[corner::tr]);
+}
+
+double height(const std::vector<cv::Point2d> &corners) noexcept {
+    return cv::norm(corners[corner::tl] - corners[corner::bl]);
+}
+

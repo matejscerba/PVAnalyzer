@@ -229,6 +229,10 @@ std::optional<double> get_vertical_tilt_angle(const frame_part &a, const frame_p
 
 bool is_inside(const std::vector<cv::Point2d> &corners, const cv::Mat &frame) noexcept;
 
+double width(const std::vector<cv::Point2d> &corners) noexcept;
+
+double height(const std::vector<cv::Point2d> &corners) noexcept;
+
 //////////////////////////////////////////////////////////////////////////////////////
 // constants
 //////////////////////////////////////////////////////////////////////////////////////

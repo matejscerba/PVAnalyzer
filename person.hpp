@@ -34,7 +34,6 @@ public:
     person(std::size_t frame_no, const cv::Rect &box, double fps) noexcept {
         valid_tracker = false;
         move_analyzer = std::nullopt;
-        last_angle = 0.0;
         this->first_frame = frame_no;
         this->first_bbox = box;
         this->fps = fps;
@@ -55,8 +54,8 @@ public:
             if (track(frame, frame_no)) {
                 draw(frame, frame_no);
 
-                cv::imshow("frame", frame);
-                cv::waitKey();
+                // cv::imshow("frame", frame);
+                // cv::waitKey();
             }
 
             // Save current modified frame.
@@ -104,7 +103,9 @@ private:
 
     double fps;
 
-    double last_angle;
+    double last_angle = 0.0;
+
+    cv::Point2d center_shift = cv::Point2d();
 
     /// @brief Tracker used to track person in frames.
     cv::Ptr<cv::Tracker> tracker;
@@ -186,7 +187,8 @@ private:
         cv::Mat rotated;
         if (corners.size() && corners.back()) {
             double angle = get_angle() + shift;
-            if (shift == 0.0) last_angle = angle;
+            if (shift == 0.0 && std::abs(angle - last_angle) <= 45.0)
+                last_angle = angle;
             cv::Point center = get_center(*corners.back());
             cv::Mat rotation = cv::getRotationMatrix2D(center, angle, 1.0);
             cv::warpAffine(frame, rotated, rotation, frame.size());
@@ -256,13 +258,14 @@ private:
         if (valid_tracker) {
             // cropped_frames.push_back(frame(scaled).clone());
             // cv::imshow("in_update", *cropped_frames.back());
+            tracker_corners.push_back(get_corners(bbox));
             corners.push_back(get_corners(bbox));
         } else {
             // cropped_frames.push_back(std::nullopt);
+            tracker_corners.push_back(std::nullopt);
             corners.push_back(std::nullopt);
         }
         scaled_corners.push_back(std::nullopt);
-        tracker_corners.push_back(std::nullopt);
         points.push_back(frame_body(npoints, std::nullopt));
     }
 
@@ -291,6 +294,7 @@ private:
         cv::Rect bbox = first_bbox;
         if (frame_no == first_frame) {
             tracker->init(frame, bbox);
+            // TODO: Move to ctor.
             move_analyzer = movement_analyzer(frame_no, frame, bbox, fps);
             valid_tracker = true;
         } else if (valid_tracker && tracker->update(frame, bbox) && is_inside(get_corners(bbox), frame)) {
@@ -299,14 +303,16 @@ private:
             valid_tracker = false;
         }
         cv::Mat rotated = rotate(frame);
+        update_center_shift();
         update_properties(frame, bbox);
         if (valid_tracker) {
             cv::Point2d size = parts_dtor.last_body_size();
-            cv::Point2d center = get_center(*corners.back());
+            cv::Point2d center = get_center(*tracker_corners.back());
+            center += center_shift;
             cv::Point2d tl = center - size / 2;
             cv::Point2d br = center + size / 2;
             cv::Rect rect(tl, br);
-            cv::Rect2d scaled_rect = scale(rect, frame, 1.5);
+            cv::Rect2d scaled_rect = scale(rect, frame, 1.3);
             if (size.x < first_bbox.width / 2 || size.y < first_bbox.height / 2) {
                 std::cout << "smaller" << std::endl;
                 scaled_rect = scale(bbox, frame);
@@ -317,11 +323,13 @@ private:
                 cv::Mat r;
                 std::vector<cv::Point2d> scaled_corns;
                 double angle = get_angle() + SHIFTS[i];
-                cv::Point center = get_center(*corners.back());
                 cv::Mat rotation = cv::getRotationMatrix2D(center, angle, 1.0);
                 cv::Mat back_rot = cv::getRotationMatrix2D(center, -angle, 1.0);
                 cv::warpAffine(frame, r, rotation, frame.size());
                 frame_body detected = parts_dtor.deep_detect(r(scaled_rect));
+                // std::stringstream s;
+                // s << i;
+                // cv::imshow(s.str(), r(scaled_rect));
                 if (check(detected) > max_parts) {
                     max_parts = check(detected);
                     std::for_each(detected.begin(), detected.end(), [scaled_rect, back_rot](frame_part &part) {
@@ -337,36 +345,32 @@ private:
                     points.back() = detected;
                 }
                 if (max_parts == npoints) break;
-                if (!move_analyzer->vault_frames(frame_no)) continue;
-                // Square
-                scaled_rect = scale_square(scaled_rect, r);
-                detected = parts_dtor.deep_detect(r(scaled_rect));
-                if (check(detected) > max_parts) {
-                    max_parts = check(detected);
-                    std::for_each(detected.begin(), detected.end(), [scaled_rect, back_rot](frame_part &part){
-                        if (part) {
-                            *part += scaled_rect.tl();
-                            std::vector<cv::Point2d> res;
-                            cv::transform(std::vector<cv::Point2d>{*part}, res, back_rot);
-                            part = res.front();
-                        }
-                    });
-                    cv::transform(get_corners(scaled_rect), scaled_corns, back_rot);
-                    scaled_corners.back() = scaled_corns;
-                    points.back() = detected;
-                }
-                if (max_parts == npoints) break;
-                // TODO: Update properties.
             }
-            cv::Point2d movement = move_analyzer->last_movement();
-            init_tracker(frame, points.back(), movement);
+            init_tracker(frame, points.back());
         }
         return valid_tracker;
     }
 
-    void init_tracker(const cv::Mat &frame, const frame_body &body, cv::Point2d movement) noexcept {
-        std::vector<cv::Point2d> torso_corners;
+    void update_center_shift() noexcept {
+        if (tracker_corners.size() && tracker_corners.back()) {
+            cv::Point2d a = get_center(*tracker_corners.back());
+            frame_body body = points.back();
+            if ((body[body_part::l_hip] || body[body_part::r_hip])) {
+                center_shift = (*body[body_part::l_hip] + *body[body_part::r_hip]) / 2 - a;
+                if (std::abs(center_shift.x) > width(*tracker_corners.back()) / 2.0) {
+                    center_shift *= (width(*tracker_corners.back()) / 2.0) / std::abs(center_shift.x);
+                }
+                if (std::abs(center_shift.y) > height(*tracker_corners.back()) / 2.0) {
+                    center_shift *= (height(*tracker_corners.back()) / 2.0) / std::abs(center_shift.y);
+                }
+            }
+        }
+        // std::cout << center_shift << std::endl;
+    }
+
+    void init_tracker(const cv::Mat &frame, const frame_body &body) noexcept {
         if ((body[body_part::l_hip] || body[body_part::r_hip]) && body[body_part::head]) {
+            std::vector<cv::Point2d> torso_corners;
             cv::Point2d head = *body[body_part::head];
             cv::Point2d hip;
             if (body[body_part::l_hip] && body[body_part::r_hip])
@@ -382,25 +386,20 @@ private:
             torso_corners.push_back(head - perp);
             torso_corners.push_back(hip + perp);
             torso_corners.push_back(hip - perp);
-        } else {
-            torso_corners.push_back((*tracker_corners[tracker_corners.size() - 2])[corner::tl] + movement);
-            torso_corners.push_back((*tracker_corners[tracker_corners.size() - 2])[corner::tr] + movement);
-            torso_corners.push_back((*tracker_corners[tracker_corners.size() - 2])[corner::bl] + movement);
-            torso_corners.push_back((*tracker_corners[tracker_corners.size() - 2])[corner::br] + movement);
+            double top = torso_corners.front().y;
+            double right = torso_corners.front().x;
+            double bottom = torso_corners.front().y;
+            double left = torso_corners.front().x;
+            for (const auto &c : torso_corners) {
+                top = std::min(top, c.y);
+                right = std::max(right, c.x);
+                bottom = std::max(bottom, c.y);
+                left = std::min(left, c.x);
+            }
+            cv::Rect bbox(left, top, right - left, bottom - top);
+            tracker->init(frame, bbox);
+            tracker_corners.back() = get_corners(bbox);
         }
-        double top = torso_corners.front().y;
-        double right = torso_corners.front().x;
-        double bottom = torso_corners.front().y;
-        double left = torso_corners.front().x;
-        for (const auto &c : torso_corners) {
-            top = std::min(top, c.y);
-            right = std::max(right, c.x);
-            bottom = std::max(bottom, c.y);
-            left = std::min(left, c.x);
-        }
-        cv::Rect bbox(left, top, right - left, bottom - top);
-        tracker->init(frame, bbox);
-        tracker_corners.back() = get_corners(bbox);
     }
 
     int check(const frame_body &body) const noexcept {

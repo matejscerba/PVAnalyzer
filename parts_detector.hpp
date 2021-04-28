@@ -35,7 +35,7 @@ private:
 
     cv::Point2d center;
 
-    cv::Point2d last_size;
+    cv::Point2d last_size = cv::Point2d();
 
     frame_body extract_points(const cv::Mat &frame, cv::Mat &output) {
         frame_body res(npoints, std::nullopt);
@@ -63,29 +63,23 @@ private:
 
             res[n] = p;
         }
-        bool valid = false;
-        double top;
-        double right;
-        double bottom;
-        double left;
+        std::size_t valid_parts = 0;
+        double max = 0.0;
         for (const auto &p : res) {
-            if (p) {
-                if (valid) {
-                    top = std::min(top, p->y);
-                    right = std::max(right, p->x);
-                    bottom = std::max(bottom, p->y);
-                    left = std::min(left, p->x);
-                } else {
-                    top = p->y;
-                    right = p->x;
-                    bottom = p->y;
-                    left = p->x;
-                    valid = true;
-                }
+            for (const auto &q : res) {
+                std::optional<double> dist = distance(p, q);
+                if (dist && *dist > max) max = *dist;
             }
+            if (p) ++valid_parts;
         }
-        if (valid) {
-            last_size = cv::Point2d(right - left, bottom - top);
+        if (valid_parts == npoints) {
+            if (last_size.x != 0) {
+                last_size *= 2;
+                last_size += cv::Point2d(max, max);
+                last_size /= 3;
+            } else {
+                last_size = cv::Point2d(max, max);
+            }
         }
         return res;
     }
