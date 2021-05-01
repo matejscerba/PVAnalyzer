@@ -4,7 +4,6 @@
 
 #include "forward.hpp"
 #include "person.hpp"
-#include "drawer.hpp"
 
 struct model {
 public:
@@ -102,7 +101,7 @@ public:
         cv::Mat frame;
         for (std::size_t frame_no = 0; frame_no < frames.size(); ++frame_no) {
             frame = frames[frame_no].clone();
-            drawer::draw(frame, frame_points[frame_no]);
+            draw_body(frame, model_to_frame(frame_points[frame_no]));
             res.push_back(frame);
         }
         return res;
@@ -182,7 +181,7 @@ private:
     void read_body(std::ifstream &input) noexcept {
         std::string line;
         model_body b;
-        for (std::size_t i = 0; i < npoints; ++i) {
+        for (std::size_t i = 0; i < NPOINTS; ++i) {
             std::getline(input, line);
             b.push_back(parse_point(std::move(line)));
         }

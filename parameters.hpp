@@ -192,10 +192,10 @@ public:
      * @param points Athlete's body parts detected in the whole video.
      */
     virtual void compute(const model_video_body &points) noexcept {
-        if ((takeoff >= takeoff_parameter_frames) && (points.size() > takeoff + takeoff_parameter_frames)) {
-            model_body before = points[takeoff - takeoff_parameter_frames];
+        if ((takeoff >= TAKEOFF_PARAM_FRAMES) && (points.size() > takeoff + TAKEOFF_PARAM_FRAMES)) {
+            model_body before = points[takeoff - TAKEOFF_PARAM_FRAMES];
             model_body during = points[takeoff];
-            model_body after = points[takeoff + takeoff_parameter_frames];
+            model_body after = points[takeoff + TAKEOFF_PARAM_FRAMES];
             model_point p_before = (before[a] + before[b]) / 2.0;
             model_point p_during = (during[a] + during[b]) / 2.0;
             model_point p_after = (after[a] + after[b]) / 2.0;
@@ -287,10 +287,10 @@ public:
      * @param points Athlete's body parts detected in the whole video.
      */
     virtual void compute(const model_video_body &points) noexcept {
-        if ((takeoff >= takeoff_parameter_frames) && (points.size() > takeoff + takeoff_parameter_frames)) {
+        if ((takeoff >= TAKEOFF_PARAM_FRAMES) && (points.size() > takeoff + TAKEOFF_PARAM_FRAMES)) {
             model_body first = get_first_hips(points);
             model_body during = points[takeoff];
-            model_body after = points[takeoff + takeoff_parameter_frames];
+            model_body after = points[takeoff + TAKEOFF_PARAM_FRAMES];
             model_point p_first = (first[body_part::l_hip] + first[body_part::r_hip]) / 2.0;
             model_point p_during = (during[body_part::l_hip] + during[body_part::r_hip]) / 2.0;
             model_point p_after = (after[body_part::l_hip] + after[body_part::r_hip]) / 2.0;

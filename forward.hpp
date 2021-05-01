@@ -2,13 +2,13 @@
 
 #include <opencv2/opencv.hpp>
 
+#include <ctime>
+#include <cstddef>
+#include <functional>
+#include <optional>
+#include <ostream>
 #include <string>
 #include <vector>
-#include <optional>
-#include <tuple>
-#include <ostream>
-#include <ctime>
-#include <sstream>
 
 /**
  * @brief File containing definitions of type aliases, constants and helper functions.
@@ -42,7 +42,9 @@ typedef std::vector<std::optional<std::vector<cv::Point2d>>> person_corners;
 // enums
 //////////////////////////////////////////////////////////////////////////////////////
 
-/// @brief Maps bounding box corners to indices.
+/**
+ * @brief Maps corners to indices.
+ */
 enum corner : std::size_t {
     /// Top left.
     tl = 0,
@@ -55,7 +57,7 @@ enum corner : std::size_t {
 };
 
 /**
- * @brief Maps body parts' names to correct indices.
+ * @brief Maps body parts' names to indices.
  */
 enum body_part : std::size_t {
     head = 0,
@@ -76,9 +78,7 @@ enum body_part : std::size_t {
 };
 
 /**
- * @brief Supported horizontal movement directions and their corresponding values.
- * 
- * @note This value multiplies angle so that video rotates the correct way during vault.
+ * @brief Supported horizontal movement directions.
 */
 enum class direction {
     right,
@@ -101,61 +101,49 @@ enum class vault_part {
 //////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @brief Add two optional points if both are valid.
- * 
- * @returns sum of two points if both are valid, empty optional otherwise.
+ * @brief Add two frame_parts if both are valid, return invalid otherwise.
  */
-std::optional<cv::Point2d> operator+(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs);
-
-model_point operator+(const model_point &lhs, const model_point &rhs);
-
-model_point operator-(const model_point &p);
-
-std::optional<cv::Point2d> operator-(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs);
-
-model_point operator-(const model_point &lhs, const model_point &rhs);
+frame_part operator+(const frame_part &lhs, const frame_part &rhs) noexcept;
 
 /**
- * @brief
+ * @brief Subtract two frame_parts if both are valid, return invalid otherwise.
  */
-std::optional<cv::Point2d> operator/(const std::optional<cv::Point2d> &lhs, double rhs);
-
-model_point operator/(const model_point &lhs, double rhs);
+frame_part operator-(const frame_part &lhs, const frame_part &rhs) noexcept;
 
 /**
- * @brief
+ * @brief Divide frame_part by number.
+ */
+frame_part operator/(const frame_part &lhs, double rhs) noexcept;
+
+/**
+ * @brief Add two model_points if both are valid, return invalid otherwise.
+ */
+model_point operator+(const model_point &lhs, const model_point &rhs) noexcept;
+
+/**
+ * @brief Unary minus operator for model_point.
+ */
+model_point operator-(const model_point &p) noexcept;
+
+/**
+ * @brief Subtract two model_points if both are valid, return invalid otherwise.
+ */
+model_point operator-(const model_point &lhs, const model_point &rhs) noexcept;
+
+/**
+ * @brief Divide model_point by number.
+ */
+model_point operator/(const model_point &lhs, double rhs) noexcept;
+
+/**
+ * @brief Multiply number by optional number if it contains value, return invalid otherwise.
  */
 std::optional<double> operator*(double lhs, const std::optional<double> &rhs) noexcept;
 
-model_point operator*(double lhs, const model_point &rhs);
-
 /**
- * @brief Add two video bodies together.
- * 
- * @returns result of appending `rhs` to `lhs`.
+ * @brief Write model_point to output stream.
  */
-video_body operator+(const video_body &&lhs, const video_body &&rhs);
-
-std::ostream& operator<<(std::ostream& os, const model_point &p);
-
-std::ostream& operator<<(std::ostream& os, const frame_body &body);
-
-/**
- * @brief Extract corners from rectangle.
- * 
- * @param rect Rectangle to extract corners from.
- * @returns vector of points representing corners so that indices
- *     correspond to `enum corner`.
-*/
-std::vector<cv::Point2d> get_corners(const cv::Rect &rect);
-
-/**
- * @brief Computes center of given frame.
- * 
- * @param frame Given frame used to compute its center.
- * @returns point in center of given frame.
- */
-cv::Point get_center(const cv::Mat &frame);
+std::ostream& operator<<(std::ostream& os, const model_point &p) noexcept;
 
 /**
  * @brief Compute center of given rectangle.
@@ -163,40 +151,47 @@ cv::Point get_center(const cv::Mat &frame);
  * @param rect Rectangle whose center should be computed.
  * @returns point in center of given rectangle.
  */
-cv::Point2d get_center(const cv::Rect &rect);
-
-std::optional<cv::Point2d> get_center(const std::optional<cv::Rect> &rect);
-
-cv::Point get_center(const std::vector<cv::Point2d> &pts) noexcept;
+cv::Point2d get_center(const cv::Rect &rect) noexcept;
 
 /**
- * @brief Count mean of offset of given consecutive values in vector.
+ * @brief Count mean offset of given points.
  * 
  * @param begin Iterator specifying beginning of values to be processed.
  * @param end Iterator specifying end of values to be processed.
- * @returns mean of offsets of given consecutive values.
+ * @returns mean offset.
 */
-std::optional<cv::Point2d> count_mean_delta(std::vector<std::optional<cv::Point2d>>::const_iterator begin, std::vector<std::optional<cv::Point2d>>::const_iterator end) noexcept;
+offset count_mean_delta(offsets::const_iterator begin, offsets::const_iterator end) noexcept;
 
 /**
- * @brief
+ * @brief Get name of given body part.
  */
-std::string body_part_name(const body_part part);
+std::string body_part_name(const body_part part) noexcept;
 
-std::optional<double> distance(const std::optional<cv::Point2d> &a, const std::optional<cv::Point2d> &b) noexcept;
+/**
+ * @brief Compute distance of two frame_parts.
+ * 
+ * If both frame_parts are valid, compute their distance,
+ * otherwise return no value.
+ */
+std::optional<double> distance(const frame_part &a, const frame_part &b) noexcept;
 
+/**
+ * @brief Compute distance of two model_points.
+ * 
+ * If both model_points are valid, compute their distance,
+ * otherwise return no value.
+ */
 std::optional<double> distance(const model_point &a, const model_point &b) noexcept;
 
+/**
+ * @brief Get model_point satisfying comparison function in z coordinate.
+ */
 model_point get_part(const model_point &a, const model_point &b, std::function<bool (double, double)> compare) noexcept;
 
-std::optional<double> get_height(const model_point &a, const model_point &b, std::function<bool (double, double)> compare) noexcept;
-
 /**
- * @brief Create name for output file from current date.
- * 
- * @returns name for output file.
+ * @brief Get height of model_point satisfying comparison function.
  */
-std::string create_output_filename() noexcept;
+std::optional<double> get_height(const model_point &a, const model_point &b, std::function<bool (double, double)> compare) noexcept;
 
 /**
  * @brief Get numbers of frames in which ankle specified by `compare` reaches local point of interest.
@@ -214,6 +209,7 @@ std::string create_output_filename() noexcept;
 std::vector<std::size_t> get_frame_numbers( std::vector<model_body>::const_iterator begin,
                                             std::vector<model_body>::const_iterator end,
                                             std::function<bool (double, double)> compare) noexcept;
+
 /**
  * @brief Get frame numbers in which athlete's foot leaves ground.
  * 
@@ -226,44 +222,75 @@ std::vector<std::size_t> get_frame_numbers( std::vector<model_body>::const_itera
  */
 std::vector<std::size_t> get_step_frames(const model_video_body &points) noexcept;
 
+/**
+ * @brief Compute angle of ray with origin in `a` going through `b` and vertical axis.
+ * 
+ * @note y coordinate is not used.
+ */
 std::optional<double> get_vertical_tilt_angle(const model_point &a, const model_point &b) noexcept;
 
+/**
+ * @brief Compute angle of ray with origin in `a` going through `b` and vertical axis.
+ */
 std::optional<double> get_vertical_tilt_angle(const frame_part &a, const frame_part &b) noexcept;
 
-bool is_inside(const std::vector<cv::Point2d> &corners, const cv::Mat &frame) noexcept;
+/**
+ * @brief Create name for output file from current date.
+ * 
+ * @returns name for output file.
+ */
+std::string create_output_filename() noexcept;
 
-double width(const std::vector<cv::Point2d> &corners) noexcept;
+/**
+ * @brief Check if given rectangle is inside `frame`.
+ */
+bool is_inside(const cv::Rect &rect, const cv::Mat &frame) noexcept;
 
-double height(const std::vector<cv::Point2d> &corners) noexcept;
+/**
+ * @brief Draw body into given frame.
+ */
+void draw_body(cv::Mat &frame, const frame_body &body) noexcept;
+
+/**
+ * @brief Convert model_body to frame_body.
+ * 
+ * Leave out y coordinte of model_body.
+ */
+frame_body model_to_frame(const model_body &body) noexcept;
 
 //////////////////////////////////////////////////////////////////////////////////////
 // constants
 //////////////////////////////////////////////////////////////////////////////////////
 
-/// @brief Path to protofile to be used for deep neural network intialization.
-extern const std::string protofile;
-
-/// @brief Path to caffe model to be used for deep neural network intialization.
-extern const std::string caffemodel;
-
-/// @brief Expected vault duration in seconds.
-const double vault_duration = 0.8;
+/**
+ * @brief Path to protofile to be used for deep neural network intialization.
+ */
+extern const std::string PROTOFILE;
 
 /**
- * @brief Determines size of bounding box where to detect body parts.
+ * @brief Path to caffe model to be used for deep neural network intialization.
+ */
+extern const std::string CAFFEMODEL;
+
+/**
+ * @brief Determines size ratio of window in which to detect body parts.
  * 
- * Ratio of size of bounding box used to detect body parts and size of
- * bounding box tracked by `tracker`.
+ * Ratio of window in which to detect body parts and initial athlete's
+ * bounding box.
  * 
  * @note Measures size linearly, not bounding box's surface.
  */
-const double scale_factor = 1.8;
+const double BASE_SCALE_FACTOR = 1.8;
 
-/// @brief Number of body parts, that is being detected.
-const int npoints = 16;
+/**
+ * @brief Number of body parts, that is being detected.
+ */
+const int NPOINTS = 16;
 
-/// @brief Number of pairs of body parts (joined by line to form a stickman).
-const int npairs = 14;
+/**
+ * @brief Number of pairs of body parts (joined by line to form a stickman).
+ */
+const int NPAIRS = 14;
 
 /**
  * @brief Body parts pairs specified by indices.
@@ -272,22 +299,34 @@ const int npairs = 14;
  * Left Elbow – 6, Left Wrist – 7, Right Hip – 8, Right Knee – 9, Right Ankle – 10, Left Hip – 11,
  * Left Knee – 12, Left Ankle – 13, Chest – 14, Background – 15.
  */
-const std::size_t pairs[14][2] = {
+const std::size_t PAIRS[NPAIRS][2] = {
     {0,1}, {1,2}, {2,3},
     {3,4}, {1,5}, {5,6},
     {6,7}, {1,14}, {14,8}, {8,9},
     {9,10}, {14,11}, {11,12}, {12,13}
 };
 
-/// @brief Minimal probability value to mark body part as valid.
-const double detection_threshold = 0.1;
+/**
+ * @brief Minimal probability value to mark body part as valid.
+ */
+const double DET_THRESHOLD = 0.1;
 
-/// @brief How many seconds to check for vault beginning.
-const double vault_check_time = 0.2;
+/**
+ * @brief How many seconds to check for vault beginning.
+ */
+const double VAULT_CHECK_TIME = 0.2;
 
-/// @brief How much the person's coordinates must change in order to set `_vault_began` to true.
-const double vault_threshold = -2.5 * 137.0;
+/**
+ * @brief How much the person's coordinates must change in order to set `_vault_began` to true.
+ */
+const double VAULT_THRESHOLD = -2.5 * 137.0;
 
-const std::size_t takeoff_parameter_frames = 3;
+/**
+ * @brief Number of frames to analyze for takeoff parameter.
+ */
+const std::size_t TAKEOFF_PARAM_FRAMES = 3;
 
+/**
+ * @brief Rotation shifts to use when detecting body parts.
+ */
 const std::vector<double> SHIFTS{ 0, -20, 20 };

@@ -54,7 +54,7 @@ public:
 
         cv::Mat frame;
         bboxes = std::vector<std::optional<cv::Rect>>(raw_frames.size(), std::nullopt);
-        points = video_body(raw_frames.size(), frame_body(npoints, std::nullopt));
+        points = video_body(raw_frames.size(), frame_body(NPOINTS, std::nullopt));
         for (std::size_t frame_no = 0; frame_no < raw_frames.size(); ++frame_no) {
             std::cout << "Processing frame " << frame_no << std::endl;
 
@@ -177,7 +177,7 @@ private:
     bool track(const cv::Mat &frame, std::size_t frame_no) noexcept {
         cv::Rect bbox = first_bbox;
         valid_tracker = (frame_no == first_frame) ||
-                        (valid_tracker && tracker->update(frame, bbox) && is_inside(get_corners(bbox), frame));
+                        (valid_tracker && tracker->update(frame, bbox) && is_inside(bbox, frame));
 
         if (!valid_tracker) return false;
 
@@ -259,32 +259,7 @@ private:
         }
 
         if (points.size() > frame_no) {
-            for (int n = 0; n < npairs; n++) {
-                std::size_t a_idx = pairs[n][0];
-                std::size_t b_idx = pairs[n][1];
-                std::optional<cv::Point2d> a = points[frame_no][a_idx];
-                std::optional<cv::Point2d> b = points[frame_no][b_idx];
-
-                // Check if points `a` and `b` are valid.
-                if (a && b) {
-                    cv::Scalar c(0, 255, 255);
-                    if ((a_idx == body_part::l_ankle) || (a_idx == body_part::l_knee) || (a_idx == body_part::l_hip) ||
-                        (a_idx == body_part::l_wrist) || (a_idx == body_part::l_elbow) || (a_idx == body_part::l_shoulder) ||
-                        (b_idx == body_part::l_ankle) || (b_idx == body_part::l_knee) || (b_idx == body_part::l_hip) ||
-                        (b_idx == body_part::l_wrist) || (b_idx == body_part::l_elbow) || (b_idx == body_part::l_shoulder)) {
-                            c = cv::Scalar(255, 0, 255);
-                    } else if ((a_idx == body_part::r_ankle) || (a_idx == body_part::r_knee) || (a_idx == body_part::r_hip) ||
-                        (a_idx == body_part::r_wrist) || (a_idx == body_part::r_elbow) || (a_idx == body_part::r_shoulder) ||
-                        (b_idx == body_part::r_ankle) || (b_idx == body_part::r_knee) || (b_idx == body_part::r_hip) ||
-                        (b_idx == body_part::r_wrist) || (b_idx == body_part::r_elbow) || (b_idx == body_part::r_shoulder)) {
-                            c = cv::Scalar(255, 255, 0);
-                    }
-                    // Draw points representing joints and connect them with lines.
-                    cv::line(frame, *a, *b, c, 2);
-                    cv::circle(frame, *a, 2, cv::Scalar(0, 0, 255), -1);
-                    cv::circle(frame, *b, 2, cv::Scalar(0, 0, 255), -1);
-                }
-            }
+            draw_body(frame, points[frame_no]);
         }
 
         if (move_analyzer)

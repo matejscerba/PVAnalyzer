@@ -84,12 +84,12 @@ public:
     bool is_vault_beginning(double person_height, double fps) const noexcept {
         if (!is_valid_direction())
             return false;
-        int vault_check_frames = (int)(vault_check_time * fps);
+        int vault_check_frames = (int)(VAULT_CHECK_TIME * fps);
         if (person_offsets.size() > 2 * vault_check_frames) {
             std::optional<cv::Point2d> runup_mean_delta = count_mean_delta(person_offsets.end() - 2 * vault_check_frames, person_offsets.end() - vault_check_frames);
             std::optional<cv::Point2d> vault_mean_delta = count_mean_delta(person_offsets.end() - vault_check_frames, person_offsets.end());
 
-            if (runup_mean_delta && vault_mean_delta && (vault_mean_delta->y - runup_mean_delta->y) * person_height < vault_threshold)
+            if (runup_mean_delta && vault_mean_delta && (vault_mean_delta->y - runup_mean_delta->y) * person_height < VAULT_THRESHOLD)
                 return true;
         }
         return false;

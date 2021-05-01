@@ -22,7 +22,7 @@ public:
      * Load net used for detections.
      */
     parts_detector() noexcept {
-        net = cv::dnn::readNet(protofile, caffemodel);
+        net = cv::dnn::readNet(PROTOFILE, CAFFEMODEL);
         last_size = cv::Point2d();
         center_shift = cv::Point2d();
         angle = 0.0;
@@ -57,7 +57,7 @@ public:
                 best = count(detected);
                 body = detected;
             }
-            if (best == npoints) break;
+            if (best == NPOINTS) break;
         }
         update_size(body);
         update_center_shift(bbox, body);
@@ -103,7 +103,7 @@ private:
      * @note If scaled rectangle does not fit inside frame, smaller rectangle
      * which fits inside frame is returned.
     */
-    cv::Rect scale(const cv::Rect &rect, const cv::Mat &frame, double factor = scale_factor) const noexcept {
+    cv::Rect scale(const cv::Rect &rect, const cv::Mat &frame, double factor = BASE_SCALE_FACTOR) const noexcept {
         cv::Point center = get_center(rect);
         cv::Point diag = center - rect.tl();
         cv::Point tl = center - factor * diag;
@@ -174,7 +174,7 @@ private:
      * @returns detections fitted inside `input`.
      */
     frame_body extract_points(const cv::Mat &input, cv::Mat &&output) noexcept {
-        frame_body body(npoints, std::nullopt);
+        frame_body body(NPOINTS, std::nullopt);
         int h = output.size[2];
         int w = output.size[3];
 
@@ -182,22 +182,22 @@ private:
         double sy = (double)input.rows / (double)h;
 
         // Get points from output.
-        for (int n = 0; n < npoints; ++n) {
-            cv::Mat probMat(h, w, CV_32F, output.ptr(0, n));
+        for (std::size_t i = 0; i < NPOINTS; ++i) {
+            cv::Mat probMat(h, w, CV_32F, output.ptr(0, i));
 
-            // Get point in output with maximum probability of "being point `n`".
+            // Get point in output with maximum probability of "being point `i`".
             frame_part p = std::nullopt;
             cv::Point max;
             double prob;
             cv::minMaxLoc(probMat, 0, &prob, 0, &max);
 
             // Check point probability against a threshold.
-            if (prob > detection_threshold) {
+            if (prob > DET_THRESHOLD) {
                 p = max;
                 p->x *= sx; p->y *= sy; // Scale point so it fits input.
             }
 
-            body[n] = p;
+            body[i] = p;
         }
         return body;
     }
@@ -239,16 +239,14 @@ private:
      * @param body Last detected body.
      */
     void update_size(const frame_body &body) noexcept {
-        std::size_t valid_parts = 0;
         double max = 0.0;
         for (const auto &p : body) {
             for (const auto &q : body) {
                 std::optional<double> dist = distance(p, q);
                 if (dist && *dist > max) max = *dist;
             }
-            if (p) ++valid_parts;
         }
-        if (valid_parts == npoints) {
+        if (count(body) == NPOINTS) {
             if (last_size.x != 0) {
                 last_size *= 2;
                 last_size += cv::Point2d(max, max);

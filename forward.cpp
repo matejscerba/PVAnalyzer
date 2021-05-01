@@ -1,61 +1,55 @@
+#include <algorithm>
+#include <cmath>
+#include <iomanip>
+#include <sstream>
+#include <utility>
+
 #include "forward.hpp"
 
-const std::string protofile = "pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt";
+const std::string PROTOFILE = "pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt";
 
-const std::string caffemodel = "pose/mpi/pose_iter_160000.caffemodel";
+const std::string CAFFEMODEL = "pose/mpi/pose_iter_160000.caffemodel";
 
-std::optional<cv::Point2d> operator+(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs) {
+frame_part operator+(const frame_part &lhs, const frame_part &rhs) noexcept {
     if (lhs && rhs) return *lhs + *rhs;
     return std::nullopt;
 }
 
-model_point operator+(const model_point &lhs, const model_point &rhs) {
-    if (lhs && rhs) return *lhs + *rhs;
-    return std::nullopt;
-}
-
-model_point operator-(const model_point &p) {
-    if (p) return - *p;
-    return std::nullopt;
-}
-
-std::optional<cv::Point2d> operator-(const std::optional<cv::Point2d> &lhs, const std::optional<cv::Point2d> &rhs) {
+frame_part operator-(const frame_part &lhs, const frame_part &rhs) noexcept {
     if (lhs && rhs) return *lhs - *rhs;
     return std::nullopt;
 }
 
-model_point operator-(const model_point &lhs, const model_point &rhs) {
+frame_part operator/(const frame_part &lhs, double rhs) noexcept {
+    if (lhs) return *lhs / rhs;
+    return std::nullopt;
+}
+
+model_point operator+(const model_point &lhs, const model_point &rhs) noexcept {
+    if (lhs && rhs) return *lhs + *rhs;
+    return std::nullopt;
+}
+
+model_point operator-(const model_point &p) noexcept {
+    if (p) return -*p;
+    return std::nullopt;
+}
+
+model_point operator-(const model_point &lhs, const model_point &rhs) noexcept {
     return lhs + (- rhs);
 }
 
-std::optional<cv::Point2d> operator/(const std::optional<cv::Point2d> &lhs, double rhs) {
+model_point operator/(const model_point &lhs, double rhs) noexcept {
     if (lhs) return *lhs / rhs;
     return std::nullopt;
 }
-
-model_point operator/(const model_point &lhs, double rhs) {
-    if (lhs) return *lhs / rhs;
-    return std::nullopt;
-}
-
-video_body operator+(const video_body &&lhs, const video_body &&rhs) {
-    video_body res = std::move(lhs);
-    res.insert(res.end(), rhs.begin(), rhs.end());
-    return res;
-}
-
-model_point operator*(double lhs, const model_point &rhs) {
-    if (rhs) return lhs * (*rhs);
-    return std::nullopt;
-}
-
 
 std::optional<double> operator*(double lhs, const std::optional<double> &rhs) noexcept {
     if (rhs) return lhs * (*rhs);
     return std::nullopt;
 }
 
-std::ostream& operator<<(std::ostream& os, const model_point &p) {
+std::ostream& operator<<(std::ostream& os, const model_point &p) noexcept {
     if (p) {
         os << p->x << "," << p->y << "," << p->z;
     } else {
@@ -64,42 +58,11 @@ std::ostream& operator<<(std::ostream& os, const model_point &p) {
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const frame_body &body) {
-    for (const auto part : body) {
-        if (part) {
-            os << *part << " ";
-        } else {
-            os << "? ";
-        }
-    }
-    return os;
-}
-
-std::vector<cv::Point2d> get_corners(const cv::Rect &rect) {
-    return {
-        rect.tl(), cv::Point2d(rect.br().x, rect.tl().y),
-        cv::Point2d(rect.tl().x, rect.br().y), rect.br()
-    };
-}
-
-cv::Point get_center(const cv::Mat &frame) {
-    return cv::Point(frame.cols / 2, frame.rows / 2);
-}
-
-cv::Point2d get_center(const cv::Rect &rect) {
+cv::Point2d get_center(const cv::Rect &rect) noexcept {
     return cv::Point2d((double)rect.x + (double)rect.width / 2, (double)rect.y + (double)rect.height / 2);
 }
 
-std::optional<cv::Point2d> get_center(const std::optional<cv::Rect> &rect){
-    if (rect) return get_center(*rect);
-    return std::nullopt;
-}
-
-cv::Point get_center(const std::vector<cv::Point2d> &pts) noexcept {
-    return (pts[corner::tl] + pts[corner::br]) / 2.0;
-}
-
-std::optional<cv::Point2d> count_mean_delta(std::vector<std::optional<cv::Point2d>>::const_iterator begin, std::vector<std::optional<cv::Point2d>>::const_iterator end) noexcept {
+offset count_mean_delta(offsets::const_iterator begin, offsets::const_iterator end) noexcept {
     auto n = end - begin - 1;
     if (n > 0 && *(--end) && *begin) {
         cv::Point2d sum = **end - **begin;
@@ -108,7 +71,7 @@ std::optional<cv::Point2d> count_mean_delta(std::vector<std::optional<cv::Point2
     return std::nullopt;
 }
 
-std::string body_part_name(const body_part part) {
+std::string body_part_name(const body_part part) noexcept {
     switch (part) {
         case body_part::head:
             return "Head";
@@ -143,7 +106,7 @@ std::string body_part_name(const body_part part) {
     }
 }
 
-std::optional<double> distance(const std::optional<cv::Point2d> &a, const std::optional<cv::Point2d> &b) noexcept {
+std::optional<double> distance(const frame_part &a, const frame_part &b) noexcept {
     if (a && b) {
         return cv::norm(*a - *b);
     }
@@ -226,9 +189,9 @@ std::vector<std::size_t> get_step_frames(const model_video_body &points) noexcep
 
 std::optional<double> get_vertical_tilt_angle(const model_point &a, const model_point &b) noexcept {
     if (a && b) {
-        double y = a->z - b->z;
+        double z = a->z - b->z;
         double x = a->x - b->x;
-        return std::atan(x / y) * 180.0 / M_PI;
+        return std::atan(x / z) * 180.0 / M_PI;
     }
     return std::nullopt;
 }
@@ -249,21 +212,50 @@ std::string create_output_filename() noexcept {
     return sstr.str();
 }
 
-bool is_inside(const std::vector<cv::Point2d> &corners, const cv::Mat &frame) noexcept {
-    for (const auto &corner : corners) {
-        if (corner.x < 0.0 || corner.x > (double)frame.cols ||
-            corner.y < 0.0 || corner.y > (double)frame.rows) {
-                return false;
+bool is_inside(const cv::Rect &rect, const cv::Mat &frame) noexcept {
+    return rect.tl().x >= 0 && rect.tl().y <= 0 &&
+        rect.br().x <= frame.cols && rect.br().y <= frame.rows;
+}
+
+void draw_body(cv::Mat &frame, const frame_body &body) noexcept {
+    for (std::size_t i = 0; i < NPAIRS; ++i) {
+        std::size_t a_idx = PAIRS[i][0];
+        std::size_t b_idx = PAIRS[i][1];
+        std::optional<cv::Point2d> a = body[a_idx];
+        std::optional<cv::Point2d> b = body[b_idx];
+
+        // Check if points `a` and `b` are valid.
+        if (a && b) {
+            cv::Scalar c(0, 255, 255);
+            if ((a_idx == body_part::l_ankle) || (a_idx == body_part::l_knee) || (a_idx == body_part::l_hip) ||
+                (a_idx == body_part::l_wrist) || (a_idx == body_part::l_elbow) || (a_idx == body_part::l_shoulder) ||
+                (b_idx == body_part::l_ankle) || (b_idx == body_part::l_knee) || (b_idx == body_part::l_hip) ||
+                (b_idx == body_part::l_wrist) || (b_idx == body_part::l_elbow) || (b_idx == body_part::l_shoulder)) {
+                    c = cv::Scalar(255, 0, 255);
+            } else if ((a_idx == body_part::r_ankle) || (a_idx == body_part::r_knee) || (a_idx == body_part::r_hip) ||
+                (a_idx == body_part::r_wrist) || (a_idx == body_part::r_elbow) || (a_idx == body_part::r_shoulder) ||
+                (b_idx == body_part::r_ankle) || (b_idx == body_part::r_knee) || (b_idx == body_part::r_hip) ||
+                (b_idx == body_part::r_wrist) || (b_idx == body_part::r_elbow) || (b_idx == body_part::r_shoulder)) {
+                    c = cv::Scalar(255, 255, 0);
+            }
+            // Connect body parts with lines.
+            cv::line(frame, *a, *b, c, 2);
         }
     }
-    return true;
+    // Draw body parts.
+    for (std::size_t i = 0; i < NPOINTS; ++i) {
+        if (body[i])
+            cv::circle(frame, *body[i], 2, cv::Scalar(0, 0, 255), -1);
+    }
 }
 
-double width(const std::vector<cv::Point2d> &corners) noexcept {
-    return cv::norm(corners[corner::tl] - corners[corner::tr]);
+frame_body model_to_frame(const model_body &body) noexcept {
+    frame_body res;
+    for (const auto &p : body) {
+        if (p) {
+            res.push_back(cv::Point2d(p->x, p->z));
+        }
+        res.push_back(std::nullopt);
+    }
+    return res;
 }
-
-double height(const std::vector<cv::Point2d> &corners) noexcept {
-    return cv::norm(corners[corner::tl] - corners[corner::bl]);
-}
-

@@ -94,13 +94,12 @@ private:
          * false otherwise.
          */
         bool track(const cv::Mat &frame, std::size_t frame_no) noexcept {
-            cv::Rect box;
-            // Update tracker.
-            if (tracker->update(frame, box)) {
-                bboxes.push_back(box);
-                return is_inside(get_corners(box), frame)
+            cv::Rect bbox;
+            if (tracker->update(frame, bbox)) {
+                bboxes.push_back(bbox);
+                return is_inside(bbox, frame)
                     && is_moving(frame_no)
-                    && move_analyzer.update(frame, box, frame_no);
+                    && move_analyzer.update(frame, bbox, frame_no);
             }
 
             return false;
