@@ -12,17 +12,17 @@ Handles background tracking used to determine person\textquotesingle{}s movement
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classbackground__tracker_a82495f32e178b0febf96661267b8ee58}{background\+\_\+tracker}} (const cv\+::\+Mat \&frame, const cv\+::\+Rect \&\mbox{\hyperlink{classperson}{person}}, direction dir) noexcept
+\mbox{\hyperlink{classbackground__tracker_aa3186f58cf889e87daaccec7a59f1d67}{background\+\_\+tracker}} (const cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no, const cv\+::\+Rect \&bbox, direction dir) noexcept
 \begin{DoxyCompactList}\small\item\em Default contructor. \end{DoxyCompactList}\item 
-bool \mbox{\hyperlink{classbackground__tracker_a368441a2d2667c9c8e8cec696eb9dcbc}{update}} (const cv\+::\+Mat \&frame, const cv\+::\+Rect \&\mbox{\hyperlink{classperson}{person}}) noexcept
+bool \mbox{\hyperlink{classbackground__tracker_a02f4b4949cd54853f6793ae6bd652d9d}{update}} (const cv\+::\+Mat \&frame, const cv\+::\+Rect \&bbox) noexcept
 \begin{DoxyCompactList}\small\item\em Track background in given frame and update properties. \end{DoxyCompactList}\item 
 bool \mbox{\hyperlink{classbackground__tracker_adfe84f3edd6e911ad28c1f1195c9be7b}{is\+\_\+valid\+\_\+direction}} () const noexcept
 \begin{DoxyCompactList}\small\item\em Check if assumed direction is correct. \end{DoxyCompactList}\item 
-bool \mbox{\hyperlink{classbackground__tracker_ae1a8c3abb334bf6b2e9e012879c73e33}{is\+\_\+vault\+\_\+beginning}} (double frame\+\_\+height, double person\+\_\+height) const noexcept
+bool \mbox{\hyperlink{classbackground__tracker_a29341c56ca2d785c0900646dd47f5c23}{is\+\_\+vault\+\_\+beginning}} (double person\+\_\+height, double fps) const noexcept
 \begin{DoxyCompactList}\small\item\em Check if vault is beginning. \end{DoxyCompactList}\item 
-std\+::optional$<$ cv\+::\+Point2d $>$ \mbox{\hyperlink{classbackground__tracker_a1c0080360405507c4ff84111282de115}{frame\+\_\+offset}} (std\+::size\+\_\+t person\+\_\+frame\+\_\+no) const noexcept
+std\+::optional$<$ cv\+::\+Point2d $>$ \mbox{\hyperlink{classbackground__tracker_ab7bbe170f46e14458286db7bd1ab0143}{frame\+\_\+offset}} (std\+::size\+\_\+t frame\+\_\+no) const noexcept
 \begin{DoxyCompactList}\small\item\em Get offset of frame specified by its number. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classbackground__tracker_a88e830b8004149da79e77e54ccc0f83c}{draw}} (cv\+::\+Mat \&frame, std\+::size\+\_\+t person\+\_\+frame\+\_\+no) const noexcept
+void \mbox{\hyperlink{classbackground__tracker_a3d6af6267c7271eb12bbfa42bd72d31f}{draw}} (cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no) const noexcept
 \begin{DoxyCompactList}\small\item\em Draw bounding box of currently tracked background part. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
@@ -32,11 +32,11 @@ Handles background tracking used to determine person\textquotesingle{}s movement
 Tracks part of background on one side of person and determines if person is moving away from tracked part of background. Determines whether a vault has begun. 
 
 \doxysubsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classbackground__tracker_a82495f32e178b0febf96661267b8ee58}\label{classbackground__tracker_a82495f32e178b0febf96661267b8ee58}} 
+\mbox{\Hypertarget{classbackground__tracker_aa3186f58cf889e87daaccec7a59f1d67}\label{classbackground__tracker_aa3186f58cf889e87daaccec7a59f1d67}} 
 \index{background\_tracker@{background\_tracker}!background\_tracker@{background\_tracker}}
 \index{background\_tracker@{background\_tracker}!background\_tracker@{background\_tracker}}
 \doxysubsubsection{\texorpdfstring{background\_tracker()}{background\_tracker()}}
-{\footnotesize\ttfamily background\+\_\+tracker\+::background\+\_\+tracker (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{frame,  }\item[{const cv\+::\+Rect \&}]{person,  }\item[{direction}]{dir }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+{\footnotesize\ttfamily background\+\_\+tracker\+::background\+\_\+tracker (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no,  }\item[{const cv\+::\+Rect \&}]{bbox,  }\item[{direction}]{dir }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
 
 
@@ -44,9 +44,11 @@ Default contructor.
 
 
 \begin{DoxyParams}{Parameters}
-{\em frame} & First frame in which person was detected. \\
+{\em frame} & Frame in which person was detected. \\
 \hline
-{\em person} & Bounding box of person in {\ttfamily frame}. \\
+{\em frame\+\_\+no} & Number of frame in which person was detected. \\
+\hline
+{\em bbox} & Bounding box of person in {\ttfamily frame}. \\
 \hline
 {\em dir} & Assumed direction of person\textquotesingle{}s movement. \\
 \hline
@@ -54,11 +56,11 @@ Default contructor.
 
 
 \doxysubsection{Member Function Documentation}
-\mbox{\Hypertarget{classbackground__tracker_a88e830b8004149da79e77e54ccc0f83c}\label{classbackground__tracker_a88e830b8004149da79e77e54ccc0f83c}} 
+\mbox{\Hypertarget{classbackground__tracker_a3d6af6267c7271eb12bbfa42bd72d31f}\label{classbackground__tracker_a3d6af6267c7271eb12bbfa42bd72d31f}} 
 \index{background\_tracker@{background\_tracker}!draw@{draw}}
 \index{draw@{draw}!background\_tracker@{background\_tracker}}
 \doxysubsubsection{\texorpdfstring{draw()}{draw()}}
-{\footnotesize\ttfamily void background\+\_\+tracker\+::draw (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{person\+\_\+frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+{\footnotesize\ttfamily void background\+\_\+tracker\+::draw (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
 
 
@@ -68,14 +70,14 @@ Draw bounding box of currently tracked background part.
 \begin{DoxyParams}{Parameters}
 {\em frame} & Frame in which bounding box should be drawn. \\
 \hline
-{\em person\+\_\+frame\+\_\+no} & Number of given frame. \\
+{\em frame\+\_\+no} & Number of given frame. \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classbackground__tracker_a1c0080360405507c4ff84111282de115}\label{classbackground__tracker_a1c0080360405507c4ff84111282de115}} 
+\mbox{\Hypertarget{classbackground__tracker_ab7bbe170f46e14458286db7bd1ab0143}\label{classbackground__tracker_ab7bbe170f46e14458286db7bd1ab0143}} 
 \index{background\_tracker@{background\_tracker}!frame\_offset@{frame\_offset}}
 \index{frame\_offset@{frame\_offset}!background\_tracker@{background\_tracker}}
 \doxysubsubsection{\texorpdfstring{frame\_offset()}{frame\_offset()}}
-{\footnotesize\ttfamily std\+::optional$<$cv\+::\+Point2d$>$ background\+\_\+tracker\+::frame\+\_\+offset (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{person\+\_\+frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+{\footnotesize\ttfamily std\+::optional$<$cv\+::\+Point2d$>$ background\+\_\+tracker\+::frame\+\_\+offset (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
 
 
@@ -83,17 +85,14 @@ Get offset of frame specified by its number.
 
 
 \begin{DoxyParams}{Parameters}
-{\em person\+\_\+frame\+\_\+no} & Number of frame which offset should be computed. \\
+{\em frame\+\_\+no} & Number of frame which offset should be computed. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 offset of specified frame, invalid value if offset could not be computed.
 \end{DoxyReturn}
-\begin{DoxyNote}{Note}
-Frame number 0 corresponds to first frame, in which person was detected.
-\end{DoxyNote}
 \begin{DoxySeeAlso}{See also}
-\mbox{\hyperlink{classmovement__analyzer_ad9af61a3d887c286a3e3b1de99265c10}{movement\+\_\+analyzer\+::frame\+\_\+offset}}. 
+\mbox{\hyperlink{classmovement__analyzer_aa888d04b8794af369f176e2c5f35e0d0}{movement\+\_\+analyzer\+::frame\+\_\+offset}}. 
 \end{DoxySeeAlso}
 \mbox{\Hypertarget{classbackground__tracker_adfe84f3edd6e911ad28c1f1195c9be7b}\label{classbackground__tracker_adfe84f3edd6e911ad28c1f1195c9be7b}} 
 \index{background\_tracker@{background\_tracker}!is\_valid\_direction@{is\_valid\_direction}}
@@ -108,31 +107,33 @@ Check if assumed direction is correct.
 \begin{DoxyReturn}{Returns}
 true if assumed direction is correct, false otherwise. 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classbackground__tracker_ae1a8c3abb334bf6b2e9e012879c73e33}\label{classbackground__tracker_ae1a8c3abb334bf6b2e9e012879c73e33}} 
+\mbox{\Hypertarget{classbackground__tracker_a29341c56ca2d785c0900646dd47f5c23}\label{classbackground__tracker_a29341c56ca2d785c0900646dd47f5c23}} 
 \index{background\_tracker@{background\_tracker}!is\_vault\_beginning@{is\_vault\_beginning}}
 \index{is\_vault\_beginning@{is\_vault\_beginning}!background\_tracker@{background\_tracker}}
 \doxysubsubsection{\texorpdfstring{is\_vault\_beginning()}{is\_vault\_beginning()}}
-{\footnotesize\ttfamily bool background\+\_\+tracker\+::is\+\_\+vault\+\_\+beginning (\begin{DoxyParamCaption}\item[{double}]{frame\+\_\+height,  }\item[{double}]{person\+\_\+height }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+{\footnotesize\ttfamily bool background\+\_\+tracker\+::is\+\_\+vault\+\_\+beginning (\begin{DoxyParamCaption}\item[{double}]{person\+\_\+height,  }\item[{double}]{fps }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
 
 
 Check if vault is beginning. 
 
+Compute difference of vertical movement changes of last {\ttfamily vault\+\_\+check\+\_\+frames} and {\ttfamily vault\+\_\+check\+\_\+frames} before that and decide whether tracked person takes off.
+
 
 \begin{DoxyParams}{Parameters}
-{\em frame\+\_\+height} & Height of frame. \\
-\hline
 {\em person\+\_\+height} & Height of person in frame. \\
+\hline
+{\em fps} & Frame rate of processed video. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
 true if vault is beginning, false otherwise. 
 \end{DoxyReturn}
-\mbox{\Hypertarget{classbackground__tracker_a368441a2d2667c9c8e8cec696eb9dcbc}\label{classbackground__tracker_a368441a2d2667c9c8e8cec696eb9dcbc}} 
+\mbox{\Hypertarget{classbackground__tracker_a02f4b4949cd54853f6793ae6bd652d9d}\label{classbackground__tracker_a02f4b4949cd54853f6793ae6bd652d9d}} 
 \index{background\_tracker@{background\_tracker}!update@{update}}
 \index{update@{update}!background\_tracker@{background\_tracker}}
 \doxysubsubsection{\texorpdfstring{update()}{update()}}
-{\footnotesize\ttfamily bool background\+\_\+tracker\+::update (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{frame,  }\item[{const cv\+::\+Rect \&}]{person }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+{\footnotesize\ttfamily bool background\+\_\+tracker\+::update (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{frame,  }\item[{const cv\+::\+Rect \&}]{bbox }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
 
 
@@ -142,7 +143,7 @@ Track background in given frame and update properties.
 \begin{DoxyParams}{Parameters}
 {\em frame} & Frame in which to track background. \\
 \hline
-{\em person} & Person\textquotesingle{}s bounding box in {\ttfamily frame}. \\
+{\em bbox} & Person\textquotesingle{}s bounding box in {\ttfamily frame}. \\
 \hline
 \end{DoxyParams}
 

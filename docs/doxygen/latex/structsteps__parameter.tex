@@ -1,0 +1,57 @@
+\hypertarget{structsteps__parameter}{}\doxysection{steps\+\_\+parameter Struct Reference}
+\label{structsteps__parameter}\index{steps\_parameter@{steps\_parameter}}
+Inheritance diagram for steps\+\_\+parameter\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{structsteps__parameter}
+\end{center}
+\end{figure}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structsteps__parameter_a538e295ec1c6c9cb4414ff345b8a7bc5}{steps\+\_\+parameter}} (const std\+::string \mbox{\hyperlink{structparameter_a5c825fcc566d22739856395927f7eee2}{name}}, const vault\+\_\+part \mbox{\hyperlink{structparameter_a2faab1d32b7c1f9138b746966e56bfd4}{part}}, const std\+::string \&\&\mbox{\hyperlink{structparameter_a74ed8a5aa34fd12979f6447519e41ca8}{unit}}, double \mbox{\hyperlink{structsteps__parameter_a65628f64af60cc138d8aeae8bb6d78b8}{fps}}=30) noexcept
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structsteps__parameter_a475c12a5da5ea33041f14f9f656ebc7b}\label{structsteps__parameter_a475c12a5da5ea33041f14f9f656ebc7b}} 
+std\+::vector$<$ std\+::size\+\_\+t $>$ \mbox{\hyperlink{structsteps__parameter_a475c12a5da5ea33041f14f9f656ebc7b}{step\+\_\+frames}}
+\begin{DoxyCompactList}\small\item\em Numbers of frames where step happens. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structsteps__parameter_a65628f64af60cc138d8aeae8bb6d78b8}\label{structsteps__parameter_a65628f64af60cc138d8aeae8bb6d78b8}} 
+double \mbox{\hyperlink{structsteps__parameter_a65628f64af60cc138d8aeae8bb6d78b8}{fps}}
+\begin{DoxyCompactList}\small\item\em Frame rate of processed video. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structsteps__parameter_a538e295ec1c6c9cb4414ff345b8a7bc5}\label{structsteps__parameter_a538e295ec1c6c9cb4414ff345b8a7bc5}} 
+\index{steps\_parameter@{steps\_parameter}!steps\_parameter@{steps\_parameter}}
+\index{steps\_parameter@{steps\_parameter}!steps\_parameter@{steps\_parameter}}
+\doxysubsubsection{\texorpdfstring{steps\_parameter()}{steps\_parameter()}}
+{\footnotesize\ttfamily steps\+\_\+parameter\+::steps\+\_\+parameter (\begin{DoxyParamCaption}\item[{const std\+::string}]{name,  }\item[{const vault\+\_\+part}]{part,  }\item[{const std\+::string \&\&}]{unit,  }\item[{double}]{fps = {\ttfamily 30} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}, {\ttfamily [noexcept]}}
+
+
+
+Default constructor. 
+
+Specifies parameter\textquotesingle{}s name, vault part and unit as well as frame rate of processed video.
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & Name of this parameter. \\
+\hline
+{\em part} & Part of vault for which this parameter is designated. \\
+\hline
+{\em unit} & String representation of this parameter\textquotesingle{}s unit. \\
+\hline
+{\em fps} & Frame rate of processed video.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+This constructor can be called by derived structs only. 
+\end{DoxyNote}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+parameters.\+hpp\end{DoxyCompactItemize}

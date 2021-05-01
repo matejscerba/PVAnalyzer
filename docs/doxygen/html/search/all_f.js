@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['takeoff_45',['takeoff',['../structtakeoff__parameter.html#a8308aeda8ea2365494de29cd0063a25a',1,'takeoff_parameter']]],
-  ['takeoff_5fangle_46',['takeoff_angle',['../structtakeoff__angle.html',1,'takeoff_angle'],['../structtakeoff__angle.html#adf72c9f29b34b789393e1b08c0d43faf',1,'takeoff_angle::takeoff_angle()']]],
-  ['takeoff_5fparameter_47',['takeoff_parameter',['../structtakeoff__parameter.html',1,'takeoff_parameter'],['../structtakeoff__parameter.html#a4b225d499378dfd54afd773455cd510c',1,'takeoff_parameter::takeoff_parameter()']]],
-  ['track_48',['track',['../classperson.html#abc972b7df689b7e8fee4fd7e98e5652a',1,'person']]]
+  ['unit_47',['unit',['../structparameter.html#a74ed8a5aa34fd12979f6447519e41ca8',1,'parameter']]],
+  ['update_48',['update',['../classbackground__tracker.html#a02f4b4949cd54853f6793ae6bd652d9d',1,'background_tracker::update()'],['../classmovement__analyzer.html#a25718ec889141283f1c2ec0ad1b65275',1,'movement_analyzer::update()']]]
 ];

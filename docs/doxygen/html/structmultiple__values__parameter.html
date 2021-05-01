@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>BP: multiple_values_parameter Struct Reference</title>
+<title>Pole Vault Analyzer: multiple_values_parameter Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">BP
+   <div id="projectname">Pole Vault Analyzer
    </div>
   </td>
  </tr>
@@ -81,13 +81,14 @@ Inheritance diagram for multiple_values_parameter:</div>
  <div class="center">
   <img src="structmultiple__values__parameter.png" usemap="#multiple_5Fvalues_5Fparameter_map" alt=""/>
   <map id="multiple_5Fvalues_5Fparameter_map" name="multiple_5Fvalues_5Fparameter_map">
-<area href="structparameter.html" title="Base struct representing vault-related parameter, containing its values and operating with them." alt="parameter" shape="rect" coords="344,0,506,24"/>
+<area href="structparameter.html" title="Base struct representing vault-related parameter, containing its values and operating with them." alt="parameter" shape="rect" coords="387,0,549,24"/>
 <area href="structframe__wise__parameter.html" title="Represents frame-wise parameter, e.g. position of left ankle throughout whole processed video." alt="frame_wise_parameter" shape="rect" coords="172,112,334,136"/>
-<area href="structsteps__duration.html" title="Duration of each step in seconds." alt="steps_duration" shape="rect" coords="516,112,678,136"/>
+<area href="structsteps__parameter.html" alt="steps_parameter" shape="rect" coords="602,112,764,136"/>
 <area href="structbody__part__height.html" title="Parameter specifying y-coordinate of a body part in each frame." alt="body_part_height" shape="rect" coords="0,168,162,192"/>
 <area href="structhips__height.html" title="Parameter specifying y-coordinate of center of athlete&#39;s hips in each frame." alt="hips_height" shape="rect" coords="172,168,334,192"/>
 <area href="structvertical__tilt.html" title="Parameter specifying angle between vertical axis and ray given by body parts in each frame." alt="vertical_tilt" shape="rect" coords="344,168,506,192"/>
-<area href="structsteps__angle.html" alt="steps_angle" shape="rect" coords="516,168,678,192"/>
+<area href="structsteps__angle.html" title="Angle of ray from hips center to lower ankle and vertical axis when athlete&#39;s foot reaches ground." alt="steps_angle" shape="rect" coords="516,168,678,192"/>
+<area href="structsteps__duration.html" title="Duration of each step in seconds." alt="steps_duration" shape="rect" coords="688,168,850,192"/>
 <area href="structhorizontal__tilt.html" title="Parameter specifying angle between horizontal axis and ray given by body parts in each frame." alt="horizontal_tilt" shape="rect" coords="344,224,506,248"/>
   </map>
 </div></div>
@@ -99,9 +100,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad4c7eeced8b519b10f88197fa41942ad"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmultiple__values__parameter.html#ad4c7eeced8b519b10f88197fa41942ad">write_param</a> (std::ostream &amp;os, std::size_t value_no) const noexcept</td></tr>
 <tr class="separator:ad4c7eeced8b519b10f88197fa41942ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structparameter"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structparameter')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structparameter.html">parameter</a></td></tr>
-<tr class="memitem:a838bf155a77ebd8ae84ed7782b564a02 inherit pub_methods_structparameter"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structparameter.html#a838bf155a77ebd8ae84ed7782b564a02">compute</a> (const video_body &amp;points) noexcept=0</td></tr>
-<tr class="memdesc:a838bf155a77ebd8ae84ed7782b564a02 inherit pub_methods_structparameter"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute parameter's values based on given body parts detected in whole video.  <a href="structparameter.html#a838bf155a77ebd8ae84ed7782b564a02">More...</a><br /></td></tr>
-<tr class="separator:a838bf155a77ebd8ae84ed7782b564a02 inherit pub_methods_structparameter"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab120495c7c6fe96fa4e439c0cefb7a81 inherit pub_methods_structparameter"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structparameter.html#ab120495c7c6fe96fa4e439c0cefb7a81">compute</a> (const model_video_body &amp;points) noexcept=0</td></tr>
+<tr class="memdesc:ab120495c7c6fe96fa4e439c0cefb7a81 inherit pub_methods_structparameter"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute parameter's values based on given body parts detected in whole video.  <a href="structparameter.html#ab120495c7c6fe96fa4e439c0cefb7a81">More...</a><br /></td></tr>
+<tr class="separator:ab120495c7c6fe96fa4e439c0cefb7a81 inherit pub_methods_structparameter"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac09ad3208582cc6c999fbab9628dd02 inherit pub_methods_structparameter"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structparameter.html#aac09ad3208582cc6c999fbab9628dd02">write_value</a> (std::ostream &amp;os, std::size_t frame_no, bool write_unit) const noexcept=0</td></tr>
 <tr class="memdesc:aac09ad3208582cc6c999fbab9628dd02 inherit pub_methods_structparameter"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write value into given stream for given frame number.  <a href="structparameter.html#aac09ad3208582cc6c999fbab9628dd02">More...</a><br /></td></tr>
 <tr class="separator:aac09ad3208582cc6c999fbab9628dd02 inherit pub_methods_structparameter"><td class="memSeparator" colspan="2">&#160;</td></tr>

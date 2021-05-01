@@ -37,7 +37,7 @@ public:
      * @param frames Number of frames in video.
      * @param fps Frame rate of processed video.
      */
-    void analyze(const model &athlete, const std::string &filename, double fps, bool save) noexcept {
+    void analyze(const model &athlete, const std::string &filename, double fps) noexcept {
         points_frame = athlete.get_frame_points();
         points_real = athlete.get_real_points();
 
@@ -45,7 +45,7 @@ public:
         this->filename = filename;
         this->fps = fps;
 
-        if (compute_parameters(points_real) && save) {
+        if (compute_parameters(points_real)) {
             write_parameters();
         }
     }

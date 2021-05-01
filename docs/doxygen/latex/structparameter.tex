@@ -12,13 +12,13 @@ Base struct representing vault-\/related parameter, containing its values and op
 Inheritance diagram for parameter\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[height=2.352941cm]{structparameter}
+\includegraphics[height=2.058824cm]{structparameter}
 \end{center}
 \end{figure}
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-virtual void \mbox{\hyperlink{structparameter_a838bf155a77ebd8ae84ed7782b564a02}{compute}} (const video\+\_\+body \&points) noexcept=0
+virtual void \mbox{\hyperlink{structparameter_ab120495c7c6fe96fa4e439c0cefb7a81}{compute}} (const model\+\_\+video\+\_\+body \&points) noexcept=0
 \begin{DoxyCompactList}\small\item\em Compute parameter\textquotesingle{}s values based on given body parts detected in whole video. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{structparameter_aac09ad3208582cc6c999fbab9628dd02}{write\+\_\+value}} (std\+::ostream \&os, std\+::size\+\_\+t frame\+\_\+no, bool write\+\_\+unit) const noexcept=0
 \begin{DoxyCompactList}\small\item\em Write value into given stream for given frame number. \end{DoxyCompactList}\item 
@@ -76,11 +76,11 @@ This constructor can be called by derived structs only.
 
 
 \doxysubsection{Member Function Documentation}
-\mbox{\Hypertarget{structparameter_a838bf155a77ebd8ae84ed7782b564a02}\label{structparameter_a838bf155a77ebd8ae84ed7782b564a02}} 
+\mbox{\Hypertarget{structparameter_ab120495c7c6fe96fa4e439c0cefb7a81}\label{structparameter_ab120495c7c6fe96fa4e439c0cefb7a81}} 
 \index{parameter@{parameter}!compute@{compute}}
 \index{compute@{compute}!parameter@{parameter}}
 \doxysubsubsection{\texorpdfstring{compute()}{compute()}}
-{\footnotesize\ttfamily virtual void parameter\+::compute (\begin{DoxyParamCaption}\item[{const video\+\_\+body \&}]{points }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [noexcept]}}
+{\footnotesize\ttfamily virtual void parameter\+::compute (\begin{DoxyParamCaption}\item[{const model\+\_\+video\+\_\+body \&}]{points }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}, {\ttfamily [noexcept]}}
 
 
 
@@ -96,7 +96,7 @@ Saves corresponding values to member propoerty defined in derived structs.
 \end{DoxyNote}
 
 
-Implemented in \mbox{\hyperlink{structframe__wise__parameter_a4df1f5c8465836f988543970d3cca637}{frame\+\_\+wise\+\_\+parameter}}, \mbox{\hyperlink{structsteps__angle_a69fb7ed121919a71e7da3af63b1bc65d}{steps\+\_\+angle}}, \mbox{\hyperlink{structsteps__duration_a6713637f86ad8bc0303b2f5dce06d4b9}{steps\+\_\+duration}}, \mbox{\hyperlink{structtakeoff__angle_a06491bbe29f2a1061de6f506a6fe1a2e}{takeoff\+\_\+angle}}, and \mbox{\hyperlink{structvelocity__loss_a39dcfc43be6ef9ea0b9876fc286ffd16}{velocity\+\_\+loss}}.
+Implemented in \mbox{\hyperlink{structframe__wise__parameter_a3aa49a1c05ec50c3b409948528ce394a}{frame\+\_\+wise\+\_\+parameter}}, \mbox{\hyperlink{structsteps__angle_ae7e19ca603853836eb29030df8cf6576}{steps\+\_\+angle}}, \mbox{\hyperlink{structsteps__duration_a1147e97c47facc7c4798c64d21b81343}{steps\+\_\+duration}}, \mbox{\hyperlink{structtakeoff__angle_a7afeff9f47029f08aa117f2051141562}{takeoff\+\_\+angle}}, and \mbox{\hyperlink{structvelocity__loss_a4af13a20f6b8ba5e09c8e998fe2cc549}{velocity\+\_\+loss}}.
 
 \mbox{\Hypertarget{structparameter_ad3acf012ae8ffada5951c058db90e1ef}\label{structparameter_ad3acf012ae8ffada5951c058db90e1ef}} 
 \index{parameter@{parameter}!size@{size}}

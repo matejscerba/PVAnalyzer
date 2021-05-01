@@ -1,5 +1,14 @@
 \hypertarget{structsteps__angle}{}\doxysection{steps\+\_\+angle Struct Reference}
 \label{structsteps__angle}\index{steps\_angle@{steps\_angle}}
+
+
+Angle of ray from hips center to lower ankle and vertical axis when athlete\textquotesingle{}s foot reaches ground.  
+
+
+
+
+{\ttfamily \#include $<$parameters.\+hpp$>$}
+
 Inheritance diagram for steps\+\_\+angle\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
@@ -9,40 +18,57 @@ Inheritance diagram for steps\+\_\+angle\+:\begin{figure}[H]
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{structsteps__angle_aab9c77cf221275edd79e634745bbbc4a}\label{structsteps__angle_aab9c77cf221275edd79e634745bbbc4a}} 
-{\bfseries steps\+\_\+angle} (direction dir) noexcept
-\item 
+\mbox{\hyperlink{structsteps__angle_aab9c77cf221275edd79e634745bbbc4a}{steps\+\_\+angle}} (direction dir) noexcept
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{structsteps__angle_ae7e19ca603853836eb29030df8cf6576}{compute}} (const model\+\_\+video\+\_\+body \&points) noexcept
+\begin{DoxyCompactList}\small\item\em Compute leg angle for each step. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{structsteps__angle_a80117846d84dc30ce2adf1aded2d32a9}{write\+\_\+value}} (std\+::ostream \&os, std\+::size\+\_\+t frame\+\_\+no, bool write\+\_\+unit) const noexcept
-\begin{DoxyCompactList}\small\item\em Write duration of step happening during frame {\ttfamily frame\+\_\+no}. \end{DoxyCompactList}\item 
-virtual void \mbox{\hyperlink{structsteps__angle_a69fb7ed121919a71e7da3af63b1bc65d}{compute}} (const video\+\_\+body \&points) noexcept
-\begin{DoxyCompactList}\small\item\em Compute duration of each step based on detected body parts in whole video. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\begin{DoxyCompactList}\small\item\em Write leg angle if step happens in frame {\ttfamily frame\+\_\+no}. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Additional Inherited Members}
 
 
-\doxysubsection{Member Function Documentation}
-\mbox{\Hypertarget{structsteps__angle_a69fb7ed121919a71e7da3af63b1bc65d}\label{structsteps__angle_a69fb7ed121919a71e7da3af63b1bc65d}} 
-\index{steps\_angle@{steps\_angle}!compute@{compute}}
-\index{compute@{compute}!steps\_angle@{steps\_angle}}
-\doxysubsubsection{\texorpdfstring{compute()}{compute()}}
-{\footnotesize\ttfamily virtual void steps\+\_\+angle\+::compute (\begin{DoxyParamCaption}\item[{const video\+\_\+body \&}]{points }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+\doxysubsection{Detailed Description}
+Angle of ray from hips center to lower ankle and vertical axis when athlete\textquotesingle{}s foot reaches ground. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structsteps__angle_aab9c77cf221275edd79e634745bbbc4a}\label{structsteps__angle_aab9c77cf221275edd79e634745bbbc4a}} 
+\index{steps\_angle@{steps\_angle}!steps\_angle@{steps\_angle}}
+\index{steps\_angle@{steps\_angle}!steps\_angle@{steps\_angle}}
+\doxysubsubsection{\texorpdfstring{steps\_angle()}{steps\_angle()}}
+{\footnotesize\ttfamily steps\+\_\+angle\+::steps\+\_\+angle (\begin{DoxyParamCaption}\item[{direction}]{dir }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
 
 
-Compute duration of each step based on detected body parts in whole video. 
+Default constructor. 
 
-Get numbers of frames where the lower ankle leaves locally lowest point and where the higher ankle leaves locally highest point. Keep low points, which are below center of previous low point and high point (the first one is kept every time). Compute duration between subsequent low points based on their frame numbers and frame rate of processed video.
+Specifies parameter\textquotesingle{}s name, vault part and unit as well as frame rate of processed video.
 
 
 \begin{DoxyParams}{Parameters}
-{\em points} & Athlete\textquotesingle{}s body parts detected in the whole video.\\
+{\em fps} & Frame rate of processed video. \\
 \hline
 \end{DoxyParams}
-\begin{DoxyNote}{Note}
-Ankle must leave local point of interest by more than 1 px (vertically). 
-\end{DoxyNote}
 
 
-Reimplemented from \mbox{\hyperlink{structsteps__duration_a6713637f86ad8bc0303b2f5dce06d4b9}{steps\+\_\+duration}}.
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structsteps__angle_ae7e19ca603853836eb29030df8cf6576}\label{structsteps__angle_ae7e19ca603853836eb29030df8cf6576}} 
+\index{steps\_angle@{steps\_angle}!compute@{compute}}
+\index{compute@{compute}!steps\_angle@{steps\_angle}}
+\doxysubsubsection{\texorpdfstring{compute()}{compute()}}
+{\footnotesize\ttfamily virtual void steps\+\_\+angle\+::compute (\begin{DoxyParamCaption}\item[{const model\+\_\+video\+\_\+body \&}]{points }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Compute leg angle for each step. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em points} & Athlete\textquotesingle{}s body parts detected in the whole video. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{structparameter_ab120495c7c6fe96fa4e439c0cefb7a81}{parameter}}.
 
 \mbox{\Hypertarget{structsteps__angle_a80117846d84dc30ce2adf1aded2d32a9}\label{structsteps__angle_a80117846d84dc30ce2adf1aded2d32a9}} 
 \index{steps\_angle@{steps\_angle}!write\_value@{write\_value}}
@@ -52,7 +78,7 @@ Reimplemented from \mbox{\hyperlink{structsteps__duration_a6713637f86ad8bc0303b2
 
 
 
-Write duration of step happening during frame {\ttfamily frame\+\_\+no}. 
+Write leg angle if step happens in frame {\ttfamily frame\+\_\+no}. 
 
 
 \begin{DoxyParams}[1]{Parameters}
@@ -65,7 +91,7 @@ Write duration of step happening during frame {\ttfamily frame\+\_\+no}.
 \end{DoxyParams}
 
 
-Reimplemented from \mbox{\hyperlink{structsteps__duration_ae8c734aeae19e6e0e3ca2438269f5487}{steps\+\_\+duration}}.
+Implements \mbox{\hyperlink{structparameter_aac09ad3208582cc6c999fbab9628dd02}{parameter}}.
 
 
 

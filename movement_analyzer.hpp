@@ -3,14 +3,15 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/tracking/tracking.hpp>
 
-#include <vector>
-#include <algorithm>
+#include <cstddef>
 #include <optional>
+#include <vector>
 
+#include "forward.hpp"
 #include "background_tracker.hpp"
 
 /**
- * @brief Handles movement of person's bounding box.
+ * @brief Analyzes movement of person's bounding box.
  */
 class movement_analyzer {
 public:
@@ -19,12 +20,13 @@ public:
      * @brief Default constructor.
      * 
      * @param frame First frame, where person was detected.
-     * @param person Bounding box of person in `frame`.
+     * @param bbox Bounding box of person in `frame`.
      */
-    movement_analyzer(std::size_t frame_no, const cv::Mat &frame, const cv::Rect2d &person, double fps) {
-        left_direction_tracker = background_tracker(frame, frame_no, person, direction::left);
-        right_direction_tracker = background_tracker(frame, frame_no, person, direction::right);
+    movement_analyzer(std::size_t frame_no, const cv::Mat &frame, const cv::Rect2d &bbox, double fps) noexcept {
+        left_direction_tracker = background_tracker(frame, frame_no, bbox, direction::left);
+        right_direction_tracker = background_tracker(frame, frame_no, bbox, direction::right);
         this->fps = fps;
+        dir  = direction::unknown;
     }
 
     /**
@@ -33,64 +35,61 @@ public:
      * Update valid trackers, update direction and check whether vault began in given frame.
      * 
      * @param frame Frame to be processed.
-     * @param person Person's bounding box in given frame.
+     * @param bbox Person's bounding box in given frame.
      * @param frame_no Number of processed frame.
      * @returns false if both trackers failed (unable to determine person's movement direction),
-     *     true if tracking of at least one background tracker is OK.
+     * true if tracking of at least one background tracker is OK.
     */
-    bool update(const cv::Mat &frame, const cv::Rect2d &person, std::size_t frame_no) {
+    bool update(const cv::Mat &frame, const cv::Rect2d &bbox, std::size_t frame_no) noexcept {
         bool res = false;
         if (left_direction_tracker) {
-            if (left_direction_tracker->update(frame, person)) {
-                if (!_vault_began && left_direction_tracker->is_vault_beginning(person.height, fps)) {
-                    _vault_began = frame_no;
+            if (left_direction_tracker->update(frame, bbox)) {
+                // Tracker assuming runup to the left didn't fail.
+                if (!takeoff_frame && left_direction_tracker->is_vault_beginning(bbox.height, fps)) {
+                    takeoff_frame = frame_no;
                 }
                 res = true;
             } else {
-                if (right_direction_tracker)
-                    left_direction_tracker.reset();
+                // Tracker failed, invalidate it.
+                left_direction_tracker.reset();
             }
         }
         if (right_direction_tracker) {
-            if (right_direction_tracker->update(frame, person)) {
-                if (!_vault_began && right_direction_tracker->is_vault_beginning(person.height, fps)) {
-                    _vault_began = frame_no;
+            if (right_direction_tracker->update(frame, bbox)) {
+                // Tracker assuming runup to the right didn't fail.
+                if (!takeoff_frame && right_direction_tracker->is_vault_beginning(bbox.height, fps)) {
+                    takeoff_frame = frame_no;
                 }
                 res = true;
             } else {
-                if (left_direction_tracker)
-                    right_direction_tracker.reset();
+                // Tracker failed, invalidate it.
+                right_direction_tracker.reset();
             }
         }
-        update_direction(person);
+        update_direction();
         return res;
     }
 
-    /// @brief Get detected direction.
+    /**
+     * @brief Get detected direction.
+     * 
+     * @returns detected direction.
+     */
     direction get_direction() const noexcept {
         return dir;
     }
 
-    // cv::Point2d last_movement() const noexcept {
-    //     if (dir == direction::unknown) return cv::Point2d();
-    //     if (left_direction_tracker)
-    //         return left_direction_tracker->last_person_movement();
-    //     if (right_direction_tracker)
-    //         return right_direction_tracker->last_person_movement();
-    //     return cv::Point2d();
-    // }
-
     /**
-     * @brief Computes how many frames passed from beginning of vault.
+     * @brief Computes how many frames passed since beginning of vault.
      * 
      * @param frame_no Number of frame used for comparison to beginning of vault.
      * @returns number of frames after beginning of vault up to `frame_no`.
      * 
      * @note Returns 0 if vault has not begun yet.
      */
-    std::size_t vault_frames(std::size_t frame_no) const {
-        if (_vault_began && (frame_no > _vault_began.value())) {
-            return frame_no - _vault_began.value();
+    std::size_t vault_frames(std::size_t frame_no) const noexcept {
+        if (takeoff_frame && (frame_no > *takeoff_frame)) {
+            return frame_no - *takeoff_frame;
         } else {
             return 0;
         }
@@ -103,17 +102,14 @@ public:
      * @param real Returns valid offset if true, zero offset otherwise.
      * @returns offset of specified frame, invalid value if offset could not be computed.
      * 
-     * @note Frame number 0 corresponds to first frame, in which person was detected.
      * @note If real is false, frame offset is irrelevant.
      * 
      * @see background_tracker::frame_offset.
      */
-    std::optional<cv::Point2d> frame_offset(std::size_t frame_no, bool real = true) const {
+    std::optional<cv::Point2d> frame_offset(std::size_t frame_no, bool real = true) const noexcept {
         if (!real) return cv::Point2d();
-        if (left_direction_tracker)
-            return left_direction_tracker->frame_offset(frame_no);
-        if (right_direction_tracker)
-            return right_direction_tracker->frame_offset(frame_no);
+        if (valid_direction_tracker)
+            return valid_direction_tracker->frame_offset(frame_no);
         return std::nullopt;
     }
 
@@ -132,40 +128,59 @@ public:
 
 private:
 
-    /// @brief Background tracker used for tracking athlete assuming he is moving to the left.
+    /**
+     * @brief Background tracker used for tracking athlete assuming he is moving to the left.
+     */
     std::optional<background_tracker> left_direction_tracker;
 
-    /// @brief Background tracker used for tracking athlete assuming he is moving to the right.
+    /**
+     * @brief Background tracker used for tracking athlete assuming he is moving to the right.
+     */
     std::optional<background_tracker> right_direction_tracker;
 
-    /// @brief In which frame the vault began (contains value if it was set).
-    std::optional<std::size_t> _vault_began;
+    /**
+     * @brief Background tracker that holds the valid background tracker.
+     * 
+     * Is used for accessing background tracker after whole video was processed.
+     * 
+     * @note Is set when direction of movement can be determined.
+     */
+    std::optional<background_tracker> valid_direction_tracker;
 
-    // TODO: rename to direction
-    /// @brief Horizontal direction of person's movement.
-    direction dir = direction::unknown;
+    /**
+     * @brief In which frame the vault began (contains value if it was set).
+     */
+    std::optional<std::size_t> takeoff_frame;
 
+    /**
+     * @brief Horizontal direction of person's movement.
+     */
+    direction dir;
+
+    /**
+     * @brief Frame rate of processed video.
+     */
     double fps;
 
     /**
      * @brief Update person's movement direction based on background trackers.
      * 
-     * @param person Person, whose direction should be updated.
-     * 
      * @note Invalidate the second tracker if person is moving according to the first one.
     */
-    void update_direction(const cv::Rect2d &person) {
+    void update_direction() noexcept {
         if (dir == direction::unknown) {
             if (left_direction_tracker) {
                 if (left_direction_tracker->is_valid_direction()) {
                     dir = direction::left;
                     right_direction_tracker.reset();
+                    valid_direction_tracker = left_direction_tracker;
                 }
             }
             if (right_direction_tracker) {
                 if (right_direction_tracker->is_valid_direction()) {
                     dir = direction::right;
                     left_direction_tracker.reset();
+                    valid_direction_tracker = right_direction_tracker;
                 }
             }
         }

@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['movement_5fanalyzer_70',['movement_analyzer',['../classmovement__analyzer.html',1,'']]],
-  ['multiple_5fvalues_5fparameter_71',['multiple_values_parameter',['../structmultiple__values__parameter.html',1,'']]]
+  ['hips_5fheight_64',['hips_height',['../structhips__height.html',1,'']]],
+  ['hips_5fvelocity_5floss_65',['hips_velocity_loss',['../structhips__velocity__loss.html',1,'']]],
+  ['horizontal_5ftilt_66',['horizontal_tilt',['../structhorizontal__tilt.html',1,'']]]
 ];

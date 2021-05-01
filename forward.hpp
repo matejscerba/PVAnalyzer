@@ -23,6 +23,9 @@ typedef std::vector<model_point> model_body;
 typedef std::vector<model_body> model_video_body;
 typedef std::vector<model_point> model_offsets;
 
+typedef std::optional<cv::Point2d> offset;
+typedef std::vector<offset> offsets;
+
 /// @brief Represents person's body part in frame, can be invalid.
 typedef std::optional<cv::Point2d> frame_part;
 

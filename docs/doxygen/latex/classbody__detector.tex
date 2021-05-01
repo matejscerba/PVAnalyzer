@@ -9,26 +9,13 @@ Detects athlete in each frame of a video.
 
 {\ttfamily \#include $<$body\+\_\+detector.\+hpp$>$}
 
-\doxysubsection*{Public Types}
-\begin{DoxyCompactItemize}
-\item 
-enum class \mbox{\hyperlink{classbody__detector_a237e9cb02069549a0bdfd2d025044f6c}{result}} \{ \mbox{\hyperlink{classbody__detector_a237e9cb02069549a0bdfd2d025044f6ca08b43519a7e36ee4c6c5615d1663bcfd}{skip}}
-, \mbox{\hyperlink{classbody__detector_a237e9cb02069549a0bdfd2d025044f6ca444bcb3a3fcf8389296c49467f27e1d6}{ok}}
-, \mbox{\hyperlink{classbody__detector_a237e9cb02069549a0bdfd2d025044f6cacb5e100e5a9a3e7f6d1fd97512215282}{error}}
-, \mbox{\hyperlink{classbody__detector_a237e9cb02069549a0bdfd2d025044f6caad921d60486366258809553a3db49a4a}{unknown}}
- \}
-\begin{DoxyCompactList}\small\item\em Supported return values for function {\ttfamily detect}. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classbody__detector_ae0b9477c3bb4e531733df9d979fbb144}{body\+\_\+detector}} (std\+::size\+\_\+t frame, const cv\+::\+Point \&position, double fps)
+\mbox{\hyperlink{classbody__detector_a11eb1f8bba8a9f62f15e509c2ac360fa}{body\+\_\+detector}} (double fps) noexcept
 \begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
-\mbox{\hyperlink{classbody__detector_a237e9cb02069549a0bdfd2d025044f6c}{result}} \mbox{\hyperlink{classbody__detector_a6e1c35278f2992294697556f1c45f8d2}{detect}} (const cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no)
-\begin{DoxyCompactList}\small\item\em Detect athlete in given frame or track it if it was detected earlier. \end{DoxyCompactList}\item 
-std\+::optional$<$ \mbox{\hyperlink{classperson}{person}} $>$ \mbox{\hyperlink{classbody__detector_a195b6a0857240af61ec00bb6ce29ac83}{get\+\_\+athlete}} () const
-\begin{DoxyCompactList}\small\item\em Get valid athlete detected in processed video, invalid optional otherwise. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classbody__detector_a7d9324897796303d27ffce6d9e04b246}{draw}} (cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no) const
-\begin{DoxyCompactList}\small\item\em Draw each person in frame. \end{DoxyCompactList}\end{DoxyCompactItemize}
+std\+::optional$<$ \mbox{\hyperlink{classperson}{person}} $>$ \mbox{\hyperlink{classbody__detector_aae71b7b3f9638220d56251c7b8715fc0}{find\+\_\+athlete}} (const std\+::vector$<$ cv\+::\+Mat $>$ \&raw\+\_\+frames, std\+::vector$<$ cv\+::\+Mat $>$ \&found\+\_\+frames) noexcept
+\begin{DoxyCompactList}\small\item\em Find athlete in video given by frames. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -36,43 +23,12 @@ Detects athlete in each frame of a video.
 
 Detects all people in given frame and tracks athlete in next frames. Athlete is selected based on given position. Tracking in next frames is performed by instance of class person. 
 
-\doxysubsection{Member Enumeration Documentation}
-\mbox{\Hypertarget{classbody__detector_a237e9cb02069549a0bdfd2d025044f6c}\label{classbody__detector_a237e9cb02069549a0bdfd2d025044f6c}} 
-\index{body\_detector@{body\_detector}!result@{result}}
-\index{result@{result}!body\_detector@{body\_detector}}
-\doxysubsubsection{\texorpdfstring{result}{result}}
-{\footnotesize\ttfamily enum \mbox{\hyperlink{classbody__detector_a237e9cb02069549a0bdfd2d025044f6c}{body\+\_\+detector\+::result}}\hspace{0.3cm}{\ttfamily [strong]}}
-
-
-
-Supported return values for function {\ttfamily detect}. 
-
-\begin{DoxyEnumFields}{Enumerator}
-\raisebox{\heightof{T}}[0pt][0pt]{\index{skip@{skip}!body\_detector@{body\_detector}}\index{body\_detector@{body\_detector}!skip@{skip}}}\mbox{\Hypertarget{classbody__detector_a237e9cb02069549a0bdfd2d025044f6ca08b43519a7e36ee4c6c5615d1663bcfd}\label{classbody__detector_a237e9cb02069549a0bdfd2d025044f6ca08b43519a7e36ee4c6c5615d1663bcfd}} 
-skip&Processed frame was skipped. \\
-\hline
-
-\raisebox{\heightof{T}}[0pt][0pt]{\index{ok@{ok}!body\_detector@{body\_detector}}\index{body\_detector@{body\_detector}!ok@{ok}}}\mbox{\Hypertarget{classbody__detector_a237e9cb02069549a0bdfd2d025044f6ca444bcb3a3fcf8389296c49467f27e1d6}\label{classbody__detector_a237e9cb02069549a0bdfd2d025044f6ca444bcb3a3fcf8389296c49467f27e1d6}} 
-ok&Frame was processed correctly (athlete was detected). \\
-\hline
-
-\raisebox{\heightof{T}}[0pt][0pt]{\index{error@{error}!body\_detector@{body\_detector}}\index{body\_detector@{body\_detector}!error@{error}}}\mbox{\Hypertarget{classbody__detector_a237e9cb02069549a0bdfd2d025044f6cacb5e100e5a9a3e7f6d1fd97512215282}\label{classbody__detector_a237e9cb02069549a0bdfd2d025044f6cacb5e100e5a9a3e7f6d1fd97512215282}} 
-error&An error occured when frame was being processed. \\
-\hline
-
-\raisebox{\heightof{T}}[0pt][0pt]{\index{unknown@{unknown}!body\_detector@{body\_detector}}\index{body\_detector@{body\_detector}!unknown@{unknown}}}\mbox{\Hypertarget{classbody__detector_a237e9cb02069549a0bdfd2d025044f6caad921d60486366258809553a3db49a4a}\label{classbody__detector_a237e9cb02069549a0bdfd2d025044f6caad921d60486366258809553a3db49a4a}} 
-unknown&No information about result is available. \\
-\hline
-
-\end{DoxyEnumFields}
-
-
 \doxysubsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classbody__detector_ae0b9477c3bb4e531733df9d979fbb144}\label{classbody__detector_ae0b9477c3bb4e531733df9d979fbb144}} 
+\mbox{\Hypertarget{classbody__detector_a11eb1f8bba8a9f62f15e509c2ac360fa}\label{classbody__detector_a11eb1f8bba8a9f62f15e509c2ac360fa}} 
 \index{body\_detector@{body\_detector}!body\_detector@{body\_detector}}
 \index{body\_detector@{body\_detector}!body\_detector@{body\_detector}}
 \doxysubsubsection{\texorpdfstring{body\_detector()}{body\_detector()}}
-{\footnotesize\ttfamily body\+\_\+detector\+::body\+\_\+detector (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame,  }\item[{const cv\+::\+Point \&}]{position,  }\item[{double}]{fps }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily body\+\_\+detector\+::body\+\_\+detector (\begin{DoxyParamCaption}\item[{double}]{fps }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
 
 
@@ -80,65 +36,33 @@ Default constructor.
 
 
 \begin{DoxyParams}{Parameters}
-{\em frame} & Number of frame when detection should begin, frames before are supposed to be skipped, computed from 0. \\
-\hline
-{\em position} & Point in frame (specified by first parameter), where athlete is expected. \\
-\hline
 {\em fps} & Frame rate of processed video. \\
 \hline
 \end{DoxyParams}
 
 
 \doxysubsection{Member Function Documentation}
-\mbox{\Hypertarget{classbody__detector_a6e1c35278f2992294697556f1c45f8d2}\label{classbody__detector_a6e1c35278f2992294697556f1c45f8d2}} 
-\index{body\_detector@{body\_detector}!detect@{detect}}
-\index{detect@{detect}!body\_detector@{body\_detector}}
-\doxysubsubsection{\texorpdfstring{detect()}{detect()}}
-{\footnotesize\ttfamily \mbox{\hyperlink{classbody__detector_a237e9cb02069549a0bdfd2d025044f6c}{result}} body\+\_\+detector\+::detect (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\Hypertarget{classbody__detector_aae71b7b3f9638220d56251c7b8715fc0}\label{classbody__detector_aae71b7b3f9638220d56251c7b8715fc0}} 
+\index{body\_detector@{body\_detector}!find\_athlete@{find\_athlete}}
+\index{find\_athlete@{find\_athlete}!body\_detector@{body\_detector}}
+\doxysubsubsection{\texorpdfstring{find\_athlete()}{find\_athlete()}}
+{\footnotesize\ttfamily std\+::optional$<$\mbox{\hyperlink{classperson}{person}}$>$ body\+\_\+detector\+::find\+\_\+athlete (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ cv\+::\+Mat $>$ \&}]{raw\+\_\+frames,  }\item[{std\+::vector$<$ cv\+::\+Mat $>$ \&}]{found\+\_\+frames }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
 
 
-Detect athlete in given frame or track it if it was detected earlier. 
+Find athlete in video given by frames. 
+
+Find athlete in {\ttfamily raw\+\_\+frames}, draw detections to {\ttfamily found\+\_\+frames}.
 
 
-\begin{DoxyParams}{Parameters}
-{\em frame} & Frame, in which athlete should be detected. \\
+\begin{DoxyParams}[1]{Parameters}
+ & {\em raw\+\_\+frames} & Frames representing video to be processed. \\
 \hline
-{\em frame\+\_\+no} & Number of given frame. \\
+\mbox{\texttt{ out}}  & {\em found\+\_\+frames} & Modified frames will be written here. \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-result of detection, whether frame was skipped, detected correctly or an error occured. 
-\end{DoxyReturn}
-\mbox{\Hypertarget{classbody__detector_a7d9324897796303d27ffce6d9e04b246}\label{classbody__detector_a7d9324897796303d27ffce6d9e04b246}} 
-\index{body\_detector@{body\_detector}!draw@{draw}}
-\index{draw@{draw}!body\_detector@{body\_detector}}
-\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
-{\footnotesize\ttfamily void body\+\_\+detector\+::draw (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Draw each person in frame. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em frame} & Frame where to draw people. \\
-\hline
-{\em frame\+\_\+no} & Number of given frame. \\
-\hline
-\end{DoxyParams}
-\mbox{\Hypertarget{classbody__detector_a195b6a0857240af61ec00bb6ce29ac83}\label{classbody__detector_a195b6a0857240af61ec00bb6ce29ac83}} 
-\index{body\_detector@{body\_detector}!get\_athlete@{get\_athlete}}
-\index{get\_athlete@{get\_athlete}!body\_detector@{body\_detector}}
-\doxysubsubsection{\texorpdfstring{get\_athlete()}{get\_athlete()}}
-{\footnotesize\ttfamily std\+::optional$<$\mbox{\hyperlink{classperson}{person}}$>$ body\+\_\+detector\+::get\+\_\+athlete (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Get valid athlete detected in processed video, invalid optional otherwise. 
-
-\begin{DoxyReturn}{Returns}
-person representing valid athlete, invalid optional if no valid athlete was detected. 
+person representing athlete or invalid value if athlete could not be found. 
 \end{DoxyReturn}
 
 

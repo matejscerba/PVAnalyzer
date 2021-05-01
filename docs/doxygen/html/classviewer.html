@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>BP: viewer Class Reference</title>
+<title>Pole Vault Analyzer: viewer Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">BP
+   <div id="projectname">Pole Vault Analyzer
    </div>
   </td>
  </tr>
@@ -76,18 +76,19 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a863b9bc690f68c4f839fc6b9f9aa3a39"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classviewer.html#a863b9bc690f68c4f839fc6b9f9aa3a39">viewer</a> (const std::vector&lt; cv::Mat &gt; &amp;frames, const std::vector&lt; cv::Mat &gt; &amp;raw_frames, <a class="el" href="classvault__analyzer.html">vault_analyzer</a> &amp;analyzer)</td></tr>
-<tr class="memdesc:a863b9bc690f68c4f839fc6b9f9aa3a39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="classviewer.html#a863b9bc690f68c4f839fc6b9f9aa3a39">More...</a><br /></td></tr>
-<tr class="separator:a863b9bc690f68c4f839fc6b9f9aa3a39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00b5d3c49a89dd2c72208878a35c4b94"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classviewer.html#a00b5d3c49a89dd2c72208878a35c4b94">show</a> ()</td></tr>
-<tr class="memdesc:a00b5d3c49a89dd2c72208878a35c4b94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Show current frame of video.  <a href="classviewer.html#a00b5d3c49a89dd2c72208878a35c4b94">More...</a><br /></td></tr>
-<tr class="separator:a00b5d3c49a89dd2c72208878a35c4b94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2487d90ef15c5d969c5f597b8359b2c"><td class="memItemLeft" align="right" valign="top"><a id="ae2487d90ef15c5d969c5f597b8359b2c"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classviewer.html#ae2487d90ef15c5d969c5f597b8359b2c">viewer</a> () noexcept</td></tr>
+<tr class="memdesc:ae2487d90ef15c5d969c5f597b8359b2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. <br /></td></tr>
+<tr class="separator:ae2487d90ef15c5d969c5f597b8359b2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad18dd453a0a8570e6d65ab6c3b399d42"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classviewer.html#ad18dd453a0a8570e6d65ab6c3b399d42">show</a> (const std::vector&lt; cv::Mat &gt; &amp;frames, const std::vector&lt; cv::Mat &gt; &amp;raw_frames, const <a class="el" href="classvault__analyzer.html">vault_analyzer</a> &amp;analyzer) noexcept</td></tr>
+<tr class="memdesc:ad18dd453a0a8570e6d65ab6c3b399d42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Show current frame of video.  <a href="classviewer.html#ad18dd453a0a8570e6d65ab6c3b399d42">More...</a><br /></td></tr>
+<tr class="separator:ad18dd453a0a8570e6d65ab6c3b399d42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Shows user frames of video and parameters' values for each frame. </p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a863b9bc690f68c4f839fc6b9f9aa3a39"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a863b9bc690f68c4f839fc6b9f9aa3a39">&#9670;&nbsp;</a></span>viewer()</h2>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ad18dd453a0a8570e6d65ab6c3b399d42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad18dd453a0a8570e6d65ab6c3b399d42">&#9670;&nbsp;</a></span>show()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -96,7 +97,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">viewer::viewer </td>
+          <td class="memname">void viewer::show </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; cv::Mat &gt; &amp;&#160;</td>
           <td class="paramname"><em>frames</em>, </td>
@@ -110,7 +111,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classvault__analyzer.html">vault_analyzer</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classvault__analyzer.html">vault_analyzer</a> &amp;&#160;</td>
           <td class="paramname"><em>analyzer</em>&#160;</td>
         </tr>
         <tr>
@@ -121,50 +122,21 @@ Public Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Default constructor. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">frames</td><td>Frames with detections drawings. </td></tr>
-    <tr><td class="paramname">raw_frames</td><td>Unmodified frames of processed video. </td></tr>
-    <tr><td class="paramname">analyzer</td><td>Analyzer after analyzing athlete's movement.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classvault__analyzer.html" title="Analyzes detections made when processing video.">vault_analyzer</a> </dd></dl>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="a00b5d3c49a89dd2c72208878a35c4b94"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a00b5d3c49a89dd2c72208878a35c4b94">&#9670;&nbsp;</a></span>show()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void viewer::show </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Show current frame of video. </p>
-<p>Handle user inputs: left arrow shows previous frame, right arrow shows the next one, space bar toggles whether to show detections drawings, escape key closes window and ends. </p>
+<p>Handle user inputs: left arrow shows previous frame, right arrow shows the next one, space bar toggles whether to show detections drawings, escape key closes window and ends.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">frames</td><td>Frames with detections' drawings. </td></tr>
+    <tr><td class="paramname">raw_frames</td><td>Unmodified frames of processed video. </td></tr>
+    <tr><td class="paramname">analyzer</td><td>Analyzer after analyzing athlete's movement. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

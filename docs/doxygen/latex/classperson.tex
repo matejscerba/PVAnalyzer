@@ -2,7 +2,7 @@
 \label{classperson}\index{person@{person}}
 
 
-Represents person through whole video.  
+Represents athlete through whole video.  
 
 
 
@@ -12,41 +12,29 @@ Represents person through whole video.
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classperson_ae90f6692ec91554dd77192ae8ce556ee}{person}} (std\+::size\+\_\+t frame\+\_\+no, const cv\+::\+Mat \&frame, double fps, const cv\+::\+Rect \&box, cv\+::dnn\+::\+Net \&net)
+\mbox{\hyperlink{classperson_a21943e2c79f043c1db11ab12ce68542b}{person}} (std\+::size\+\_\+t frame\+\_\+no, const cv\+::\+Rect \&box, double fps) noexcept
 \begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
-cv\+::\+Rect \mbox{\hyperlink{classperson_aa7911b119262c3ebe2d5878653ca6d53}{bbox}} (std\+::size\+\_\+t frame\+\_\+no) const
-\item 
-double \mbox{\hyperlink{classperson_ac03253d245f83f8d18f71f011869e6be}{width}} (std\+::size\+\_\+t frame\+\_\+no) const
-\item 
-double \mbox{\hyperlink{classperson_a9822e8678e2639defc9fc9884177ff42}{height}} (std\+::size\+\_\+t frame\+\_\+no) const
-\item 
-bool \mbox{\hyperlink{classperson_abc972b7df689b7e8fee4fd7e98e5652a}{track}} (const cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no)
-\begin{DoxyCompactList}\small\item\em Track person in next frame. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classperson_af730fd6a8f0e0b4e44e45f57034f94c7}{detect}} (const cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no)
-\begin{DoxyCompactList}\small\item\em Detect body parts of this person inside given frame. \end{DoxyCompactList}\item 
-video\+\_\+body \mbox{\hyperlink{classperson_ad48818624f2f5488b21a9665acd93ef9}{get\+\_\+points}} (bool real=false) const
-\begin{DoxyCompactList}\small\item\em Get point of all body parts of person. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classperson_a8c31a2752c61d64c4afdbf8c2480e4bc}{draw}} (cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no) const
-\begin{DoxyCompactList}\small\item\em Draw this person in {\ttfamily frame}. \end{DoxyCompactList}\end{DoxyCompactItemize}
-\doxysubsection*{Friends}
-\begin{DoxyCompactItemize}
-\item 
-\mbox{\Hypertarget{classperson_a008f20eebd302cf51f40fc30f38e1e4d}\label{classperson_a008f20eebd302cf51f40fc30f38e1e4d}} 
-class {\bfseries vault\+\_\+analyzer}
-\end{DoxyCompactItemize}
+std\+::vector$<$ cv\+::\+Mat $>$ \mbox{\hyperlink{classperson_adf651ff73e98c6b9de886b5370ba6124}{detect}} (const std\+::vector$<$ cv\+::\+Mat $>$ \&raw\+\_\+frames) noexcept
+\begin{DoxyCompactList}\small\item\em Detect athlete and his body parts in given video. \end{DoxyCompactList}\item 
+video\+\_\+body \mbox{\hyperlink{classperson_a225b1f0ca0246a6c27755dc7d072f755}{get\+\_\+points}} (bool real=false) const noexcept
+\begin{DoxyCompactList}\small\item\em Get all body parts of athlete throughout whole video. \end{DoxyCompactList}\item 
+offsets \mbox{\hyperlink{classperson_a10062c54ef6d8509d8267f164482af36}{get\+\_\+offsets}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get offsets of all frames. \end{DoxyCompactList}\item 
+direction \mbox{\hyperlink{classperson_a67d326c1312ea797581fd468deed0f9e}{get\+\_\+direction}} () const
+\begin{DoxyCompactList}\small\item\em Get athlete\textquotesingle{}s direction. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
-Represents person through whole video. 
+Represents athlete through whole video. 
 
-Holds information about a person through whole video (or its part when certain person is in frame). Handles transitions between frames. Handles rotations during vault as well. 
+Holds information about a athlete through whole video. Tracks athlete through whole video. 
 
 \doxysubsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classperson_ae90f6692ec91554dd77192ae8ce556ee}\label{classperson_ae90f6692ec91554dd77192ae8ce556ee}} 
+\mbox{\Hypertarget{classperson_a21943e2c79f043c1db11ab12ce68542b}\label{classperson_a21943e2c79f043c1db11ab12ce68542b}} 
 \index{person@{person}!person@{person}}
 \index{person@{person}!person@{person}}
 \doxysubsubsection{\texorpdfstring{person()}{person()}}
-{\footnotesize\ttfamily person\+::person (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no,  }\item[{const cv\+::\+Mat \&}]{frame,  }\item[{double}]{fps,  }\item[{const cv\+::\+Rect \&}]{box,  }\item[{cv\+::dnn\+::\+Net \&}]{net }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily person\+::person (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no,  }\item[{const cv\+::\+Rect \&}]{box,  }\item[{double}]{fps }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
 
 
@@ -54,81 +42,69 @@ Default constructor.
 
 
 \begin{DoxyParams}{Parameters}
-{\em frame\+\_\+no} & Number of frame, in which this person was detected for the first time. \\
+{\em frame\+\_\+no} & Number of frame, in which athlete was detected for the first time. \\
 \hline
-{\em frame} & Current frame, this person was already detected here. \\
+{\em box} & Bounding box of athlete in {\ttfamily frame}. \\
 \hline
 {\em fps} & Frame rate of processed video. \\
-\hline
-{\em box} & Bounding box of this person in {\ttfamily frame}. \\
-\hline
-{\em net} & Deep neural network used for detecting person\textquotesingle{}s body parts. \\
 \hline
 \end{DoxyParams}
 
 
 \doxysubsection{Member Function Documentation}
-\mbox{\Hypertarget{classperson_aa7911b119262c3ebe2d5878653ca6d53}\label{classperson_aa7911b119262c3ebe2d5878653ca6d53}} 
-\index{person@{person}!bbox@{bbox}}
-\index{bbox@{bbox}!person@{person}}
-\doxysubsubsection{\texorpdfstring{bbox()}{bbox()}}
-{\footnotesize\ttfamily cv\+::\+Rect person\+::bbox (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-\begin{DoxyParams}{Parameters}
-{\em frame\+\_\+no} & Number of frame where to get bounding box. \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-bounding box of this person in current frame. 
-\end{DoxyReturn}
-\mbox{\Hypertarget{classperson_af730fd6a8f0e0b4e44e45f57034f94c7}\label{classperson_af730fd6a8f0e0b4e44e45f57034f94c7}} 
+\mbox{\Hypertarget{classperson_adf651ff73e98c6b9de886b5370ba6124}\label{classperson_adf651ff73e98c6b9de886b5370ba6124}} 
 \index{person@{person}!detect@{detect}}
 \index{detect@{detect}!person@{person}}
 \doxysubsubsection{\texorpdfstring{detect()}{detect()}}
-{\footnotesize\ttfamily void person\+::detect (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily std\+::vector$<$cv\+::\+Mat$>$ person\+::detect (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ cv\+::\+Mat $>$ \&}]{raw\+\_\+frames }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
 
 
-Detect body parts of this person inside given frame. 
-
-Use deep neural network to detect body parts of this person inside frame, crop frame to smaller input for speed optimization.
-
-
-\begin{DoxyParams}{Parameters}
-{\em frame} & Frame which to crop and detect body parts on. \\
-\hline
-{\em frame\+\_\+no} & Number of given frame. \\
-\hline
-\end{DoxyParams}
-\mbox{\Hypertarget{classperson_a8c31a2752c61d64c4afdbf8c2480e4bc}\label{classperson_a8c31a2752c61d64c4afdbf8c2480e4bc}} 
-\index{person@{person}!draw@{draw}}
-\index{draw@{draw}!person@{person}}
-\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
-{\footnotesize\ttfamily void person\+::draw (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Draw this person in {\ttfamily frame}. 
-
-Draw this person\textquotesingle{}s unscaled bounding box, scaled bounidng box and connected body parts forming a \char`\"{}stickman\char`\"{} in {\ttfamily frame}.
+Detect athlete and his body parts in given video. 
 
 
 \begin{DoxyParams}{Parameters}
-{\em frame} & Frame in which this person should be drawn. \\
-\hline
-{\em frame\+\_\+no} & Number of given frame. \\
+{\em raw\+\_\+frames} & Frames of video to be processed. \\
 \hline
 \end{DoxyParams}
-\mbox{\Hypertarget{classperson_ad48818624f2f5488b21a9665acd93ef9}\label{classperson_ad48818624f2f5488b21a9665acd93ef9}} 
+\begin{DoxyReturn}{Returns}
+Frames with drawings of detections. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classperson_a67d326c1312ea797581fd468deed0f9e}\label{classperson_a67d326c1312ea797581fd468deed0f9e}} 
+\index{person@{person}!get\_direction@{get\_direction}}
+\index{get\_direction@{get\_direction}!person@{person}}
+\doxysubsubsection{\texorpdfstring{get\_direction()}{get\_direction()}}
+{\footnotesize\ttfamily direction person\+::get\+\_\+direction (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get athlete\textquotesingle{}s direction. 
+
+\begin{DoxyReturn}{Returns}
+athlete\textquotesingle{}s direction. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classperson_a10062c54ef6d8509d8267f164482af36}\label{classperson_a10062c54ef6d8509d8267f164482af36}} 
+\index{person@{person}!get\_offsets@{get\_offsets}}
+\index{get\_offsets@{get\_offsets}!person@{person}}
+\doxysubsubsection{\texorpdfstring{get\_offsets()}{get\_offsets()}}
+{\footnotesize\ttfamily offsets person\+::get\+\_\+offsets (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Get offsets of all frames. 
+
+\begin{DoxyReturn}{Returns}
+offsets of all frames. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classperson_a225b1f0ca0246a6c27755dc7d072f755}\label{classperson_a225b1f0ca0246a6c27755dc7d072f755}} 
 \index{person@{person}!get\_points@{get\_points}}
 \index{get\_points@{get\_points}!person@{person}}
 \doxysubsubsection{\texorpdfstring{get\_points()}{get\_points()}}
-{\footnotesize\ttfamily video\+\_\+body person\+::get\+\_\+points (\begin{DoxyParamCaption}\item[{bool}]{real = {\ttfamily false} }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily video\+\_\+body person\+::get\+\_\+points (\begin{DoxyParamCaption}\item[{bool}]{real = {\ttfamily false} }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
 
 
-Get point of all body parts of person. 
+Get all body parts of athlete throughout whole video. 
 
 
 \begin{DoxyParams}{Parameters}
@@ -136,48 +112,11 @@ Get point of all body parts of person.
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Returns}
-detected body parts in part of video where person was detected. 
+detected body parts in whole video in specified coordinates.
 \end{DoxyReturn}
-\mbox{\Hypertarget{classperson_a9822e8678e2639defc9fc9884177ff42}\label{classperson_a9822e8678e2639defc9fc9884177ff42}} 
-\index{person@{person}!height@{height}}
-\index{height@{height}!person@{person}}
-\doxysubsubsection{\texorpdfstring{height()}{height()}}
-{\footnotesize\ttfamily double person\+::height (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-\begin{DoxyReturn}{Returns}
-height of this person\textquotesingle{}s bounding box in given frame. 
-\end{DoxyReturn}
-\mbox{\Hypertarget{classperson_abc972b7df689b7e8fee4fd7e98e5652a}\label{classperson_abc972b7df689b7e8fee4fd7e98e5652a}} 
-\index{person@{person}!track@{track}}
-\index{track@{track}!person@{person}}
-\doxysubsubsection{\texorpdfstring{track()}{track()}}
-{\footnotesize\ttfamily bool person\+::track (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Track person in next frame. 
-
-Rotates frame so that person\textquotesingle{}s angle of rotation is as low as possible.
-
-
-\begin{DoxyParams}{Parameters}
-{\em frame} & Next frame in which person should be tracked. \\
-\hline
-{\em frame\+\_\+no} & Number of given frame. \\
-\hline
-\end{DoxyParams}
-\begin{DoxyReturn}{Returns}
-true if detection was OK, false if an error occured. 
-\end{DoxyReturn}
-\mbox{\Hypertarget{classperson_ac03253d245f83f8d18f71f011869e6be}\label{classperson_ac03253d245f83f8d18f71f011869e6be}} 
-\index{person@{person}!width@{width}}
-\index{width@{width}!person@{person}}
-\doxysubsubsection{\texorpdfstring{width()}{width()}}
-{\footnotesize\ttfamily double person\+::width (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
-
-\begin{DoxyReturn}{Returns}
-width of this person\textquotesingle{}s bounding box in given frame. 
-\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+If {\ttfamily real} is false, return points in frame coordinates. 
+\end{DoxyNote}
 
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}

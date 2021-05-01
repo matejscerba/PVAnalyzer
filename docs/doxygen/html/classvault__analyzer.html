@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>BP: vault_analyzer Class Reference</title>
+<title>Pole Vault Analyzer: vault_analyzer Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">BP
+   <div id="projectname">Pole Vault Analyzer
    </div>
   </td>
  </tr>
@@ -76,9 +76,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa78ef16e1fca064d25e311aa48fd1bae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvault__analyzer.html#aa78ef16e1fca064d25e311aa48fd1bae">analyze</a> (const <a class="el" href="classperson.html">person</a> &amp;athlete, const std::string &amp;filename, std::size_t frames, double fps) noexcept</td></tr>
-<tr class="memdesc:aa78ef16e1fca064d25e311aa48fd1bae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Analyze athlete's movements in processed video.  <a href="classvault__analyzer.html#aa78ef16e1fca064d25e311aa48fd1bae">More...</a><br /></td></tr>
-<tr class="separator:aa78ef16e1fca064d25e311aa48fd1bae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0037fcf7147db04de86a1921abb08747"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvault__analyzer.html#a0037fcf7147db04de86a1921abb08747">analyze</a> (const <a class="el" href="structmodel.html">model</a> &amp;athlete, const std::string &amp;filename, double fps) noexcept</td></tr>
+<tr class="memdesc:a0037fcf7147db04de86a1921abb08747"><td class="mdescLeft">&#160;</td><td class="mdescRight">Analyze athlete's movements in processed video.  <a href="classvault__analyzer.html#a0037fcf7147db04de86a1921abb08747">More...</a><br /></td></tr>
+<tr class="separator:a0037fcf7147db04de86a1921abb08747"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abfea5f5b1f4d5169f737bf0e29ad0638"><td class="memItemLeft" align="right" valign="top"><a id="abfea5f5b1f4d5169f737bf0e29ad0638"></a>
 std::vector&lt; std::shared_ptr&lt; <a class="el" href="structparameter.html">parameter</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvault__analyzer.html#abfea5f5b1f4d5169f737bf0e29ad0638">get_parameters</a> () const noexcept</td></tr>
 <tr class="memdesc:abfea5f5b1f4d5169f737bf0e29ad0638"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get parameters including their values. <br /></td></tr>
@@ -100,8 +100,8 @@ std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 <div class="textblock"><p>Analyzes detections made when processing video. </p>
 <p>Holds detected athlete's body parts and values of corresponding parameters. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="aa78ef16e1fca064d25e311aa48fd1bae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa78ef16e1fca064d25e311aa48fd1bae">&#9670;&nbsp;</a></span>analyze()</h2>
+<a id="a0037fcf7147db04de86a1921abb08747"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0037fcf7147db04de86a1921abb08747">&#9670;&nbsp;</a></span>analyze()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -112,7 +112,7 @@ std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
         <tr>
           <td class="memname">void vault_analyzer::analyze </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classperson.html">person</a> &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="structmodel.html">model</a> &amp;&#160;</td>
           <td class="paramname"><em>athlete</em>, </td>
         </tr>
         <tr>
@@ -120,12 +120,6 @@ std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>filename</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::size_t&#160;</td>
-          <td class="paramname"><em>frames</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

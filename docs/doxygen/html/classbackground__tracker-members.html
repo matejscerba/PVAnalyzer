@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>BP: Member List</title>
+<title>Pole Vault Analyzer: Member List</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">BP
+   <div id="projectname">Pole Vault Analyzer
    </div>
   </td>
  </tr>
@@ -68,12 +68,12 @@ $(function() {
 
 <p>This is the complete list of members for <a class="el" href="classbackground__tracker.html">background_tracker</a>, including all inherited members.</p>
 <table class="directory">
-  <tr class="even"><td class="entry"><a class="el" href="classbackground__tracker.html#a82495f32e178b0febf96661267b8ee58">background_tracker</a>(const cv::Mat &amp;frame, const cv::Rect &amp;person, direction dir) noexcept</td><td class="entry"><a class="el" href="classbackground__tracker.html">background_tracker</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classbackground__tracker.html#a88e830b8004149da79e77e54ccc0f83c">draw</a>(cv::Mat &amp;frame, std::size_t person_frame_no) const noexcept</td><td class="entry"><a class="el" href="classbackground__tracker.html">background_tracker</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classbackground__tracker.html#a1c0080360405507c4ff84111282de115">frame_offset</a>(std::size_t person_frame_no) const noexcept</td><td class="entry"><a class="el" href="classbackground__tracker.html">background_tracker</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classbackground__tracker.html#aa3186f58cf889e87daaccec7a59f1d67">background_tracker</a>(const cv::Mat &amp;frame, std::size_t frame_no, const cv::Rect &amp;bbox, direction dir) noexcept</td><td class="entry"><a class="el" href="classbackground__tracker.html">background_tracker</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classbackground__tracker.html#a3d6af6267c7271eb12bbfa42bd72d31f">draw</a>(cv::Mat &amp;frame, std::size_t frame_no) const noexcept</td><td class="entry"><a class="el" href="classbackground__tracker.html">background_tracker</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classbackground__tracker.html#ab7bbe170f46e14458286db7bd1ab0143">frame_offset</a>(std::size_t frame_no) const noexcept</td><td class="entry"><a class="el" href="classbackground__tracker.html">background_tracker</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
   <tr><td class="entry"><a class="el" href="classbackground__tracker.html#adfe84f3edd6e911ad28c1f1195c9be7b">is_valid_direction</a>() const noexcept</td><td class="entry"><a class="el" href="classbackground__tracker.html">background_tracker</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr class="even"><td class="entry"><a class="el" href="classbackground__tracker.html#ae1a8c3abb334bf6b2e9e012879c73e33">is_vault_beginning</a>(double frame_height, double person_height) const noexcept</td><td class="entry"><a class="el" href="classbackground__tracker.html">background_tracker</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
-  <tr><td class="entry"><a class="el" href="classbackground__tracker.html#a368441a2d2667c9c8e8cec696eb9dcbc">update</a>(const cv::Mat &amp;frame, const cv::Rect &amp;person) noexcept</td><td class="entry"><a class="el" href="classbackground__tracker.html">background_tracker</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classbackground__tracker.html#a29341c56ca2d785c0900646dd47f5c23">is_vault_beginning</a>(double person_height, double fps) const noexcept</td><td class="entry"><a class="el" href="classbackground__tracker.html">background_tracker</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr><td class="entry"><a class="el" href="classbackground__tracker.html#a02f4b4949cd54853f6793ae6bd652d9d">update</a>(const cv::Mat &amp;frame, const cv::Rect &amp;bbox) noexcept</td><td class="entry"><a class="el" href="classbackground__tracker.html">background_tracker</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

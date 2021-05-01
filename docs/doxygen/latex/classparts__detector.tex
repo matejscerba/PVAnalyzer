@@ -1,0 +1,64 @@
+\hypertarget{classparts__detector}{}\doxysection{parts\+\_\+detector Class Reference}
+\label{classparts__detector}\index{parts\_detector@{parts\_detector}}
+
+
+Handles body parts detections.  
+
+
+
+
+{\ttfamily \#include $<$parts\+\_\+detector.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classparts__detector_ac7818d84d7b38b7f9567c7f1570dcc39}{parts\+\_\+detector}} () noexcept
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+frame\+\_\+body \mbox{\hyperlink{classparts__detector_a5fa3670d89d5cb684821363143024e53}{detect}} (const cv\+::\+Mat \&frame, const cv\+::\+Rect \&bbox) noexcept
+\begin{DoxyCompactList}\small\item\em Detect body parts in given image. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Handles body parts detections. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classparts__detector_ac7818d84d7b38b7f9567c7f1570dcc39}\label{classparts__detector_ac7818d84d7b38b7f9567c7f1570dcc39}} 
+\index{parts\_detector@{parts\_detector}!parts\_detector@{parts\_detector}}
+\index{parts\_detector@{parts\_detector}!parts\_detector@{parts\_detector}}
+\doxysubsubsection{\texorpdfstring{parts\_detector()}{parts\_detector()}}
+{\footnotesize\ttfamily parts\+\_\+detector\+::parts\+\_\+detector (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Default constructor. 
+
+Load net used for detections. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classparts__detector_a5fa3670d89d5cb684821363143024e53}\label{classparts__detector_a5fa3670d89d5cb684821363143024e53}} 
+\index{parts\_detector@{parts\_detector}!detect@{detect}}
+\index{detect@{detect}!parts\_detector@{parts\_detector}}
+\doxysubsubsection{\texorpdfstring{detect()}{detect()}}
+{\footnotesize\ttfamily frame\+\_\+body parts\+\_\+detector\+::detect (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{frame,  }\item[{const cv\+::\+Rect \&}]{bbox }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Detect body parts in given image. 
+
+Rotate frame based on torso tilt in last frame, crop window used for detection and detect body parts in cropped window.
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame} & Image in which body parts detections should be made. \\
+\hline
+{\em bbox} & Athlete\textquotesingle{}s bounding box. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+detected body parts in {\ttfamily frame}. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+parts\+\_\+detector.\+hpp\end{DoxyCompactItemize}

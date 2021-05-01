@@ -12,8 +12,10 @@ Wrapper of whole program\textquotesingle{}s functionality.
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-void \mbox{\hyperlink{classvideo__processor_a7a8846e85161c128ccf6312807a04483}{process}} (const std\+::string \&filename)
-\begin{DoxyCompactList}\small\item\em Process video at certain path frame by frame. \end{DoxyCompactList}\end{DoxyCompactItemize}
+void \mbox{\hyperlink{classvideo__processor_a13643ae91a9e8a7faa6fc1f00af4b50f}{process\+\_\+video}} (const std\+::string \&filename, bool save=true) const noexcept
+\begin{DoxyCompactList}\small\item\em Process video at certain path frame by frame. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classvideo__processor_a21a4dadb9ea9defa22155789bf70a36d}{process\+\_\+model}} (const std\+::string \&filename) const noexcept
+\begin{DoxyCompactList}\small\item\em Process model of athlete\textquotesingle{}s movement given by path. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
@@ -22,19 +24,40 @@ Wrapper of whole program\textquotesingle{}s functionality.
 This class is intented to be used for default functionality. It processes the video and passes individual frames to other parts of the program. 
 
 \doxysubsection{Member Function Documentation}
-\mbox{\Hypertarget{classvideo__processor_a7a8846e85161c128ccf6312807a04483}\label{classvideo__processor_a7a8846e85161c128ccf6312807a04483}} 
-\index{video\_processor@{video\_processor}!process@{process}}
-\index{process@{process}!video\_processor@{video\_processor}}
-\doxysubsubsection{\texorpdfstring{process()}{process()}}
-{\footnotesize\ttfamily void video\+\_\+processor\+::process (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+\mbox{\Hypertarget{classvideo__processor_a21a4dadb9ea9defa22155789bf70a36d}\label{classvideo__processor_a21a4dadb9ea9defa22155789bf70a36d}} 
+\index{video\_processor@{video\_processor}!process\_model@{process\_model}}
+\index{process\_model@{process\_model}!video\_processor@{video\_processor}}
+\doxysubsubsection{\texorpdfstring{process\_model()}{process\_model()}}
+{\footnotesize\ttfamily void video\+\_\+processor\+::process\+\_\+model (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Process model of athlete\textquotesingle{}s movement given by path. 
+
+Load model, extract frames of video which was used to create model, draw athlete in frames, analyze athlete\textquotesingle{}s movements.
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & Path to model to be processed. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classvideo__processor_a13643ae91a9e8a7faa6fc1f00af4b50f}\label{classvideo__processor_a13643ae91a9e8a7faa6fc1f00af4b50f}} 
+\index{video\_processor@{video\_processor}!process\_video@{process\_video}}
+\index{process\_video@{process\_video}!video\_processor@{video\_processor}}
+\doxysubsubsection{\texorpdfstring{process\_video()}{process\_video()}}
+{\footnotesize\ttfamily void video\+\_\+processor\+::process\+\_\+video (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename,  }\item[{bool}]{save = {\ttfamily true} }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
 
 
 Process video at certain path frame by frame. 
 
+Extract frames, find athlete, detect athlete\textquotesingle{}s body and analyze movements. Write output.
+
 
 \begin{DoxyParams}{Parameters}
 {\em filename} & Path to video file to be processed. \\
+\hline
+{\em save} & Whether to save model of athlete\textquotesingle{}s movements. \\
 \hline
 \end{DoxyParams}
 

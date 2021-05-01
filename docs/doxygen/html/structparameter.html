@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>BP: parameter Struct Reference</title>
+<title>Pole Vault Analyzer: parameter Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">BP
+   <div id="projectname">Pole Vault Analyzer
    </div>
   </td>
  </tr>
@@ -82,28 +82,29 @@ Inheritance diagram for parameter:</div>
  <div class="center">
   <img src="structparameter.png" usemap="#parameter_map" alt=""/>
   <map id="parameter_map" name="parameter_map">
-<area href="structmultiple__values__parameter.html" title="Represents multiple-valued parameter, e.g. length of each step during runup." alt="multiple_values_parameter" shape="rect" coords="344,56,506,80"/>
-<area href="structsingle__value__parameter.html" title="Represents single-valued parameter, e.g. vault height." alt="single_value_parameter" shape="rect" coords="774,56,936,80"/>
+<area href="structmultiple__values__parameter.html" title="Represents multiple-valued parameter, e.g. length of each step during runup." alt="multiple_values_parameter" shape="rect" coords="387,56,549,80"/>
+<area href="structsingle__value__parameter.html" title="Represents single-valued parameter, e.g. vault height." alt="single_value_parameter" shape="rect" coords="946,56,1108,80"/>
 <area href="structframe__wise__parameter.html" title="Represents frame-wise parameter, e.g. position of left ankle throughout whole processed video." alt="frame_wise_parameter" shape="rect" coords="172,112,334,136"/>
-<area href="structsteps__duration.html" title="Duration of each step in seconds." alt="steps_duration" shape="rect" coords="516,112,678,136"/>
-<area href="structtakeoff__parameter.html" title="Single valued parameter, whose value is associated with takeoff." alt="takeoff_parameter" shape="rect" coords="774,112,936,136"/>
+<area href="structsteps__parameter.html" alt="steps_parameter" shape="rect" coords="602,112,764,136"/>
+<area href="structtakeoff__parameter.html" title="Single valued parameter, whose value is associated with takeoff." alt="takeoff_parameter" shape="rect" coords="946,112,1108,136"/>
 <area href="structbody__part__height.html" title="Parameter specifying y-coordinate of a body part in each frame." alt="body_part_height" shape="rect" coords="0,168,162,192"/>
 <area href="structhips__height.html" title="Parameter specifying y-coordinate of center of athlete&#39;s hips in each frame." alt="hips_height" shape="rect" coords="172,168,334,192"/>
 <area href="structvertical__tilt.html" title="Parameter specifying angle between vertical axis and ray given by body parts in each frame." alt="vertical_tilt" shape="rect" coords="344,168,506,192"/>
-<area href="structsteps__angle.html" alt="steps_angle" shape="rect" coords="516,168,678,192"/>
-<area href="structtakeoff__angle.html" title="Athlete&#39;s takeoff angle." alt="takeoff_angle" shape="rect" coords="688,168,850,192"/>
-<area href="structvelocity__loss.html" title="Velocity loss of center of given body parts during takeoff." alt="velocity_loss" shape="rect" coords="860,168,1022,192"/>
+<area href="structsteps__angle.html" title="Angle of ray from hips center to lower ankle and vertical axis when athlete&#39;s foot reaches ground." alt="steps_angle" shape="rect" coords="516,168,678,192"/>
+<area href="structsteps__duration.html" title="Duration of each step in seconds." alt="steps_duration" shape="rect" coords="688,168,850,192"/>
+<area href="structtakeoff__angle.html" title="Athlete&#39;s takeoff angle." alt="takeoff_angle" shape="rect" coords="860,168,1022,192"/>
+<area href="structvelocity__loss.html" title="Velocity loss of center of given body parts during takeoff." alt="velocity_loss" shape="rect" coords="1032,168,1194,192"/>
 <area href="structhorizontal__tilt.html" title="Parameter specifying angle between horizontal axis and ray given by body parts in each frame." alt="horizontal_tilt" shape="rect" coords="344,224,506,248"/>
-<area href="structhips__velocity__loss.html" title="Horizontal velocity loss of center of hips." alt="hips_velocity_loss" shape="rect" coords="774,224,936,248"/>
-<area href="structshoulders__velocity__loss.html" title="Horizontal velocity loss of center of shoulders." alt="shoulders_velocity_loss" shape="rect" coords="946,224,1108,248"/>
+<area href="structhips__velocity__loss.html" title="Horizontal velocity loss of center of hips." alt="hips_velocity_loss" shape="rect" coords="946,224,1108,248"/>
+<area href="structshoulders__velocity__loss.html" title="Horizontal velocity loss of center of shoulders." alt="shoulders_velocity_loss" shape="rect" coords="1118,224,1280,248"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a838bf155a77ebd8ae84ed7782b564a02"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structparameter.html#a838bf155a77ebd8ae84ed7782b564a02">compute</a> (const video_body &amp;points) noexcept=0</td></tr>
-<tr class="memdesc:a838bf155a77ebd8ae84ed7782b564a02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute parameter's values based on given body parts detected in whole video.  <a href="structparameter.html#a838bf155a77ebd8ae84ed7782b564a02">More...</a><br /></td></tr>
-<tr class="separator:a838bf155a77ebd8ae84ed7782b564a02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab120495c7c6fe96fa4e439c0cefb7a81"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structparameter.html#ab120495c7c6fe96fa4e439c0cefb7a81">compute</a> (const model_video_body &amp;points) noexcept=0</td></tr>
+<tr class="memdesc:ab120495c7c6fe96fa4e439c0cefb7a81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute parameter's values based on given body parts detected in whole video.  <a href="structparameter.html#ab120495c7c6fe96fa4e439c0cefb7a81">More...</a><br /></td></tr>
+<tr class="separator:ab120495c7c6fe96fa4e439c0cefb7a81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aac09ad3208582cc6c999fbab9628dd02"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structparameter.html#aac09ad3208582cc6c999fbab9628dd02">write_value</a> (std::ostream &amp;os, std::size_t frame_no, bool write_unit) const noexcept=0</td></tr>
 <tr class="memdesc:aac09ad3208582cc6c999fbab9628dd02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write value into given stream for given frame number.  <a href="structparameter.html#aac09ad3208582cc6c999fbab9628dd02">More...</a><br /></td></tr>
 <tr class="separator:aac09ad3208582cc6c999fbab9628dd02"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -194,8 +195,8 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a838bf155a77ebd8ae84ed7782b564a02"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a838bf155a77ebd8ae84ed7782b564a02">&#9670;&nbsp;</a></span>compute()</h2>
+<a id="ab120495c7c6fe96fa4e439c0cefb7a81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab120495c7c6fe96fa4e439c0cefb7a81">&#9670;&nbsp;</a></span>compute()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -206,7 +207,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">virtual void parameter::compute </td>
           <td>(</td>
-          <td class="paramtype">const video_body &amp;&#160;</td>
+          <td class="paramtype">const model_video_body &amp;&#160;</td>
           <td class="paramname"><em>points</em></td><td>)</td>
           <td></td>
         </tr>
@@ -227,7 +228,7 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>Saves corresponding values to member propoerty defined in derived structs. </dd></dl>
 
-<p>Implemented in <a class="el" href="structframe__wise__parameter.html#a4df1f5c8465836f988543970d3cca637">frame_wise_parameter</a>, <a class="el" href="structsteps__angle.html#a69fb7ed121919a71e7da3af63b1bc65d">steps_angle</a>, <a class="el" href="structsteps__duration.html#a6713637f86ad8bc0303b2f5dce06d4b9">steps_duration</a>, <a class="el" href="structtakeoff__angle.html#a06491bbe29f2a1061de6f506a6fe1a2e">takeoff_angle</a>, and <a class="el" href="structvelocity__loss.html#a39dcfc43be6ef9ea0b9876fc286ffd16">velocity_loss</a>.</p>
+<p>Implemented in <a class="el" href="structframe__wise__parameter.html#a3aa49a1c05ec50c3b409948528ce394a">frame_wise_parameter</a>, <a class="el" href="structsteps__angle.html#ae7e19ca603853836eb29030df8cf6576">steps_angle</a>, <a class="el" href="structsteps__duration.html#a1147e97c47facc7c4798c64d21b81343">steps_duration</a>, <a class="el" href="structtakeoff__angle.html#a7afeff9f47029f08aa117f2051141562">takeoff_angle</a>, and <a class="el" href="structvelocity__loss.html#a4af13a20f6b8ba5e09c8e998fe2cc549">velocity_loss</a>.</p>
 
 </div>
 </div>

@@ -27,7 +27,11 @@ public:
     /**
      * @brief Process video at certain path frame by frame.
      * 
+     * Extract frames, find athlete, detect athlete's body
+     * and analyze movements. Write output.
+     * 
      * @param filename Path to video file to be processed.
+     * @param save Whether to save model of athlete's movements.
      */
     void process_video(const std::string &filename, bool save = true) const noexcept {
         double fps;
@@ -55,6 +59,14 @@ public:
         // analyze(m, filename, fps, raw_frames, frames);
     }
 
+    /**
+     * @brief Process model of athlete's movement given by path.
+     * 
+     * Load model, extract frames of video which was used to create
+     * model, draw athlete in frames, analyze athlete's movements.
+     * 
+     * @param filename Path to model to be processed.
+     */
     void process_model(const std::string &filename) const noexcept {
         model m(filename);
         std::string video_filename;
@@ -62,16 +74,30 @@ public:
             double fps;
             std::vector<cv::Mat> raw_frames = extract_frames(video_filename, fps);
             std::vector<cv::Mat> frames = m.draw(raw_frames);
-            analyze(m, video_filename, fps, raw_frames, frames, false);
+            analyze(m, video_filename, fps, raw_frames, frames);
         }
     }
 
 private:
 
-    void analyze(const model &m, const std::string filename, double fps, const std::vector<cv::Mat> &raw_frames, const std::vector<cv::Mat> &frames, bool save = true) const {
+    /**
+     * @brief Analyze model of athlete's movement.
+     * 
+     * @param m Model of athlete's movement.
+     * @param filename Path to processed video.
+     * @param fps Frame rate of processed video.
+     * @param raw_frames Unmodified frames of video.
+     * @param frames Frames of video with detections drawings.
+     */
+    void analyze(   const model &m,
+                    const std::string filename,
+                    double fps,
+                    const std::vector<cv::Mat> &raw_frames,
+                    const std::vector<cv::Mat> &frames) const noexcept {
+
         // Analyze detected athlete.
         vault_analyzer analyzer;
-        analyzer.analyze(m, filename, fps, save);
+        analyzer.analyze(m, filename, fps);
 
         // Show result.
         viewer v;
@@ -83,6 +109,7 @@ private:
      * @brief Extract frames from video given by its path.
      * 
      * @param filename Path to video.
+     * @param[out] fps Frame rate of processed video.
      * 
      * @returns frames of video.
      */
@@ -122,7 +149,7 @@ private:
     /**
      * @brief Write frames as a video to given file.
      * 
-     * @param filename Path to file, where modified video should be saved.
+     * @param filename Path to file, where video should be saved.
      * @param frames Frames which will be used to create video.
      */
     void write(const std::string &filename, const std::vector<cv::Mat> &frames) const noexcept {

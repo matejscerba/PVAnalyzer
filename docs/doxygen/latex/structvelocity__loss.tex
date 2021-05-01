@@ -20,7 +20,7 @@ Inheritance diagram for velocity\+\_\+loss\+:\begin{figure}[H]
 \item 
 \mbox{\hyperlink{structvelocity__loss_aae57c263f092da64eee5c65ae71ac4c9}{velocity\+\_\+loss}} (std\+::size\+\_\+t \mbox{\hyperlink{structtakeoff__parameter_a8308aeda8ea2365494de29cd0063a25a}{takeoff}}, const std\+::string \mbox{\hyperlink{structparameter_a5c825fcc566d22739856395927f7eee2}{name}}, body\+\_\+part a, body\+\_\+part b) noexcept
 \begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
-virtual void \mbox{\hyperlink{structvelocity__loss_a39dcfc43be6ef9ea0b9876fc286ffd16}{compute}} (const video\+\_\+body \&points) noexcept
+virtual void \mbox{\hyperlink{structvelocity__loss_a4af13a20f6b8ba5e09c8e998fe2cc549}{compute}} (const model\+\_\+video\+\_\+body \&points) noexcept
 \begin{DoxyCompactList}\small\item\em Compute horizontal velocity loss during takeoff of given body parts. \end{DoxyCompactList}\item 
 virtual void \mbox{\hyperlink{structvelocity__loss_aa6ebdd8fd4b74371f8a1439d86ee9270}{write\+\_\+value}} (std\+::ostream \&os, std\+::size\+\_\+t frame\+\_\+no, bool write\+\_\+unit) const noexcept
 \begin{DoxyCompactList}\small\item\em Write velocity loss if {\ttfamily frame\+\_\+no} is the number of frame where athlete takes off. \end{DoxyCompactList}\end{DoxyCompactItemize}
@@ -53,11 +53,11 @@ Default constructor.
 
 
 \doxysubsection{Member Function Documentation}
-\mbox{\Hypertarget{structvelocity__loss_a39dcfc43be6ef9ea0b9876fc286ffd16}\label{structvelocity__loss_a39dcfc43be6ef9ea0b9876fc286ffd16}} 
+\mbox{\Hypertarget{structvelocity__loss_a4af13a20f6b8ba5e09c8e998fe2cc549}\label{structvelocity__loss_a4af13a20f6b8ba5e09c8e998fe2cc549}} 
 \index{velocity\_loss@{velocity\_loss}!compute@{compute}}
 \index{compute@{compute}!velocity\_loss@{velocity\_loss}}
 \doxysubsubsection{\texorpdfstring{compute()}{compute()}}
-{\footnotesize\ttfamily virtual void velocity\+\_\+loss\+::compute (\begin{DoxyParamCaption}\item[{const video\+\_\+body \&}]{points }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+{\footnotesize\ttfamily virtual void velocity\+\_\+loss\+::compute (\begin{DoxyParamCaption}\item[{const model\+\_\+video\+\_\+body \&}]{points }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
 
 
 
@@ -72,7 +72,7 @@ Velocity is computed for last {\ttfamily takeoff\+\_\+parameter\+\_\+frames} bef
 \end{DoxyParams}
 
 
-Implements \mbox{\hyperlink{structparameter_a838bf155a77ebd8ae84ed7782b564a02}{parameter}}.
+Implements \mbox{\hyperlink{structparameter_ab120495c7c6fe96fa4e439c0cefb7a81}{parameter}}.
 
 \mbox{\Hypertarget{structvelocity__loss_aa6ebdd8fd4b74371f8a1439d86ee9270}\label{structvelocity__loss_aa6ebdd8fd4b74371f8a1439d86ee9270}} 
 \index{velocity\_loss@{velocity\_loss}!write\_value@{write\_value}}

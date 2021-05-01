@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>BP: vertical_tilt Struct Reference</title>
+<title>Pole Vault Analyzer: vertical_tilt Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">BP
+   <div id="projectname">Pole Vault Analyzer
    </div>
   </td>
  </tr>
@@ -93,12 +93,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a7075a6ff1aa086a7f9652fc28f8b3e1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="structvertical__tilt.html#a7075a6ff1aa086a7f9652fc28f8b3e1d">More...</a><br /></td></tr>
 <tr class="separator:a7075a6ff1aa086a7f9652fc28f8b3e1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structframe__wise__parameter"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structframe__wise__parameter')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structframe__wise__parameter.html">frame_wise_parameter</a></td></tr>
+<tr class="memitem:a3aa49a1c05ec50c3b409948528ce394a inherit pub_methods_structframe__wise__parameter"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structframe__wise__parameter.html#a3aa49a1c05ec50c3b409948528ce394a">compute</a> (const model_video_body &amp;points) noexcept</td></tr>
+<tr class="memdesc:a3aa49a1c05ec50c3b409948528ce394a inherit pub_methods_structframe__wise__parameter"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute this parameter's value for each frame and save them into <code>values</code>.  <a href="structframe__wise__parameter.html#a3aa49a1c05ec50c3b409948528ce394a">More...</a><br /></td></tr>
+<tr class="separator:a3aa49a1c05ec50c3b409948528ce394a inherit pub_methods_structframe__wise__parameter"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a90c0c9975eb325c986713b12724ec3 inherit pub_methods_structframe__wise__parameter"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structframe__wise__parameter.html#a5a90c0c9975eb325c986713b12724ec3">write_value</a> (std::ostream &amp;os, std::size_t frame_no, bool write_unit) const noexcept</td></tr>
 <tr class="memdesc:a5a90c0c9975eb325c986713b12724ec3 inherit pub_methods_structframe__wise__parameter"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write parameter's value for given frame number.  <a href="structframe__wise__parameter.html#a5a90c0c9975eb325c986713b12724ec3">More...</a><br /></td></tr>
 <tr class="separator:a5a90c0c9975eb325c986713b12724ec3 inherit pub_methods_structframe__wise__parameter"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4df1f5c8465836f988543970d3cca637 inherit pub_methods_structframe__wise__parameter"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structframe__wise__parameter.html#a4df1f5c8465836f988543970d3cca637">compute</a> (const video_body &amp;points) noexcept</td></tr>
-<tr class="memdesc:a4df1f5c8465836f988543970d3cca637 inherit pub_methods_structframe__wise__parameter"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute this parameter's value for each frame and save them into <code>values</code>.  <a href="structframe__wise__parameter.html#a4df1f5c8465836f988543970d3cca637">More...</a><br /></td></tr>
-<tr class="separator:a4df1f5c8465836f988543970d3cca637 inherit pub_methods_structframe__wise__parameter"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structmultiple__values__parameter"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structmultiple__values__parameter')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="structmultiple__values__parameter.html">multiple_values_parameter</a></td></tr>
 <tr class="memitem:add193ee8e7d35c53863acf9a2d3928b3 inherit pub_methods_structmultiple__values__parameter"><td class="memItemLeft" align="right" valign="top">virtual std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmultiple__values__parameter.html#add193ee8e7d35c53863acf9a2d3928b3">size</a> () const noexcept</td></tr>
 <tr class="separator:add193ee8e7d35c53863acf9a2d3928b3 inherit pub_methods_structmultiple__values__parameter"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -107,9 +107,9 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a8e4d43d81322c4fd5df5dc742c4ec244"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvertical__tilt.html#a8e4d43d81322c4fd5df5dc742c4ec244">extract_value</a> (const frame_body &amp;body) const noexcept</td></tr>
-<tr class="memdesc:a8e4d43d81322c4fd5df5dc742c4ec244"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute angle between ray and vertical axis.  <a href="structvertical__tilt.html#a8e4d43d81322c4fd5df5dc742c4ec244">More...</a><br /></td></tr>
-<tr class="separator:a8e4d43d81322c4fd5df5dc742c4ec244"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc3aec1491bc378ca10590cc8980dc17"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structvertical__tilt.html#afc3aec1491bc378ca10590cc8980dc17">extract_value</a> (const model_body &amp;body) const noexcept</td></tr>
+<tr class="memdesc:afc3aec1491bc378ca10590cc8980dc17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute angle between ray and vertical axis.  <a href="structvertical__tilt.html#afc3aec1491bc378ca10590cc8980dc17">More...</a><br /></td></tr>
+<tr class="separator:afc3aec1491bc378ca10590cc8980dc17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_structframe__wise__parameter"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_structframe__wise__parameter')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="structframe__wise__parameter.html">frame_wise_parameter</a></td></tr>
 <tr class="memitem:ac8c8c0c1904363d313753a50b143ef7f inherit pro_methods_structframe__wise__parameter"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structframe__wise__parameter.html#ac8c8c0c1904363d313753a50b143ef7f">frame_wise_parameter</a> (const std::string <a class="el" href="structparameter.html#a5c825fcc566d22739856395927f7eee2">name</a>, const vault_part <a class="el" href="structparameter.html#a2faab1d32b7c1f9138b746966e56bfd4">part</a>, const std::string &amp;&amp;<a class="el" href="structparameter.html#a74ed8a5aa34fd12979f6447519e41ca8">unit</a>) noexcept</td></tr>
 <tr class="memdesc:ac8c8c0c1904363d313753a50b143ef7f inherit pro_methods_structframe__wise__parameter"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="structframe__wise__parameter.html#ac8c8c0c1904363d313753a50b143ef7f">More...</a><br /></td></tr>
@@ -220,8 +220,8 @@ std::vector&lt; std::optional&lt; double &gt; &gt;&#160;</td><td class="memItemR
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a8e4d43d81322c4fd5df5dc742c4ec244"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8e4d43d81322c4fd5df5dc742c4ec244">&#9670;&nbsp;</a></span>extract_value()</h2>
+<a id="afc3aec1491bc378ca10590cc8980dc17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc3aec1491bc378ca10590cc8980dc17">&#9670;&nbsp;</a></span>extract_value()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -232,7 +232,7 @@ std::vector&lt; std::optional&lt; double &gt; &gt;&#160;</td><td class="memItemR
         <tr>
           <td class="memname">virtual std::optional&lt;double&gt; vertical_tilt::extract_value </td>
           <td>(</td>
-          <td class="paramtype">const frame_body &amp;&#160;</td>
+          <td class="paramtype">const model_body &amp;&#160;</td>
           <td class="paramname"><em>body</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -247,7 +247,7 @@ std::vector&lt; std::optional&lt; double &gt; &gt;&#160;</td><td class="memItemR
 <p>Compute angle between ray and vertical axis. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">body</td><td>Body from which to extract value. </td></tr>
+    <tr><td class="paramname">body</td><td>Body from which to extract value.</td></tr>
   </table>
   </dd>
 </dl>
@@ -256,7 +256,7 @@ std::vector&lt; std::optional&lt; double &gt; &gt;&#160;</td><td class="memItemR
 <dd>
 Angle == 0 if ray faces directly upwards, degrees range is [-180,180]. </dd></dl>
 
-<p>Implements <a class="el" href="structframe__wise__parameter.html#a8f5da1fa52bbcfa1f8d47ec7079fe8c3">frame_wise_parameter</a>.</p>
+<p>Implements <a class="el" href="structframe__wise__parameter.html#a1d87a68900a1b71ea02bb45bcbf4f7ca">frame_wise_parameter</a>.</p>
 
 </div>
 </div>

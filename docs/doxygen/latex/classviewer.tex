@@ -12,52 +12,39 @@ Shows user frames of video and parameters\textquotesingle{} values for each fram
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\hyperlink{classviewer_a863b9bc690f68c4f839fc6b9f9aa3a39}{viewer}} (const std\+::vector$<$ cv\+::\+Mat $>$ \&frames, const std\+::vector$<$ cv\+::\+Mat $>$ \&raw\+\_\+frames, \mbox{\hyperlink{classvault__analyzer}{vault\+\_\+analyzer}} \&analyzer)
+\mbox{\Hypertarget{classviewer_ae2487d90ef15c5d969c5f597b8359b2c}\label{classviewer_ae2487d90ef15c5d969c5f597b8359b2c}} 
+\mbox{\hyperlink{classviewer_ae2487d90ef15c5d969c5f597b8359b2c}{viewer}} () noexcept
 \begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
-void \mbox{\hyperlink{classviewer_a00b5d3c49a89dd2c72208878a35c4b94}{show}} ()
+void \mbox{\hyperlink{classviewer_ad18dd453a0a8570e6d65ab6c3b399d42}{show}} (const std\+::vector$<$ cv\+::\+Mat $>$ \&frames, const std\+::vector$<$ cv\+::\+Mat $>$ \&raw\+\_\+frames, const \mbox{\hyperlink{classvault__analyzer}{vault\+\_\+analyzer}} \&analyzer) noexcept
 \begin{DoxyCompactList}\small\item\em Show current frame of video. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \doxysubsection{Detailed Description}
 Shows user frames of video and parameters\textquotesingle{} values for each frame. 
 
-\doxysubsection{Constructor \& Destructor Documentation}
-\mbox{\Hypertarget{classviewer_a863b9bc690f68c4f839fc6b9f9aa3a39}\label{classviewer_a863b9bc690f68c4f839fc6b9f9aa3a39}} 
-\index{viewer@{viewer}!viewer@{viewer}}
-\index{viewer@{viewer}!viewer@{viewer}}
-\doxysubsubsection{\texorpdfstring{viewer()}{viewer()}}
-{\footnotesize\ttfamily viewer\+::viewer (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ cv\+::\+Mat $>$ \&}]{frames,  }\item[{const std\+::vector$<$ cv\+::\+Mat $>$ \&}]{raw\+\_\+frames,  }\item[{\mbox{\hyperlink{classvault__analyzer}{vault\+\_\+analyzer}} \&}]{analyzer }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
-
-
-
-Default constructor. 
-
-
-\begin{DoxyParams}{Parameters}
-{\em frames} & Frames with detections drawings. \\
-\hline
-{\em raw\+\_\+frames} & Unmodified frames of processed video. \\
-\hline
-{\em analyzer} & Analyzer after analyzing athlete\textquotesingle{}s movement.\\
-\hline
-\end{DoxyParams}
-\begin{DoxySeeAlso}{See also}
-\mbox{\hyperlink{classvault__analyzer}{vault\+\_\+analyzer}} 
-\end{DoxySeeAlso}
-
-
 \doxysubsection{Member Function Documentation}
-\mbox{\Hypertarget{classviewer_a00b5d3c49a89dd2c72208878a35c4b94}\label{classviewer_a00b5d3c49a89dd2c72208878a35c4b94}} 
+\mbox{\Hypertarget{classviewer_ad18dd453a0a8570e6d65ab6c3b399d42}\label{classviewer_ad18dd453a0a8570e6d65ab6c3b399d42}} 
 \index{viewer@{viewer}!show@{show}}
 \index{show@{show}!viewer@{viewer}}
 \doxysubsubsection{\texorpdfstring{show()}{show()}}
-{\footnotesize\ttfamily void viewer\+::show (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+{\footnotesize\ttfamily void viewer\+::show (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ cv\+::\+Mat $>$ \&}]{frames,  }\item[{const std\+::vector$<$ cv\+::\+Mat $>$ \&}]{raw\+\_\+frames,  }\item[{const \mbox{\hyperlink{classvault__analyzer}{vault\+\_\+analyzer}} \&}]{analyzer }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
 
 
 
 Show current frame of video. 
 
-Handle user inputs\+: left arrow shows previous frame, right arrow shows the next one, space bar toggles whether to show detections drawings, escape key closes window and ends. 
+Handle user inputs\+: left arrow shows previous frame, right arrow shows the next one, space bar toggles whether to show detections drawings, escape key closes window and ends.
+
+
+\begin{DoxyParams}{Parameters}
+{\em frames} & Frames with detections\textquotesingle{} drawings. \\
+\hline
+{\em raw\+\_\+frames} & Unmodified frames of processed video. \\
+\hline
+{\em analyzer} & Analyzer after analyzing athlete\textquotesingle{}s movement. \\
+\hline
+\end{DoxyParams}
+
 
 The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 

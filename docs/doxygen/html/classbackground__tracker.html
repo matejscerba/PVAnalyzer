@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>BP: background_tracker Class Reference</title>
+<title>Pole Vault Analyzer: background_tracker Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">BP
+   <div id="projectname">Pole Vault Analyzer
    </div>
   </td>
  </tr>
@@ -76,31 +76,31 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a82495f32e178b0febf96661267b8ee58"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackground__tracker.html#a82495f32e178b0febf96661267b8ee58">background_tracker</a> (const cv::Mat &amp;frame, const cv::Rect &amp;<a class="el" href="classperson.html">person</a>, direction dir) noexcept</td></tr>
-<tr class="memdesc:a82495f32e178b0febf96661267b8ee58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default contructor.  <a href="classbackground__tracker.html#a82495f32e178b0febf96661267b8ee58">More...</a><br /></td></tr>
-<tr class="separator:a82495f32e178b0febf96661267b8ee58"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a368441a2d2667c9c8e8cec696eb9dcbc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackground__tracker.html#a368441a2d2667c9c8e8cec696eb9dcbc">update</a> (const cv::Mat &amp;frame, const cv::Rect &amp;<a class="el" href="classperson.html">person</a>) noexcept</td></tr>
-<tr class="memdesc:a368441a2d2667c9c8e8cec696eb9dcbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Track background in given frame and update properties.  <a href="classbackground__tracker.html#a368441a2d2667c9c8e8cec696eb9dcbc">More...</a><br /></td></tr>
-<tr class="separator:a368441a2d2667c9c8e8cec696eb9dcbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3186f58cf889e87daaccec7a59f1d67"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackground__tracker.html#aa3186f58cf889e87daaccec7a59f1d67">background_tracker</a> (const cv::Mat &amp;frame, std::size_t frame_no, const cv::Rect &amp;bbox, direction dir) noexcept</td></tr>
+<tr class="memdesc:aa3186f58cf889e87daaccec7a59f1d67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default contructor.  <a href="classbackground__tracker.html#aa3186f58cf889e87daaccec7a59f1d67">More...</a><br /></td></tr>
+<tr class="separator:aa3186f58cf889e87daaccec7a59f1d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02f4b4949cd54853f6793ae6bd652d9d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackground__tracker.html#a02f4b4949cd54853f6793ae6bd652d9d">update</a> (const cv::Mat &amp;frame, const cv::Rect &amp;bbox) noexcept</td></tr>
+<tr class="memdesc:a02f4b4949cd54853f6793ae6bd652d9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Track background in given frame and update properties.  <a href="classbackground__tracker.html#a02f4b4949cd54853f6793ae6bd652d9d">More...</a><br /></td></tr>
+<tr class="separator:a02f4b4949cd54853f6793ae6bd652d9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfe84f3edd6e911ad28c1f1195c9be7b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackground__tracker.html#adfe84f3edd6e911ad28c1f1195c9be7b">is_valid_direction</a> () const noexcept</td></tr>
 <tr class="memdesc:adfe84f3edd6e911ad28c1f1195c9be7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if assumed direction is correct.  <a href="classbackground__tracker.html#adfe84f3edd6e911ad28c1f1195c9be7b">More...</a><br /></td></tr>
 <tr class="separator:adfe84f3edd6e911ad28c1f1195c9be7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1a8c3abb334bf6b2e9e012879c73e33"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackground__tracker.html#ae1a8c3abb334bf6b2e9e012879c73e33">is_vault_beginning</a> (double frame_height, double person_height) const noexcept</td></tr>
-<tr class="memdesc:ae1a8c3abb334bf6b2e9e012879c73e33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if vault is beginning.  <a href="classbackground__tracker.html#ae1a8c3abb334bf6b2e9e012879c73e33">More...</a><br /></td></tr>
-<tr class="separator:ae1a8c3abb334bf6b2e9e012879c73e33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c0080360405507c4ff84111282de115"><td class="memItemLeft" align="right" valign="top">std::optional&lt; cv::Point2d &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackground__tracker.html#a1c0080360405507c4ff84111282de115">frame_offset</a> (std::size_t person_frame_no) const noexcept</td></tr>
-<tr class="memdesc:a1c0080360405507c4ff84111282de115"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get offset of frame specified by its number.  <a href="classbackground__tracker.html#a1c0080360405507c4ff84111282de115">More...</a><br /></td></tr>
-<tr class="separator:a1c0080360405507c4ff84111282de115"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88e830b8004149da79e77e54ccc0f83c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackground__tracker.html#a88e830b8004149da79e77e54ccc0f83c">draw</a> (cv::Mat &amp;frame, std::size_t person_frame_no) const noexcept</td></tr>
-<tr class="memdesc:a88e830b8004149da79e77e54ccc0f83c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw bounding box of currently tracked background part.  <a href="classbackground__tracker.html#a88e830b8004149da79e77e54ccc0f83c">More...</a><br /></td></tr>
-<tr class="separator:a88e830b8004149da79e77e54ccc0f83c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29341c56ca2d785c0900646dd47f5c23"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackground__tracker.html#a29341c56ca2d785c0900646dd47f5c23">is_vault_beginning</a> (double person_height, double fps) const noexcept</td></tr>
+<tr class="memdesc:a29341c56ca2d785c0900646dd47f5c23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if vault is beginning.  <a href="classbackground__tracker.html#a29341c56ca2d785c0900646dd47f5c23">More...</a><br /></td></tr>
+<tr class="separator:a29341c56ca2d785c0900646dd47f5c23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7bbe170f46e14458286db7bd1ab0143"><td class="memItemLeft" align="right" valign="top">std::optional&lt; cv::Point2d &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackground__tracker.html#ab7bbe170f46e14458286db7bd1ab0143">frame_offset</a> (std::size_t frame_no) const noexcept</td></tr>
+<tr class="memdesc:ab7bbe170f46e14458286db7bd1ab0143"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get offset of frame specified by its number.  <a href="classbackground__tracker.html#ab7bbe170f46e14458286db7bd1ab0143">More...</a><br /></td></tr>
+<tr class="separator:ab7bbe170f46e14458286db7bd1ab0143"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d6af6267c7271eb12bbfa42bd72d31f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classbackground__tracker.html#a3d6af6267c7271eb12bbfa42bd72d31f">draw</a> (cv::Mat &amp;frame, std::size_t frame_no) const noexcept</td></tr>
+<tr class="memdesc:a3d6af6267c7271eb12bbfa42bd72d31f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw bounding box of currently tracked background part.  <a href="classbackground__tracker.html#a3d6af6267c7271eb12bbfa42bd72d31f">More...</a><br /></td></tr>
+<tr class="separator:a3d6af6267c7271eb12bbfa42bd72d31f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handles background tracking used to determine person's movements. </p>
 <p>Tracks part of background on one side of person and determines if person is moving away from tracked part of background. Determines whether a vault has begun. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a82495f32e178b0febf96661267b8ee58"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a82495f32e178b0febf96661267b8ee58">&#9670;&nbsp;</a></span>background_tracker()</h2>
+<a id="aa3186f58cf889e87daaccec7a59f1d67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3186f58cf889e87daaccec7a59f1d67">&#9670;&nbsp;</a></span>background_tracker()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -117,8 +117,14 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>frame_no</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const cv::Rect &amp;&#160;</td>
-          <td class="paramname"><em>person</em>, </td>
+          <td class="paramname"><em>bbox</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -142,8 +148,9 @@ Public Member Functions</h2></td></tr>
 <p>Default contructor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">frame</td><td>First frame in which person was detected. </td></tr>
-    <tr><td class="paramname">person</td><td>Bounding box of person in <code>frame</code>. </td></tr>
+    <tr><td class="paramname">frame</td><td>Frame in which person was detected. </td></tr>
+    <tr><td class="paramname">frame_no</td><td>Number of frame in which person was detected. </td></tr>
+    <tr><td class="paramname">bbox</td><td>Bounding box of person in <code>frame</code>. </td></tr>
     <tr><td class="paramname">dir</td><td>Assumed direction of person's movement. </td></tr>
   </table>
   </dd>
@@ -152,8 +159,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a88e830b8004149da79e77e54ccc0f83c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a88e830b8004149da79e77e54ccc0f83c">&#9670;&nbsp;</a></span>draw()</h2>
+<a id="a3d6af6267c7271eb12bbfa42bd72d31f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d6af6267c7271eb12bbfa42bd72d31f">&#9670;&nbsp;</a></span>draw()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -171,7 +178,7 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::size_t&#160;</td>
-          <td class="paramname"><em>person_frame_no</em>&#160;</td>
+          <td class="paramname"><em>frame_no</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -190,15 +197,15 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">frame</td><td>Frame in which bounding box should be drawn. </td></tr>
-    <tr><td class="paramname">person_frame_no</td><td>Number of given frame. </td></tr>
+    <tr><td class="paramname">frame_no</td><td>Number of given frame. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="a1c0080360405507c4ff84111282de115"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c0080360405507c4ff84111282de115">&#9670;&nbsp;</a></span>frame_offset()</h2>
+<a id="ab7bbe170f46e14458286db7bd1ab0143"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7bbe170f46e14458286db7bd1ab0143">&#9670;&nbsp;</a></span>frame_offset()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -210,7 +217,7 @@ Public Member Functions</h2></td></tr>
           <td class="memname">std::optional&lt;cv::Point2d&gt; background_tracker::frame_offset </td>
           <td>(</td>
           <td class="paramtype">std::size_t&#160;</td>
-          <td class="paramname"><em>person_frame_no</em></td><td>)</td>
+          <td class="paramname"><em>frame_no</em></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -224,13 +231,12 @@ Public Member Functions</h2></td></tr>
 <p>Get offset of frame specified by its number. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">person_frame_no</td><td>Number of frame which offset should be computed. </td></tr>
+    <tr><td class="paramname">frame_no</td><td>Number of frame which offset should be computed. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>offset of specified frame, invalid value if offset could not be computed.</dd></dl>
-<dl class="section note"><dt>Note</dt><dd>Frame number 0 corresponds to first frame, in which person was detected.</dd></dl>
-<dl class="section see"><dt>See also</dt><dd><a class="el" href="classmovement__analyzer.html#ad9af61a3d887c286a3e3b1de99265c10" title="Get offset of frame specified by its number.">movement_analyzer::frame_offset</a>. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classmovement__analyzer.html#aa888d04b8794af369f176e2c5f35e0d0" title="Get offset of frame specified by its number.">movement_analyzer::frame_offset</a>. </dd></dl>
 
 </div>
 </div>
@@ -262,8 +268,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ae1a8c3abb334bf6b2e9e012879c73e33"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae1a8c3abb334bf6b2e9e012879c73e33">&#9670;&nbsp;</a></span>is_vault_beginning()</h2>
+<a id="a29341c56ca2d785c0900646dd47f5c23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29341c56ca2d785c0900646dd47f5c23">&#9670;&nbsp;</a></span>is_vault_beginning()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -275,13 +281,13 @@ Public Member Functions</h2></td></tr>
           <td class="memname">bool background_tracker::is_vault_beginning </td>
           <td>(</td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>frame_height</em>, </td>
+          <td class="paramname"><em>person_height</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>person_height</em>&#160;</td>
+          <td class="paramname"><em>fps</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -297,10 +303,11 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Check if vault is beginning. </p>
+<p>Compute difference of vertical movement changes of last <code>vault_check_frames</code> and <code>vault_check_frames</code> before that and decide whether tracked person takes off.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">frame_height</td><td>Height of frame. </td></tr>
     <tr><td class="paramname">person_height</td><td>Height of person in frame. </td></tr>
+    <tr><td class="paramname">fps</td><td>Frame rate of processed video. </td></tr>
   </table>
   </dd>
 </dl>
@@ -308,8 +315,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a368441a2d2667c9c8e8cec696eb9dcbc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a368441a2d2667c9c8e8cec696eb9dcbc">&#9670;&nbsp;</a></span>update()</h2>
+<a id="a02f4b4949cd54853f6793ae6bd652d9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02f4b4949cd54853f6793ae6bd652d9d">&#9670;&nbsp;</a></span>update()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -327,7 +334,7 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const cv::Rect &amp;&#160;</td>
-          <td class="paramname"><em>person</em>&#160;</td>
+          <td class="paramname"><em>bbox</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -346,7 +353,7 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">frame</td><td>Frame in which to track background. </td></tr>
-    <tr><td class="paramname">person</td><td>Person's bounding box in <code>frame</code>. </td></tr>
+    <tr><td class="paramname">bbox</td><td>Person's bounding box in <code>frame</code>. </td></tr>
   </table>
   </dd>
 </dl>
