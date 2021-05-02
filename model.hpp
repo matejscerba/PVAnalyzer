@@ -2,12 +2,32 @@
 
 #include <opencv2/opencv.hpp>
 
+#include <algorithm>
+#include <cstddef>
+#include <fstream>
+#include <iostream>
+#include <optional>
+#include <ostream>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "forward.hpp"
 #include "person.hpp"
 
+/**
+ * @brief Struct representing detected athlete in during whole vault.
+ */
 struct model {
 public:
 
+    /**
+     * @brief Constructor used after detection in video.
+     * 
+     * @param athlete Athlete whose model should be created.
+     * @param video_filename Path to video from which this model is created.
+     */
     model(const person &athlete, const std::string &video_filename) noexcept {
         this->model_filename = "";
         this->video_filename = video_filename;
@@ -16,11 +36,21 @@ public:
         compute_real_points();
     }
 
+    /**
+     * @brief Constructor used for loading model from file.
+     * 
+     * @param filename Path to file containing saved model.
+     */
     model(const std::string &filename) noexcept {
         this->model_filename = filename;
         this->video_filename = "";
     }
 
+    /**
+     * @brief Save this model to file.
+     * 
+     * Create file and save this model to it.
+     */
     void save() const noexcept {
         std::string output_filename = "models/" + create_output_filename();
         std::string ext = ".txt";
@@ -32,23 +62,38 @@ public:
         }
 
         output << video_filename << std::endl;
-        for (std::size_t frame_no = 0; frame_no < frame_points.size(); ++frame_no) {
+        for (std::size_t frame_no = 0; frame_no < points_frame_c.size(); ++frame_no) {
             output << frame_no << std::endl << frame_offsets[frame_no] << std::endl;
-            for (const auto &p : frame_points[frame_no]) {
+            for (const auto &p : points_frame_c[frame_no]) {
                 output << p << std::endl;
             }
         }
         output.close();
     }
 
+    /**
+     * @brief Get points in frame coordinates.
+     */
     model_video_points get_frame_points() const noexcept {
-        return frame_points;
+        return points_frame_c;
     }
 
+    /**
+     * @brief Get points in real-life coordinates.
+     */
     model_video_points get_real_points() const noexcept {
-        return real_points;
+        return points_real_c;
     }
 
+    /**
+     * @brief Get direction of athlete's runup.
+     * 
+     * Compare x coordinate of first and last offset of frame.
+     * 
+     * @returns direction of camera's movement direction.
+     * 
+     * @note Camera's movement direction corresponds to athlete's movement direction.
+     */
     direction get_direction() const noexcept {
         auto first = std::find_if(frame_offsets.begin(), frame_offsets.end(), [](const model_point &p) {
             return p;
@@ -66,9 +111,15 @@ public:
         return direction::unknown;
     }
 
+    /**
+     * @brief Load model from file.
+     * 
+     * @param[out] video_filename Path to video from which model was created.
+     * @returns true if model was loaded correctly.
+     */
     bool load(std::string &video_filename) noexcept {
-        frame_points.clear();
-        real_points.clear();
+        points_frame_c.clear();
+        points_real_c.clear();
         frame_offsets.clear();
 
         std::ifstream input;
@@ -87,8 +138,8 @@ public:
             if (line.find(",") == std::string::npos) {
                 // Frame number is expected.
             } else {
-                frame_offsets.push_back(parse_point(std::move(line)));
-                read_body(input);
+                frame_offsets.push_back(read_point(std::move(line)));
+                points_frame_c.push_back(read_body(input));
             }
         }
         input.close();
@@ -96,12 +147,18 @@ public:
         return true;
     }
 
+    /**
+     * @brief Draw model's points to given frames.
+     * 
+     * @param frames Frames in which model should be drawn.
+     * @returns frames with drawed model.
+     */
     std::vector<cv::Mat> draw(const std::vector<cv::Mat> &frames) const noexcept {
         std::vector<cv::Mat> res;
         cv::Mat frame;
         for (std::size_t frame_no = 0; frame_no < frames.size(); ++frame_no) {
             frame = frames[frame_no].clone();
-            draw_body(frame, model_to_frame(frame_points[frame_no]));
+            draw_body(frame, model_to_frame(points_frame_c[frame_no]));
             res.push_back(frame);
         }
         return res;
@@ -109,27 +166,54 @@ public:
 
 private:
 
+    /**
+     * @brief Path to file containing containing model.
+     */
     std::string model_filename;
+
+    /**
+     * @brief Path to file containing video from which model was created.
+     */
     std::string video_filename;
 
-    model_video_points frame_points;
-    model_video_points real_points;
+    /**
+     * @brief Athlete's body parts in frame coordinates.
+     */
+    model_video_points points_frame_c;
 
-    model_offsets frame_offsets;
+    /**
+     * @brief Athlete's body parts in real-life coordinates.
+     */
+    model_video_points points_real_c;
 
+    /**
+     * @brief Offsets of top-left corner of each frame in real-life coordinates.
+     */
+    model_points frame_offsets;
+
+    /**
+     * @brief Convert detected points to model's representation.
+     * 
+     * @param detected_pts Detected athlete's body parts.
+     */
     void compute_frame_points(const frame_video_points &detected_pts) noexcept {
-        frame_points.clear();
+        points_frame_c.clear();
         for (const auto &pts : detected_pts) {
             model_points b;
             for (const auto &p : pts) {
                 if (p) b.push_back(cv::Point3d(p->x, 0, p->y));
                 else b.push_back(std::nullopt);
             }
-            frame_points.push_back(std::move(b));
+            points_frame_c.push_back(std::move(b));
         }
     }
 
-    void compute_frame_offsets(const std::vector<std::optional<cv::Point2d>> &offsets) noexcept {
+    /**
+     * @brief Convert offsets of frames to model's representation.
+     * 
+     * @param offsets Offsets of each frame of video.
+     */
+    void compute_frame_offsets(const frame_points &offsets) noexcept {
         frame_offsets.clear();
         for (const auto &o : offsets) {
             if (o) {
@@ -142,11 +226,16 @@ private:
         }
     }
 
+    /**
+     * @brief Compute athlete's body parts positions in real-life coordinates.
+     * 
+     * Use frame offsets and athlete's body parts positions in frame coordinates.
+     */
     void compute_real_points() noexcept {
-        real_points.clear();
-        for (std::size_t i = 0; i < frame_points.size(); ++i) {
+        points_real_c.clear();
+        for (std::size_t i = 0; i < points_frame_c.size(); ++i) {
             model_points b;
-            for (const auto &p : frame_points[i]) {
+            for (const auto &p : points_frame_c[i]) {
                 if (p) {
                     b.push_back(cv::Point3d(
                         frame_offsets[i]->x + p->x,
@@ -157,11 +246,19 @@ private:
                     b.push_back(std::nullopt);
                 }
             }
-            real_points.push_back(std::move(b));
+            points_real_c.push_back(std::move(b));
         }
     }
 
-    model_point parse_point(std::string &&s) const noexcept {
+    /**
+     * @brief Read point from string.
+     * 
+     * @param s String containing point.
+     * @returns point read from given string.
+     * 
+     * @note Point (x,y,z) is stored as "x,y,z".
+     */
+    model_point read_point(std::string &&s) const noexcept {
         if (s != "" && s[0] != ',') {
             std::replace(s.begin(), s.end(), ',', ' ');
             std::stringstream sstr(s);
@@ -178,14 +275,20 @@ private:
         }
     }
 
-    void read_body(std::ifstream &input) noexcept {
+    /**
+     * @brief Read points representing athlete's body in one frame from input stream.
+     * 
+     * @param input Input stream holding athlete's body parts positions.
+     * @returns athlete's body parts positions in one frame.
+     */
+    model_points read_body(std::ifstream &input) const noexcept {
         std::string line;
         model_points b;
         for (std::size_t i = 0; i < NPOINTS; ++i) {
             std::getline(input, line);
-            b.push_back(parse_point(std::move(line)));
+            b.push_back(read_point(std::move(line)));
         }
-        frame_points.push_back(b);
+        return b;
     }
 
 };

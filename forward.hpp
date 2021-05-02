@@ -26,7 +26,7 @@ typedef std::optional<cv::Point2d> frame_point;
 /**
  * @brief Positions of all athlete's body parts in frame.
  */
-typedef std::vector<frame_point> frame_points;
+typedef std::vector<frame_point> frame_points; 
 
 /**
  * @brief Positions of all athlete's body parts in whole video.
@@ -47,11 +47,6 @@ typedef std::vector<model_point> model_points;
  * @brief Positions of all athlete's body parts during whole vault.
  */
 typedef std::vector<model_points> model_video_points;
-
-/**
- * @brief Offsets of athlete's model.
- */
-typedef std::vector<model_point> model_offsets;
 
 //////////////////////////////////////////////////////////////////////////////////////
 // enums

@@ -388,6 +388,9 @@ protected:
 
 };
 
+/**
+ * @brief Represents parameter with value for each step.
+ */
 struct steps_parameter : multiple_values_parameter {
 protected:
 
