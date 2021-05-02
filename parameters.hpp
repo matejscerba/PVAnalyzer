@@ -39,7 +39,7 @@ public:
      * 
      * @note Saves corresponding values to member propoerty defined in derived structs.
      */
-    virtual void compute(const model_video_body &points) noexcept = 0;
+    virtual void compute(const model_video_points &points) noexcept = 0;
 
     /**
      * @brief Write value into given stream for given frame number.
@@ -191,11 +191,11 @@ public:
      * 
      * @param points Athlete's body parts detected in the whole video.
      */
-    virtual void compute(const model_video_body &points) noexcept {
+    virtual void compute(const model_video_points &points) noexcept {
         if ((takeoff >= TAKEOFF_PARAM_FRAMES) && (points.size() > takeoff + TAKEOFF_PARAM_FRAMES)) {
-            model_body before = points[takeoff - TAKEOFF_PARAM_FRAMES];
-            model_body during = points[takeoff];
-            model_body after = points[takeoff + TAKEOFF_PARAM_FRAMES];
+            model_points before = points[takeoff - TAKEOFF_PARAM_FRAMES];
+            model_points during = points[takeoff];
+            model_points after = points[takeoff + TAKEOFF_PARAM_FRAMES];
             model_point p_before = (before[a] + before[b]) / 2.0;
             model_point p_during = (during[a] + during[b]) / 2.0;
             model_point p_after = (after[a] + after[b]) / 2.0;
@@ -286,11 +286,11 @@ public:
      * 
      * @param points Athlete's body parts detected in the whole video.
      */
-    virtual void compute(const model_video_body &points) noexcept {
+    virtual void compute(const model_video_points &points) noexcept {
         if ((takeoff >= TAKEOFF_PARAM_FRAMES) && (points.size() > takeoff + TAKEOFF_PARAM_FRAMES)) {
-            model_body first = get_first_hips(points);
-            model_body during = points[takeoff];
-            model_body after = points[takeoff + TAKEOFF_PARAM_FRAMES];
+            model_points first = get_first_hips(points);
+            model_points during = points[takeoff];
+            model_points after = points[takeoff + TAKEOFF_PARAM_FRAMES];
             model_point p_first = (first[body_part::l_hip] + first[body_part::r_hip]) / 2.0;
             model_point p_during = (during[body_part::l_hip] + during[body_part::r_hip]) / 2.0;
             model_point p_after = (after[body_part::l_hip] + after[body_part::r_hip]) / 2.0;
@@ -328,8 +328,8 @@ private:
      * 
      * @returns first frame_body in which both hips are valid.
      */
-    model_body get_first_hips(const model_video_body &points) const noexcept {
-        auto found = std::find_if(points.begin(), points.end(), [](const model_body &body){
+    model_points get_first_hips(const model_video_points &points) const noexcept {
+        auto found = std::find_if(points.begin(), points.end(), [](const model_points &body){
             return body[body_part::l_hip] && body[body_part::r_hip];
         });
         if (found != points.end()) {
@@ -442,7 +442,7 @@ public:
      * 
      * @param points Athlete's body parts detected in the whole video.
      */
-    virtual void compute(const model_video_body &points) noexcept {
+    virtual void compute(const model_video_points &points) noexcept {
         values.clear();
         step_frames = get_step_frames(points);
         for (std::size_t i = 1; i < step_frames.size(); ++i) {
@@ -493,9 +493,9 @@ public:
      * 
      * @param points Athlete's body parts detected in the whole video.
      */
-    virtual void compute(const model_video_body &points) noexcept {
+    virtual void compute(const model_video_points &points) noexcept {
         std::vector steps = get_step_frames(points);
-        model_video_body reversed(points.rbegin(), points.rend());
+        model_video_points reversed(points.rbegin(), points.rend());
         std::vector<std::size_t> step_beg_frames = get_frame_numbers(reversed.begin(), reversed.end(), std::less<double>());
         for (auto &i : step_beg_frames) {
             i = points.size() - i - 1;
@@ -545,7 +545,7 @@ private:
      * 
      * @note Negative angle represents ray facing in the opposite direction than athlete's runup.
      */
-    virtual std::optional<double> extract_value(const model_body &body) const noexcept {
+    virtual std::optional<double> extract_value(const model_points &body) const noexcept {
         model_point a = (body[body_part::l_hip] + body[body_part::r_hip]) / 2.0;
         model_point b = get_part(body[body_part::l_ankle], body[body_part::r_ankle], std::less<double>());
         if (a && b) {
@@ -579,10 +579,10 @@ public:
      * 
      * @param points Detected body parts to be processed.
      */
-    virtual void compute(const model_video_body &points) noexcept {
+    virtual void compute(const model_video_points &points) noexcept {
         values.clear();
         std::transform(points.begin(), points.end(), std::back_inserter(values),
-                       [this](const model_body &body){ return this->extract_value(body); }
+                       [this](const model_points &body){ return this->extract_value(body); }
         );
     }
 
@@ -624,7 +624,7 @@ protected:
      * 
      * @param body Detected body parts in a singe frame.
      */
-    virtual std::optional<double> extract_value(const model_body &body) const noexcept = 0;
+    virtual std::optional<double> extract_value(const model_points &body) const noexcept = 0;
 
 };
 
@@ -651,7 +651,7 @@ private:
      * 
      * @returns y-coordinate of hips in frame given by body points.
      */
-    virtual std::optional<double> extract_value(const model_body &body) const noexcept {
+    virtual std::optional<double> extract_value(const model_points &body) const noexcept {
         // Average of left and right hip's y-coordinate (if possible), otherwise take one hip if possible.
         if (body[body_part::r_hip] && body[body_part::l_hip]) {
             return ((*body[body_part::r_hip] + *body[body_part::l_hip]) / 2).z;
@@ -696,7 +696,7 @@ private:
      * 
      * @returns y-coordinate of `b_part` in frame given by body points.
      */
-    virtual std::optional<double> extract_value(const model_body &body) const noexcept {
+    virtual std::optional<double> extract_value(const model_points &body) const noexcept {
         if (body[b_part]) return body[b_part]->z;
         return std::nullopt;
     }
@@ -735,7 +735,7 @@ protected:
      * @note Negative angle represents ray facing in the opposite direction than athlete's runup.
      * @note Angle == 0 if ray faces directly upwards, degrees range is [-180,180].
      */
-    virtual std::optional<double> extract_value(const model_body &body) const noexcept {
+    virtual std::optional<double> extract_value(const model_points &body) const noexcept {
         double d = 0;
         if (dir == direction::left)
             d = 1;
@@ -793,7 +793,7 @@ private:
      * @note Negative angle represents ray facing downwards.
      * @note Angle's degrees range is [-90,90].
      */
-    virtual std::optional<double> extract_value(const model_body &body) const noexcept {
+    virtual std::optional<double> extract_value(const model_points &body) const noexcept {
         std::optional<double> vertical_tilt = vertical_tilt::extract_value(body);
         if (vertical_tilt) return 90.0 - std::abs(*vertical_tilt);
         return std::nullopt;

@@ -38,10 +38,10 @@ public:
      * @param bbox Athlete's bounding box.
      * @returns detected body parts in `frame`.
      */
-    frame_body detect(const cv::Mat &frame, const cv::Rect &bbox) noexcept {
+    frame_points detect(const cv::Mat &frame, const cv::Rect &bbox) noexcept {
         cv::Rect2d window_rect = get_window_rect(frame, bbox);
         int best = -1;
-        frame_body body;
+        frame_points body;
         for (auto shift : SHIFTS) {
             cv::Mat rotation;
             cv::Mat back_rot;
@@ -50,7 +50,7 @@ public:
 
             cv::Mat blob = cv::dnn::blobFromImage(window, 1.0 / 255, cv::Size(), cv::Scalar(), false, false, CV_32F);
             net.setInput(blob);
-            frame_body detected = extract_points(window, net.forward());
+            frame_points detected = extract_points(window, net.forward());
             fit_in_frame(detected, window_rect, back_rot);
 
             if (count(detected) > best) {
@@ -173,8 +173,8 @@ private:
      * @param output Output of net.
      * @returns detections fitted inside `input`.
      */
-    frame_body extract_points(const cv::Mat &input, cv::Mat &&output) noexcept {
-        frame_body body(NPOINTS, std::nullopt);
+    frame_points extract_points(const cv::Mat &input, cv::Mat &&output) noexcept {
+        frame_points body(NPOINTS, std::nullopt);
         int h = output.size[2];
         int w = output.size[3];
 
@@ -186,7 +186,7 @@ private:
             cv::Mat probMat(h, w, CV_32F, output.ptr(0, i));
 
             // Get point in output with maximum probability of "being point `i`".
-            frame_part p = std::nullopt;
+            frame_point p = std::nullopt;
             cv::Point max;
             double prob;
             cv::minMaxLoc(probMat, 0, &prob, 0, &max);
@@ -207,7 +207,7 @@ private:
      * 
      * @returns number of detected body parts.
      */
-    int count(const frame_body &body) const noexcept {
+    int count(const frame_points &body) const noexcept {
         int res = 0;
         for (const auto &part : body) {
             if (part) ++res;
@@ -222,7 +222,7 @@ private:
      * @param window_rect Rectangle specifying window used for body parts detection.
      * @param back_rot Inverse rotation matrix.
      */
-    void fit_in_frame(frame_body &body, const cv::Rect2d &window_rect, const cv::Mat &back_rot) noexcept {
+    void fit_in_frame(frame_points &body, const cv::Rect2d &window_rect, const cv::Mat &back_rot) noexcept {
         for (auto &p : body) {
             if (p) {
                 *p += window_rect.tl();
@@ -238,7 +238,7 @@ private:
      * 
      * @param body Last detected body.
      */
-    void update_size(const frame_body &body) noexcept {
+    void update_size(const frame_points &body) noexcept {
         double max = 0.0;
         for (const auto &p : body) {
             for (const auto &q : body) {
@@ -265,7 +265,7 @@ private:
      * @param bbox Athlete's bounding box.
      * @param body Detected body parts.
      */
-    void update_center_shift(const cv::Rect &bbox, const frame_body &body) noexcept {
+    void update_center_shift(const cv::Rect &bbox, const frame_points &body) noexcept {
         if (bbox != cv::Rect()) {
             cv::Point2d a = get_center(bbox);
             if ((body[body_part::l_hip] || body[body_part::r_hip])) {
@@ -285,7 +285,7 @@ private:
      * 
      * @returns vertical angle of last torso tilt, `last_angle` otherwise.
      */
-    void update_angle(const frame_body &body) noexcept {
+    void update_angle(const frame_points &body) noexcept {
         std::optional<double> current_angle = get_vertical_tilt_angle(
             (body[body_part::l_hip] + body[body_part::r_hip]) / 2.0,
             body[body_part::head]

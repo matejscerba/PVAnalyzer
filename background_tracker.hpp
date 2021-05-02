@@ -29,9 +29,9 @@ public:
      */
     background_tracker(const cv::Mat &frame, std::size_t frame_no, const cv::Rect &bbox, direction dir) noexcept {
         backgrounds = std::vector<std::optional<cv::Rect>>(frame_no, std::nullopt);
-        background_offsets = offsets(frame_no, std::nullopt);
-        person_offsets = offsets(frame_no, std::nullopt);
-        frame_offsets = offsets(frame_no, std::nullopt);
+        background_offsets = frame_points(frame_no, std::nullopt);
+        person_offsets = frame_points(frame_no, std::nullopt);
+        frame_offsets = frame_points(frame_no, std::nullopt);
         this->dir = dir;
         valid_direction_threshold = bbox.width;
         tracker = cv::TrackerCSRT::create();
@@ -86,8 +86,8 @@ public:
             return false;
         int vault_check_frames = (int)(VAULT_CHECK_TIME * fps);
         if (person_offsets.size() > 2 * vault_check_frames) {
-            std::optional<cv::Point2d> runup_mean_delta = count_mean_delta(person_offsets.end() - 2 * vault_check_frames, person_offsets.end() - vault_check_frames);
-            std::optional<cv::Point2d> vault_mean_delta = count_mean_delta(person_offsets.end() - vault_check_frames, person_offsets.end());
+            frame_point runup_mean_delta = count_mean_delta(person_offsets.end() - 2 * vault_check_frames, person_offsets.end() - vault_check_frames);
+            frame_point vault_mean_delta = count_mean_delta(person_offsets.end() - vault_check_frames, person_offsets.end());
 
             if (runup_mean_delta && vault_mean_delta && (vault_mean_delta->y - runup_mean_delta->y) * person_height < VAULT_THRESHOLD)
                 return true;
@@ -137,21 +137,21 @@ private:
      * 
      * Offset of background's center and initial person's bounding box center.
      */
-    offsets background_offsets;
+    frame_points background_offsets;
 
     /**
      * @brief Vector of offsets of person and its initial position.
      * 
      * Offset of person's bounding box center and initial person's bounding box center.
      */
-    offsets person_offsets;
+    frame_points person_offsets;
 
     /**
      * @brief Vector of offsets of frames' origins and person's initial position.
      * 
      * Offset of top left corner of frame and initial person's bounding box center.
      */
-    offsets frame_offsets;
+    frame_points frame_offsets;
 
     /**
      * @brief Assumed direction, which person is moving.

@@ -7,7 +7,6 @@
 #include <cmath>
 #include <cstddef>
 #include <iostream>
-#include <iterator>
 #include <optional>
 #include <ostream>
 #include <utility>
@@ -54,7 +53,7 @@ public:
 
         cv::Mat frame;
         bboxes = std::vector<std::optional<cv::Rect>>(raw_frames.size(), std::nullopt);
-        points = video_body(raw_frames.size(), frame_body(NPOINTS, std::nullopt));
+        points = frame_video_points(raw_frames.size(), frame_points(NPOINTS, std::nullopt));
         for (std::size_t frame_no = 0; frame_no < raw_frames.size(); ++frame_no) {
             std::cout << "Processing frame " << frame_no << std::endl;
 
@@ -82,13 +81,13 @@ public:
      * 
      * @note If `real` is false, return points in frame coordinates.
      */
-    video_body get_points(bool real = false) const noexcept {
-        video_body res;
+    frame_video_points get_points(bool real = false) const noexcept {
+        frame_video_points res;
         for (std::size_t i = 0; i < points.size(); ++i) {
-            frame_body transformed;
-            std::transform(points[i].begin(), points[i].end(), std::back_inserter(transformed),
-                           [i, this, real](const frame_part &p) { return p + this->move_analyzer->frame_offset(i, real); }
-            );
+            frame_points transformed;
+            for (const auto &p : points[i]) {
+                transformed.push_back(p + move_analyzer->frame_offset(i, real));
+            }
             res.push_back(std::move(transformed));
         }
         return res;
@@ -99,8 +98,8 @@ public:
      * 
      * @returns offsets of all frames.
      */
-    offsets get_offsets() const noexcept {
-        offsets res;
+    frame_points get_offsets() const noexcept {
+        frame_points res;
         for (std::size_t i = 0; i < points.size(); ++i)
             res.push_back(move_analyzer->frame_offset(i));
         return res;
@@ -150,7 +149,7 @@ private:
     /**
      * @brief Detected body parts of athlete in all frames in frame coordinates 
      */
-    video_body points;
+    frame_video_points points;
 
     /**
      * @brief Athlete's body parts detector.
@@ -181,7 +180,7 @@ private:
 
         if (!valid_tracker) return false;
 
-        frame_body body = parts_dtor.detect(frame, bbox);
+        frame_points body = parts_dtor.detect(frame, bbox);
 
         bbox = get_tracker_bbox(frame, body, bbox);
         tracker->init(frame, bbox);
@@ -205,7 +204,7 @@ private:
      * @param bbox Current tracker's bouning box.
      * @returns Updated tracker's bounding box.
      */
-    cv::Rect get_tracker_bbox(const cv::Mat &frame, const frame_body &body, const cv::Rect &bbox) noexcept {
+    cv::Rect get_tracker_bbox(const cv::Mat &frame, const frame_points &body, const cv::Rect &bbox) noexcept {
         if ((body[body_part::l_hip] || body[body_part::r_hip]) && body[body_part::head]) {
             std::vector<cv::Point2d> torso_corners;
             cv::Point2d head = *body[body_part::head];

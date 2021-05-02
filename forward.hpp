@@ -18,25 +18,40 @@
 // typedefs
 //////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @brief Position of athlete's body part in frame.
+ */
+typedef std::optional<cv::Point2d> frame_point;
+
+/**
+ * @brief Positions of all athlete's body parts in frame.
+ */
+typedef std::vector<frame_point> frame_points;
+
+/**
+ * @brief Positions of all athlete's body parts in whole video.
+ */
+typedef std::vector<frame_points> frame_video_points;
+
+/**
+ * @brief Position of athlete's body part.
+ */
 typedef std::optional<cv::Point3d> model_point;
-typedef std::vector<model_point> model_body;
-typedef std::vector<model_body> model_video_body;
+
+/**
+ * @brief Positions of all athlete's body parts in one moment.
+ */
+typedef std::vector<model_point> model_points;
+
+/**
+ * @brief Positions of all athlete's body parts during whole vault.
+ */
+typedef std::vector<model_points> model_video_points;
+
+/**
+ * @brief Offsets of athlete's model.
+ */
 typedef std::vector<model_point> model_offsets;
-
-typedef std::optional<cv::Point2d> offset;
-typedef std::vector<offset> offsets;
-
-/// @brief Represents person's body part in frame, can be invalid.
-typedef std::optional<cv::Point2d> frame_part;
-
-/// @brief Represents person's body in frame.
-typedef std::vector<frame_part> frame_body;
-
-/// @brief Represents person's body in all frames where person was detected.
-typedef std::vector<frame_body> video_body;
-
-/// @brief Represents corners of person's bounding box in all frames where person was detected.
-typedef std::vector<std::optional<std::vector<cv::Point2d>>> person_corners;
 
 //////////////////////////////////////////////////////////////////////////////////////
 // enums
@@ -101,19 +116,19 @@ enum class vault_part {
 //////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @brief Add two frame_parts if both are valid, return invalid otherwise.
+ * @brief Add two frame_points if both are valid, return invalid otherwise.
  */
-frame_part operator+(const frame_part &lhs, const frame_part &rhs) noexcept;
+frame_point operator+(const frame_point &lhs, const frame_point &rhs) noexcept;
 
 /**
- * @brief Subtract two frame_parts if both are valid, return invalid otherwise.
+ * @brief Subtract two frame_points if both are valid, return invalid otherwise.
  */
-frame_part operator-(const frame_part &lhs, const frame_part &rhs) noexcept;
+frame_point operator-(const frame_point &lhs, const frame_point &rhs) noexcept;
 
 /**
- * @brief Divide frame_part by number.
+ * @brief Divide frame_point by number.
  */
-frame_part operator/(const frame_part &lhs, double rhs) noexcept;
+frame_point operator/(const frame_point &lhs, double rhs) noexcept;
 
 /**
  * @brief Add two model_points if both are valid, return invalid otherwise.
@@ -160,7 +175,7 @@ cv::Point2d get_center(const cv::Rect &rect) noexcept;
  * @param end Iterator specifying end of values to be processed.
  * @returns mean offset.
 */
-offset count_mean_delta(offsets::const_iterator begin, offsets::const_iterator end) noexcept;
+frame_point count_mean_delta(frame_points::const_iterator begin, frame_points::const_iterator end) noexcept;
 
 /**
  * @brief Get name of given body part.
@@ -168,12 +183,12 @@ offset count_mean_delta(offsets::const_iterator begin, offsets::const_iterator e
 std::string body_part_name(const body_part part) noexcept;
 
 /**
- * @brief Compute distance of two frame_parts.
+ * @brief Compute distance of two frame_points.
  * 
- * If both frame_parts are valid, compute their distance,
+ * If both frame_points are valid, compute their distance,
  * otherwise return no value.
  */
-std::optional<double> distance(const frame_part &a, const frame_part &b) noexcept;
+std::optional<double> distance(const frame_point &a, const frame_point &b) noexcept;
 
 /**
  * @brief Compute distance of two model_points.
@@ -206,8 +221,8 @@ std::optional<double> get_height(const model_point &a, const model_point &b, std
  * @param compare Binary comparison function.
  * @returns vector of frame numbers where ankles leave specified local point of interest.
  */
-std::vector<std::size_t> get_frame_numbers( std::vector<model_body>::const_iterator begin,
-                                            std::vector<model_body>::const_iterator end,
+std::vector<std::size_t> get_frame_numbers( std::vector<model_points>::const_iterator begin,
+                                            std::vector<model_points>::const_iterator end,
                                             std::function<bool (double, double)> compare) noexcept;
 
 /**
@@ -220,7 +235,7 @@ std::vector<std::size_t> get_frame_numbers( std::vector<model_body>::const_itera
  * @param points Athlete's body parts detected in the whole video.
  * @returns numbers of frames in which athlete's lower foot leaves ground.
  */
-std::vector<std::size_t> get_step_frames(const model_video_body &points) noexcept;
+std::vector<std::size_t> get_step_frames(const model_video_points &points) noexcept;
 
 /**
  * @brief Compute angle of ray with origin in `a` going through `b` and vertical axis.
@@ -232,7 +247,7 @@ std::optional<double> get_vertical_tilt_angle(const model_point &a, const model_
 /**
  * @brief Compute angle of ray with origin in `a` going through `b` and vertical axis.
  */
-std::optional<double> get_vertical_tilt_angle(const frame_part &a, const frame_part &b) noexcept;
+std::optional<double> get_vertical_tilt_angle(const frame_point &a, const frame_point &b) noexcept;
 
 /**
  * @brief Create name for output file from current date.
@@ -249,14 +264,14 @@ bool is_inside(const cv::Rect &rect, const cv::Mat &frame) noexcept;
 /**
  * @brief Draw body into given frame.
  */
-void draw_body(cv::Mat &frame, const frame_body &body) noexcept;
+void draw_body(cv::Mat &frame, const frame_points &body) noexcept;
 
 /**
- * @brief Convert model_body to frame_body.
+ * @brief Convert frame_points to frame_body.
  * 
- * Leave out y coordinte of model_body.
+ * Leave out y coordinte of frame_points.
  */
-frame_body model_to_frame(const model_body &body) noexcept;
+frame_points model_to_frame(const model_points &body) noexcept;
 
 //////////////////////////////////////////////////////////////////////////////////////
 // constants

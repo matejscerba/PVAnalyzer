@@ -10,17 +10,17 @@ const std::string PROTOFILE = "pose/mpi/pose_deploy_linevec_faster_4_stages.prot
 
 const std::string CAFFEMODEL = "pose/mpi/pose_iter_160000.caffemodel";
 
-frame_part operator+(const frame_part &lhs, const frame_part &rhs) noexcept {
+frame_point operator+(const frame_point &lhs, const frame_point &rhs) noexcept {
     if (lhs && rhs) return *lhs + *rhs;
     return std::nullopt;
 }
 
-frame_part operator-(const frame_part &lhs, const frame_part &rhs) noexcept {
+frame_point operator-(const frame_point &lhs, const frame_point &rhs) noexcept {
     if (lhs && rhs) return *lhs - *rhs;
     return std::nullopt;
 }
 
-frame_part operator/(const frame_part &lhs, double rhs) noexcept {
+frame_point operator/(const frame_point &lhs, double rhs) noexcept {
     if (lhs) return *lhs / rhs;
     return std::nullopt;
 }
@@ -62,7 +62,7 @@ cv::Point2d get_center(const cv::Rect &rect) noexcept {
     return cv::Point2d((double)rect.x + (double)rect.width / 2, (double)rect.y + (double)rect.height / 2);
 }
 
-offset count_mean_delta(offsets::const_iterator begin, offsets::const_iterator end) noexcept {
+frame_point count_mean_delta(frame_points::const_iterator begin, frame_points::const_iterator end) noexcept {
     auto n = end - begin - 1;
     if (n > 0 && *(--end) && *begin) {
         cv::Point2d sum = **end - **begin;
@@ -106,7 +106,7 @@ std::string body_part_name(const body_part part) noexcept {
     }
 }
 
-std::optional<double> distance(const frame_part &a, const frame_part &b) noexcept {
+std::optional<double> distance(const frame_point &a, const frame_point &b) noexcept {
     if (a && b) {
         return cv::norm(*a - *b);
     }
@@ -139,8 +139,8 @@ std::optional<double> get_height(const model_point &a, const model_point &b, std
     return std::nullopt;
 }
 
-std::vector<std::size_t> get_frame_numbers( std::vector<model_body>::const_iterator begin,
-                                            std::vector<model_body>::const_iterator end,
+std::vector<std::size_t> get_frame_numbers( std::vector<model_points>::const_iterator begin,
+                                            std::vector<model_points>::const_iterator end,
                                             std::function<bool (double, double)> compare) noexcept {
     std::vector<std::size_t> res;
     std::optional<double> last_height = std::nullopt;
@@ -165,7 +165,7 @@ std::vector<std::size_t> get_frame_numbers( std::vector<model_body>::const_itera
     return res;
 }
 
-std::vector<std::size_t> get_step_frames(const model_video_body &points) noexcept {
+std::vector<std::size_t> get_step_frames(const model_video_points &points) noexcept {
     std::vector<std::size_t> res;
     std::less<double> low;
     std::vector<std::size_t> lows = get_frame_numbers(points.begin(), points.end(), low);
@@ -173,8 +173,8 @@ std::vector<std::size_t> get_step_frames(const model_video_body &points) noexcep
     std::vector<std::size_t> highs = get_frame_numbers(points.begin(), points.end(), high);
     double center = 0;
     for (std::size_t i = 0; i < std::min(lows.size(), highs.size()); ++i) {
-        model_body l_body = points[lows[i]];
-        model_body h_body = points[highs[i]];
+        model_points l_body = points[lows[i]];
+        model_points h_body = points[highs[i]];
         double l = *get_height(l_body[body_part::l_ankle], l_body[body_part::r_ankle], low);
         double h = *get_height(h_body[body_part::l_ankle], h_body[body_part::r_ankle], high);
         if (i > 0) {
@@ -196,7 +196,7 @@ std::optional<double> get_vertical_tilt_angle(const model_point &a, const model_
     return std::nullopt;
 }
 
-std::optional<double> get_vertical_tilt_angle(const frame_part &a, const frame_part &b) noexcept {
+std::optional<double> get_vertical_tilt_angle(const frame_point &a, const frame_point &b) noexcept {
     if (a && b) {
         double y = a->y - b->y;
         double x = a->x - b->x;
@@ -217,12 +217,12 @@ bool is_inside(const cv::Rect &rect, const cv::Mat &frame) noexcept {
         rect.br().x <= frame.cols && rect.br().y <= frame.rows;
 }
 
-void draw_body(cv::Mat &frame, const frame_body &body) noexcept {
+void draw_body(cv::Mat &frame, const frame_points &body) noexcept {
     for (std::size_t i = 0; i < NPAIRS; ++i) {
         std::size_t a_idx = PAIRS[i][0];
         std::size_t b_idx = PAIRS[i][1];
-        std::optional<cv::Point2d> a = body[a_idx];
-        std::optional<cv::Point2d> b = body[b_idx];
+        frame_point a = body[a_idx];
+        frame_point b = body[b_idx];
 
         // Check if points `a` and `b` are valid.
         if (a && b) {
@@ -249,8 +249,8 @@ void draw_body(cv::Mat &frame, const frame_body &body) noexcept {
     }
 }
 
-frame_body model_to_frame(const model_body &body) noexcept {
-    frame_body res;
+frame_points model_to_frame(const model_points &body) noexcept {
+    frame_points res;
     for (const auto &p : body) {
         if (p) {
             res.push_back(cv::Point2d(p->x, p->z));
