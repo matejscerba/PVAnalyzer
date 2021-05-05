@@ -1,6 +1,14 @@
+# Pole Vault Video Analyzer
+
+## Table of contents
+* [Technologies](#technologies)
+* [Setup](#technologies)
+* [Usage](#usage)
+
 ## Technologies
 Project is created with:
 * OpenCV version: 4.5.1
+* cmake version: 3.1 or later
 
 Correct functionality requires models for body parts detections. You can download them running script `models.sh`.
 Note that `models.sh` uses `wget` package.
