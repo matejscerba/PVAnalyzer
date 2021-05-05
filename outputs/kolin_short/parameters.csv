@@ -1,5 +1,5 @@
 data/kolin_short.mp4
-Frame number,Hips height,Hips velocity loss,Left ankle height,Right ankle height,Shoulders tilt,Shoulders velocity loss,Step duration,Step duration,Takeoff angle,Torso tilt
+Frame number,Hips height,Hips velocity loss,Left ankle height,Right ankle height,Shoulders tilt,Shoulders velocity loss,Step angle,Step duration,Takeoff angle,Torso tilt
 0,,25.24,,,,24.36,-24.10,0.20,-20.84,
 1,,,,,,,-4.64,0.20,,
 2,-27.72,,-138.17,-82.94,7.22,,-13.38,0.10,,14.23

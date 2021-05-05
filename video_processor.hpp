@@ -35,6 +35,7 @@ public:
     void process_video(const std::string &filename) const noexcept {
         double fps;
         std::vector<cv::Mat> raw_frames = extract_frames(filename, fps);
+        if (!raw_frames.size()) return;
 
         body_detector detector(fps);
 

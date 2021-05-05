@@ -417,7 +417,7 @@ protected:
      * @note This constructor can be called by derived structs only.
      */
     steps_parameter(const std::string name, const vault_part part, const std::string &&unit, double fps = 30) noexcept
-        : multiple_values_parameter("Step duration", vault_part::runup, " s"), fps(fps) {}
+        : multiple_values_parameter(name, vault_part::runup, " s"), fps(fps) {}
 
 };
 
