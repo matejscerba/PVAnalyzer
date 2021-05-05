@@ -31,9 +31,8 @@ public:
      * and analyze movements. Write output.
      * 
      * @param filename Path to video file to be processed.
-     * @param save Whether to save outputs.
      */
-    void process_video(const std::string &filename, bool save = true) const noexcept {
+    void process_video(const std::string &filename) const noexcept {
         double fps;
         std::vector<cv::Mat> raw_frames = extract_frames(filename, fps);
 
@@ -52,9 +51,9 @@ public:
         write(frames, "detections", filename);
 
         model m(*athlete, filename);
-        if (save) m.save();
+        m.save();
 
-        analyze(m, filename, fps, raw_frames, frames, save);
+        analyze(m, filename, fps, raw_frames, frames, true);
     }
 
     /**

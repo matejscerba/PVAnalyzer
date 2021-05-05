@@ -1,3 +1,4 @@
+#!/bin/bash
 # ------------------------- POSE MODELS -------------------------
 # Downloading body pose (COCO and MPI).
 OPENPOSE_URL="http://posefs1.perception.cs.cmu.edu/OpenPose/models/"
