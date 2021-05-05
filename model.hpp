@@ -52,12 +52,11 @@ public:
      * Create file and save this model to it.
      */
     void save() const noexcept {
-        std::string output_filename = "models/" + create_output_filename();
-        std::string ext = ".txt";
+        std::string output_dir = get_output_dir(video_filename);
         std::ofstream output;
-        output.open(output_filename + ext);
+        output.open(output_dir + "/model.txt");
         if (!output.is_open()) {
-            std::cout << "Could not save detected model to file \"" << output_filename << ext << "\"." << std::endl;
+            std::cout << "Could not save detected model to file \"" << output_dir << "/model.txt" << "\"." << std::endl;
             return;
         }
 
@@ -117,7 +116,7 @@ public:
      * @param[out] video_filename Path to video from which model was created.
      * @returns true if model was loaded correctly.
      */
-    bool load(std::string &video_filename) noexcept {
+    bool load(std::string &video_fn) noexcept {
         points_frame_c.clear();
         points_real_c.clear();
         frame_offsets.clear();
@@ -131,6 +130,7 @@ public:
 
         std::string line;
         std::getline(input, video_filename);
+        video_fn = video_filename;
         for (;;) {
             if (!std::getline(input, line) || line == "") {
                 break;

@@ -55,7 +55,7 @@ public:
         bboxes = std::vector<std::optional<cv::Rect>>(raw_frames.size(), std::nullopt);
         points = frame_video_points(raw_frames.size(), frame_points(NPOINTS, std::nullopt));
         for (std::size_t frame_no = 0; frame_no < raw_frames.size(); ++frame_no) {
-            std::cout << "Processing frame " << frame_no << std::endl;
+            std::cout << "Processing frame " << frame_no << "/" << raw_frames.size() - 1 << std::endl;
 
             frame = raw_frames[frame_no].clone();
 
@@ -63,8 +63,8 @@ public:
             if (track(frame, frame_no)) {
                 draw(frame, frame_no);
 
-                cv::imshow("frame", frame);
-                cv::waitKey();
+                // cv::imshow("frame", frame);
+                // cv::waitKey();
             }
 
             // Save current modified frame.

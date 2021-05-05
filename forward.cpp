@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <filesystem>
 #include <iomanip>
 #include <sstream>
 #include <utility>
@@ -54,6 +55,15 @@ std::ostream& operator<<(std::ostream& os, const model_point &p) noexcept {
         os << p->x << "," << p->y << "," << p->z;
     } else {
         os << ",,";
+    }
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const frame_point &p) noexcept {
+    if (p) {
+        os << p->x << "," << p->y;
+    } else {
+        os << ",";
     }
     return os;
 }
@@ -205,15 +215,31 @@ std::optional<double> get_vertical_tilt_angle(const frame_point &a, const frame_
     return std::nullopt;
 }
 
-std::string create_output_filename() noexcept {
-    std::time_t now = std::time(nullptr);
-    std::stringstream sstr;
-    sstr << std::put_time(std::localtime(&now), "%Y-%m-%d_%H-%M-%S");
-    return sstr.str();
+std::string get_output_dir(const std::string &video_filename) noexcept {
+    std::stringstream path(video_filename);
+    std::string part;
+    std::vector<std::string> parts;
+    std::string dir = "outputs";
+    std::filesystem::create_directory(dir);
+    dir += "/";
+    while (std::getline(path, part, '/'))
+        parts.push_back(part);
+    if (parts.size()) {
+        dir += parts.back().substr(0, parts.back().find("."));
+    } else {
+        // Could not parse parts of path to video filename.
+        std::time_t now = std::time(nullptr);
+        std::stringstream sstr;
+        sstr << std::put_time(std::localtime(&now), "%Y-%m-%d_%H-%M-%S");
+        dir += sstr.str();
+    }
+    // Create directory.
+    std::filesystem::create_directory(dir);
+    return dir;
 }
 
 bool is_inside(const cv::Rect &rect, const cv::Mat &frame) noexcept {
-    return rect.tl().x >= 0 && rect.tl().y <= 0 &&
+    return rect.tl().x >= 0 && rect.tl().y >= 0 &&
         rect.br().x <= frame.cols && rect.br().y <= frame.rows;
 }
 
@@ -254,8 +280,9 @@ frame_points model_to_frame(const model_points &body) noexcept {
     for (const auto &p : body) {
         if (p) {
             res.push_back(cv::Point2d(p->x, p->z));
+        } else {
+            res.push_back(std::nullopt);
         }
-        res.push_back(std::nullopt);
     }
     return res;
 }

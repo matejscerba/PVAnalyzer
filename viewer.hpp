@@ -44,6 +44,7 @@ public:
         for (;;) {
             cv::imshow("window", drawing ? frames[frame_no] : raw_frames[frame_no]);
 
+            std::cout << "Frame " << frame_no << "/" << frames.size() - 1 << ":";
             write_parameters();
 
             switch (cv::waitKey()) {

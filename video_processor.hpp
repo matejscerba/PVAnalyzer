@@ -31,7 +31,7 @@ public:
      * and analyze movements. Write output.
      * 
      * @param filename Path to video file to be processed.
-     * @param save Whether to save model of athlete's movements.
+     * @param save Whether to save outputs.
      */
     void process_video(const std::string &filename, bool save = true) const noexcept {
         double fps;
@@ -41,22 +41,20 @@ public:
 
         std::vector<cv::Mat> found_frames;
         std::optional<person> athlete = detector.find_athlete(raw_frames, found_frames);
-        std::string output_filename = "outputs/videos/" + create_output_filename();
-        std::string ext = ".avi";
-        // write(output_filename + "_raw_frames" + ext, raw_frames);
-        // write(output_filename + "_found_frames" + ext, found_frames);
+        write(raw_frames, "raw", filename);
+        write(found_frames, "found", filename);
         if (!athlete) {
             std::cout << "Athlete could not be found in video " << filename << std::endl;
             return;
         }
         std::vector<cv::Mat> frames = athlete->detect(raw_frames);
 
-        write(output_filename + "_frames" + ext, frames);
+        write(frames, "detections", filename);
 
         model m(*athlete, filename);
-        // if (save) m.save();
+        if (save) m.save();
 
-        // analyze(m, filename, fps, raw_frames, frames);
+        analyze(m, filename, fps, raw_frames, frames, save);
     }
 
     /**
@@ -74,7 +72,7 @@ public:
             double fps;
             std::vector<cv::Mat> raw_frames = extract_frames(video_filename, fps);
             std::vector<cv::Mat> frames = m.draw(raw_frames);
-            analyze(m, video_filename, fps, raw_frames, frames);
+            analyze(m, video_filename, fps, raw_frames, frames, false);
         }
     }
 
@@ -88,16 +86,18 @@ private:
      * @param fps Frame rate of processed video.
      * @param raw_frames Unmodified frames of video.
      * @param frames Frames of video with detections drawings.
+     * @param save Whether to save output.
      */
     void analyze(   const model &m,
                     const std::string filename,
                     double fps,
                     const std::vector<cv::Mat> &raw_frames,
-                    const std::vector<cv::Mat> &frames) const noexcept {
+                    const std::vector<cv::Mat> &frames,
+                    bool save) const noexcept {
 
         // Analyze detected athlete.
         vault_analyzer analyzer;
-        analyzer.analyze(m, filename, fps);
+        analyzer.analyze(m, filename, fps, save);
 
         // Show result.
         viewer v;
@@ -149,17 +149,25 @@ private:
     /**
      * @brief Write frames as a video to given file.
      * 
-     * @param filename Path to file, where video should be saved.
      * @param frames Frames which will be used to create video.
+     * @param output_filename
+     * @param input_filename
      */
-    void write(const std::string &filename, const std::vector<cv::Mat> &frames) const noexcept {
-        cv::VideoWriter writer(filename, cv::VideoWriter::fourcc('D','I','V','X'), 30, cv::Size(frames.front().cols, frames.front().rows));
+    void write(const std::vector<cv::Mat> &frames, const std::string &output_filename, const std::string &input_filename) const noexcept {
+        std::string output_dir = get_output_dir(input_filename);
+        std::string path = output_dir + "/" + output_filename + ".avi";
+        cv::VideoWriter writer(
+            path,
+            cv::VideoWriter::fourcc('D','I','V','X'),
+            30,
+            cv::Size(frames.front().cols, frames.front().rows)
+        );
         if (writer.isOpened()) {
             for (const auto &f : frames)
                 writer.write(f);
             writer.release();
         } else {
-            std::cout << "Video could not be written to file " << filename << std::endl;
+            std::cout << "Video could not be written to file \"" << path << "\"" << std::endl;
         }
     }
 

@@ -49,7 +49,7 @@ public:
                     takeoff_frame = frame_no;
                 }
                 res = true;
-            } else {
+            } else if (right_direction_tracker) {
                 // Tracker failed, invalidate it.
                 left_direction_tracker.reset();
             }
@@ -61,7 +61,7 @@ public:
                     takeoff_frame = frame_no;
                 }
                 res = true;
-            } else {
+            } else if (left_direction_tracker) {
                 // Tracker failed, invalidate it.
                 right_direction_tracker.reset();
             }
@@ -108,8 +108,10 @@ public:
      */
     std::optional<cv::Point2d> frame_offset(std::size_t frame_no, bool real = true) const noexcept {
         if (!real) return cv::Point2d();
-        if (valid_direction_tracker)
-            return valid_direction_tracker->frame_offset(frame_no);
+        if (left_direction_tracker)
+            return left_direction_tracker->frame_offset(frame_no);
+        if (right_direction_tracker)
+            return right_direction_tracker->frame_offset(frame_no);
         return std::nullopt;
     }
 
@@ -139,15 +141,6 @@ private:
     std::optional<background_tracker> right_direction_tracker;
 
     /**
-     * @brief Background tracker that holds the valid background tracker.
-     * 
-     * Is used for accessing background tracker after whole video was processed.
-     * 
-     * @note Is set when direction of movement can be determined.
-     */
-    std::optional<background_tracker> valid_direction_tracker;
-
-    /**
      * @brief In which frame the vault began (contains value if it was set).
      */
     std::optional<std::size_t> takeoff_frame;
@@ -173,14 +166,12 @@ private:
                 if (left_direction_tracker->is_valid_direction()) {
                     dir = direction::left;
                     right_direction_tracker.reset();
-                    valid_direction_tracker = left_direction_tracker;
                 }
             }
             if (right_direction_tracker) {
                 if (right_direction_tracker->is_valid_direction()) {
                     dir = direction::right;
                     left_direction_tracker.reset();
-                    valid_direction_tracker = right_direction_tracker;
                 }
             }
         }

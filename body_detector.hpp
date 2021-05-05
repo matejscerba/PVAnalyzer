@@ -48,6 +48,8 @@ public:
         found_frames.clear();
         cv::Mat found_frame;
         for (std::size_t frame_no = 0; frame_no < raw_frames.size(); ++frame_no) {
+            std::cout << "Finding athlete in frame " << frame_no << "/" << raw_frames.size() - 1 << std::endl;
+
             found_frame = raw_frames[frame_no].clone();
 
             // Try to find athlete in current frame and draw detections.
@@ -236,7 +238,6 @@ private:
      * @param frame_no Number of frame to be processed.
      */
     void find(const cv::Mat &frame, std::size_t frame_no) noexcept {
-        std::cout << "Finding athlete in frame " << frame_no << std::endl;
         if (!athlete) {
             if (people.size()) {
                 people.remove_if([&frame, frame_no](person_candidate &p){ return !p.track(frame, frame_no); });

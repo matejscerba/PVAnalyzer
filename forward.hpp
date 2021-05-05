@@ -156,6 +156,11 @@ std::optional<double> operator*(double lhs, const std::optional<double> &rhs) no
 std::ostream& operator<<(std::ostream& os, const model_point &p) noexcept;
 
 /**
+ * @brief Write frame_point to output stream.
+ */
+std::ostream& operator<<(std::ostream& os, const frame_point &p) noexcept;
+
+/**
  * @brief Compute center of given rectangle.
  * 
  * @param rect Rectangle whose center should be computed.
@@ -245,11 +250,14 @@ std::optional<double> get_vertical_tilt_angle(const model_point &a, const model_
 std::optional<double> get_vertical_tilt_angle(const frame_point &a, const frame_point &b) noexcept;
 
 /**
- * @brief Create name for output file from current date.
+ * @brief Get path to output directory.
  * 
- * @returns name for output file.
+ * Create new directory if it doesn't exist yet.
+ * 
+ * @param video_filename Path to processed video for which to create output directory.
+ * @returns path to output directory.
  */
-std::string create_output_filename() noexcept;
+std::string get_output_dir(const std::string &video_filename) noexcept;
 
 /**
  * @brief Check if given rectangle is inside `frame`.
@@ -294,8 +302,10 @@ const double BASE_SCALE_FACTOR = 1.8;
 
 /**
  * @brief Number of body parts, that is being detected.
+ * 
+ * @note Background is not detected.
  */
-const int NPOINTS = 16;
+const int NPOINTS = 15;
 
 /**
  * @brief Number of pairs of body parts (joined by line to form a stickman).
@@ -307,7 +317,7 @@ const int NPAIRS = 14;
  * 
  * Head – 0, Neck – 1, Right Shoulder – 2, Right Elbow – 3, Right Wrist – 4, Left Shoulder – 5,
  * Left Elbow – 6, Left Wrist – 7, Right Hip – 8, Right Knee – 9, Right Ankle – 10, Left Hip – 11,
- * Left Knee – 12, Left Ankle – 13, Chest – 14, Background – 15.
+ * Left Knee – 12, Left Ankle – 13, Chest – 14.
  */
 const std::size_t PAIRS[NPAIRS][2] = {
     {0,1}, {1,2}, {2,3},

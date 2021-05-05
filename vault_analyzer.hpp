@@ -36,8 +36,9 @@ public:
      * @param filename Path to analyzed video.
      * @param frames Number of frames in video.
      * @param fps Frame rate of processed video.
+     * @param save Whether to save parameters to file.
      */
-    void analyze(const model &athlete, const std::string &filename, double fps) noexcept {
+    void analyze(const model &athlete, const std::string &filename, double fps, bool save) noexcept {
         points_frame = athlete.get_frame_points();
         points_real = athlete.get_real_points();
 
@@ -45,7 +46,7 @@ public:
         this->filename = filename;
         this->fps = fps;
 
-        if (compute_parameters(points_real)) {
+        if (compute_parameters(points_real) && save) {
             write_parameters();
         }
     }
@@ -279,7 +280,7 @@ private:
      */
     void write_parameters() const noexcept {
         std::ofstream output;
-        std::string o_filename = "parameters/" + create_output_filename() + ".csv";
+        std::string o_filename = get_output_dir(filename) + "/parameters.csv";
         output.open(o_filename);
         if (!output.is_open()) {
             std::cout << "Output file \"" << o_filename << "\" could not be opened" << std::endl;
