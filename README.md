@@ -31,7 +31,7 @@ Video analyzer mode creates output files in folder `outputs/X/`, where `X` is na
 To analyze saved models, pass models' paths as command line arguments:
 
 ```
-$ ./build/PVAnalyzer mod1 mod2 mod3
+$ ./build/PVAnalyzer -m mod1 mod2 mod3
 ```
 
 Command above analyzes models `mod1`, `mod2` and `mod3`. You can pas any number of models to be analyzed sequentially.
