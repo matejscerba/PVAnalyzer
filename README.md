@@ -4,11 +4,15 @@
 * [Technologies](#technologies)
 * [Setup](#technologies)
 * [Usage](#usage)
+* [Plotting](#plotting)
 
 ## Technologies
 Project is created with:
 * OpenCV version: 4.5.1
 * cmake version: 3.1 or later
+* python version: 3.8.2 (older versions should work as well)
+* matplotlib version: 3.3.2 (older versions should work as well)
+* argparse version: 1.1 (older versions should work as well)
 
 Correct functionality requires models for body parts detections. You can download them running script `models.sh`.
 Note that `models.sh` uses `wget` package.
@@ -22,6 +26,12 @@ This creates executable file `build/PVAnalyzer`.
 Program can be run in two modes:
 * Video analyzer
 * Model analyzer
+
+After video or model is analyzed, you will be able to view all video frames with detections drawed in them.
+Navigate through frames using left and right arrows, parameters for each frame will be written to console.
+Note that only parameters valid for viewed frame will be written, for example velocity losses computed during
+takeoff will be written only in frame showing sthlete's takeoff.
+You can turn detections drawings off/on by pressing space bar. To end viewer, pres escape key.
 
 To show help, use single argument `--help`.
 
@@ -44,3 +54,14 @@ $ ./build/PVAnalyzer -m mod1 mod2 mod3
 
 Command above analyzes models `mod1`, `mod2` and `mod3`. You can pas any number of models to be analyzed sequentially.
 Model analyzer mode does not create any output files.
+
+## Plotting
+Output parameters can be ploted as graphs using `plot_params.py` script.
+
+To plot parameters saved to file `output.csv`, run the following command:
+
+```
+$ python3 plot_params.py --file output.csv
+```
+
+This script will show graphs of all parameters stored in file `output.csv`.
