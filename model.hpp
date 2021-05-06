@@ -136,7 +136,8 @@ public:
                 break;
             }
             if (line.find(",") == std::string::npos) {
-                // Frame number is expected.
+                // Frame number.
+                continue;
             } else {
                 frame_offsets.push_back(read_point(std::move(line)));
                 points_frame_c.push_back(read_body(input));

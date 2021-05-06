@@ -51,23 +51,6 @@ public:
         }
     }
 
-    // void analyze(   const video_body &points,
-    //                 const std::vector<std::optional<cv::Point2d>> &frame_offsets,
-    //                 const std::string &filename, double fps) noexcept {
-
-    //     points_frame = points;
-    //     points_real.clear();
-    //     for (std::size_t i = 0; i < points.size(); ++i) {
-    //         frame_body body;
-    //         for (std::size_t j = 0; j < npoints; ++j) {
-    //             body.push_back(frame_offsets[i] + points[i][j]);
-    //         }
-    //         points_real.push_back(std::move(body));
-    //     }
-    //     this->filename = filename;
-    //     this->fps = fps;
-    // }
-
     /**
      * @brief Get parameters including their values.
      */
@@ -143,6 +126,25 @@ private:
      */
     std::size_t culmination = 0;
 
+    model_video_points update_coords(const model_video_points &points) const noexcept {
+        model_point left = points[takeoff][body_part::l_ankle];
+        model_point right = points[takeoff][body_part::r_ankle];
+        model_point foot = get_part(left, right, std::less<double>()); // Lower foot.
+        model_video_points res;
+        if (foot) {
+            for (const model_points &pts : points) {
+                model_points res_pts;
+                for (const model_point &p : pts) {
+                    res_pts.push_back(p - foot);
+                }
+                res.push_back(res_pts);
+            }
+        } else {
+            res = points;
+        }
+        return res;
+    }
+
     /**
      * @brief Compute values of parameters to be analyzed.
      * 
@@ -153,6 +155,8 @@ private:
     bool compute_parameters(const model_video_points &points) noexcept {
         if (!find_moments_of_interest(points))
             return false;
+
+        model_video_points new_points = update_coords(points);
 
         parameters.push_back(std::make_shared<hips_height>());
         parameters.push_back(std::make_shared<body_part_height>(body_part::l_ankle));
@@ -169,7 +173,7 @@ private:
 
         // Compute corresponding values.
         for (auto &param : parameters) {
-            param->compute(points);
+            param->compute(new_points);
         }
 
         // Sort parameters alphabetically.
@@ -296,7 +300,7 @@ private:
 
         // Write values of parameters.
         for (std::size_t i = 0; i < points_frame.size(); ++i) {
-            output << std::endl << i;
+            output << std::endl << (int)i - (int)takeoff;
             for (const auto &param : parameters) {
                 output << ",";
                 if (i < param->size()) {
