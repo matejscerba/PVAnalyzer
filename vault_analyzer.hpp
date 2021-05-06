@@ -126,6 +126,14 @@ private:
      */
     std::size_t culmination = 0;
 
+    /**
+     * @brief Update real life coordinates.
+     * 
+     * Shift coordinates so that (0,0,0) corresponds to feet touching ground in last step.
+     * 
+     * @param points Input points.
+     * @returns shifted points.
+     */
     model_video_points update_coords(const model_video_points &points) const noexcept {
         model_point left = points[takeoff][body_part::l_ankle];
         model_point right = points[takeoff][body_part::r_ankle];
