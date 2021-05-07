@@ -56,6 +56,9 @@ public:
             find(found_frame, frame_no);
             draw(found_frame, frame_no);
 
+            // cv::imshow("frame", found_frame);
+            // cv::waitKey();
+
             // Save modified frames.
             found_frames.push_back(found_frame);
         }

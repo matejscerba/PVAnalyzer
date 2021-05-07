@@ -63,8 +63,10 @@ public:
             if (track(frame, frame_no)) {
                 draw(frame, frame_no);
 
-                // cv::imshow("frame", frame);
-                // cv::waitKey();
+                if (frame_no == 303) {
+                    cv::imshow("frame", frame);
+                    cv::waitKey();
+                }
             }
 
             // Save current modified frame.
@@ -261,8 +263,9 @@ private:
             draw_body(frame, points[frame_no]);
         }
 
-        if (move_analyzer)
+        if (move_analyzer) {
             move_analyzer->draw(frame, frame_no);
+        }
     }
 
 };

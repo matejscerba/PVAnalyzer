@@ -48,7 +48,7 @@ public:
         cv::Rect background_rect;
         if (!backgrounds.size() || !backgrounds.back()) {
             // Tracking was not performed yet, tracker needs to be initialized.
-            tracker->init(frame, update_rect(frame, background_rect, bbox));
+            update_rect(frame, background_rect, bbox);
         }
         if (tracker->update(frame, background_rect)) {
             update_properties(frame, background_rect, bbox);
@@ -181,7 +181,7 @@ private:
         cv::Rect bg = background;
         if (!backgrounds.size() || !backgrounds.back() || bg.x <= 0 || bg.y <= 0 ||
             bg.x + bg.width >= (double)frame.cols ||
-            bg.y + bg.height >= (double)frame.rows) {
+            bg.y + bg.height >= (double)frame.rows || !bg.width || !bg.height) {
                 // Compute horizontal shift for new background.
                 int d = 0;
                 if (dir == direction::left)

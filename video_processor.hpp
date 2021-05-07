@@ -41,15 +41,15 @@ public:
 
         std::vector<cv::Mat> found_frames;
         std::optional<person> athlete = detector.find_athlete(raw_frames, found_frames);
-        write(raw_frames, "raw", filename);
-        write(found_frames, "found", filename);
+        write(raw_frames, "raw", filename, fps);
+        write(found_frames, "found", filename, fps);
         if (!athlete) {
             std::cout << "Athlete could not be found in video " << filename << std::endl;
             return;
         }
         std::vector<cv::Mat> frames = athlete->detect(raw_frames);
 
-        write(frames, "detections", filename);
+        write(frames, "detections", filename, fps);
 
         model m(*athlete, filename);
         m.save();
@@ -100,8 +100,8 @@ private:
         analyzer.analyze(m, filename, fps, save);
 
         // Show result.
-        viewer v;
-        v.show(frames, raw_frames, analyzer);
+        // viewer v;
+        // v.show(frames, raw_frames, analyzer);
         cv::destroyAllWindows();
     }
 
@@ -134,7 +134,7 @@ private:
             if (frame.empty()) break;
 
             // Save current frame.
-            frames.push_back(frame.clone());
+            frames.push_back(resize(frame));
 
             // Skip frames of tested 120-fps video for efficiency reasons.
             if (filename.find("kolin2.MOV") != std::string::npos) {
@@ -152,14 +152,15 @@ private:
      * @param frames Frames which will be used to create video.
      * @param output_filename
      * @param input_filename
+     * @param fps
      */
-    void write(const std::vector<cv::Mat> &frames, const std::string &output_filename, const std::string &input_filename) const noexcept {
+    void write(const std::vector<cv::Mat> &frames, const std::string &output_filename, const std::string &input_filename, double fps) const noexcept {
         std::string output_dir = get_output_dir(input_filename);
         std::string path = output_dir + "/" + output_filename + ".avi";
         cv::VideoWriter writer(
             path,
             cv::VideoWriter::fourcc('D','I','V','X'),
-            30,
+            fps,
             cv::Size(frames.front().cols, frames.front().rows)
         );
         if (writer.isOpened()) {

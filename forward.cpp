@@ -286,3 +286,15 @@ frame_points model_to_frame(const model_points &body) noexcept {
     }
     return res;
 }
+
+cv::Mat resize(const cv::Mat &frame, std::size_t height) noexcept {
+    cv::Mat res;
+    std::size_t width = height * ((double)frame.cols / (double)frame.rows);
+    cv::Size size(width, height);
+    if (frame.cols < frame.rows) {
+        size = cv::Size(height, width);
+    }
+    cv::resize(frame, res, size);
+    std::cout << res.size() << std::endl;
+    return res;
+}
