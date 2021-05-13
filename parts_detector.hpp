@@ -163,6 +163,13 @@ private:
         return res(window_rect);
     }
 
+    cv::Mat make_smaller(const cv::Mat &frame) const noexcept {
+        double x = std::min(1.0, 150.0 / (double)frame.rows);
+        cv::Mat res;
+        cv::resize(frame, res, cv::Size(x * frame.cols, x * frame.rows));
+        return res;
+    }
+
     /**
      * @brief Extract detected points from output of net.
      * 

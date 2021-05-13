@@ -8,6 +8,10 @@
 #include <optional>
 #include <vector>
 
+#include <iostream>
+#include <fstream>
+#include <ostream>
+
 #include "forward.hpp"
 
 /**
@@ -182,21 +186,31 @@ private:
         if (!backgrounds.size() || !backgrounds.back() || bg.x <= 0 || bg.y <= 0 ||
             bg.x + bg.width >= (double)frame.cols ||
             bg.y + bg.height >= (double)frame.rows || !bg.width || !bg.height) {
+                int x = bbox.x;
+                int y = std::max(bbox.y + bbox.height, frame.rows - bbox.height);
+                int width = bbox.width;
+                int height = frame.rows - y;
+                if (frame.rows - y < 10) {
+                    y = 0;
+                    height = std::min(bbox.height, bbox.y);
+                }
+
                 // Compute horizontal shift for new background.
-                int d = 0;
-                if (dir == direction::left)
-                    d = 1;
-                else if (dir == direction::right)
-                    d = -1;
-                int shift = d * bbox.width;
-                int x = std::max(0, bbox.x + shift);
-                int width = std::min(bbox.x, bbox.width);
-                width = std::min(width, frame.cols - (bbox.x + shift));
-                width = std::max(10, width);
+                // int d = 0;
+                // if (dir == direction::left)
+                //     d = 1;
+                // else if (dir == direction::right)
+                //     d = -1;
+                // int shift = d * bbox.width;
+                // int x = std::max(0, bbox.x + shift);
+                // int width = std::min(bbox.width, frame.cols - x);
+                // width = std::max(10, width);
+                // std::cout << width << std::endl;
+                // if (x + width > frame.cols) x = frame.cols - width;
                 // Create new background inside frame.
                 bg = cv::Rect(
-                    x, bbox.y,
-                    width, bbox.height
+                    x, y,
+                    width, height
                 );
                 // Initialize tracker with new background.
                 tracker->init(frame, bg);

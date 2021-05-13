@@ -2,3 +2,4 @@
 pose/
 build/
 data/BP_videos/
+outputs/*/*.avi

@@ -32,6 +32,8 @@ public:
         hog = cv::HOGDescriptor();
         hog.setSVMDetector(cv::HOGDescriptor::getDefaultPeopleDetector());
         this->fps = fps;
+        // refresh = 0.3 * fps;
+        // last_finding = 0;
         athlete.reset();
     }
 
@@ -128,6 +130,19 @@ private:
             return bboxes.front();
         }
 
+        // void update_first_bbox(std::size_t frame_no, const cv::Rect &bbox) noexcept {
+        //     cv::Point2d diag = *(bbox.br() - get_center(bboxes[frame_no - first_frame]));
+        //     double scale = cv::norm(bboxes.front().tl() - bboxes.front().br()) /
+        //         cv::norm(bboxes[frame_no - first_frame].tl() - bboxes[frame_no - first_frame].br());
+        //     cv::Point2d center = get_center(bboxes.front());
+        //     bboxes.front() = cv::Rect(center - scale * diag, center + scale * diag);
+        //     std::cout << "updated" << std::endl;
+        // }
+
+        cv::Rect bbox(std::size_t frame_no) const noexcept {
+            return bboxes[frame_no - first_frame];
+        }
+
         /**
          * @brief Check if this person took off before given frame.
          * 
@@ -135,6 +150,7 @@ private:
          * @returns true if person took off before `frame_no`, false otherwise.
          */
         bool vault_began(std::size_t frame_no) const noexcept {
+            // return false;
             return move_analyzer.vault_frames(frame_no);
         }
 
@@ -230,6 +246,30 @@ private:
     */
     std::list<person_candidate> people;
 
+    // std::size_t refresh;
+
+    // std::size_t last_finding;
+
+    std::vector<cv::Rect> nms(const std::vector<cv::Rect> &detections) const noexcept {
+        std::vector<cv::Rect> res;
+        std::vector<cv::Rect> sorted = detections;
+        std::sort(sorted.begin(), sorted.end(), [](const auto &r, const auto &s){ return area(r) < area(s); });
+        while (sorted.size()) {
+            res.push_back(sorted.back());
+            sorted.erase(std::remove_if(sorted.begin(), sorted.end(), [&res](const auto &r){
+                int top = std::max(res.back().y, r.y);
+                int right = std::min(res.back().x + res.back().width, r.x + r.width);
+                int bottom = std::min(res.back().y + res.back().height, r.y + r.height);
+                int left = std::max(res.back().x, r.x);
+                cv::Rect intersection(
+                    left, top, right - left, bottom - top
+                );
+                return area(intersection) / area(r) >= 0.5;
+            }));
+        }
+        return res;
+    }
+
     /**
      * @brief Find athlete in given frame.
      * 
@@ -245,8 +285,10 @@ private:
             if (people.size()) {
                 people.remove_if([&frame, frame_no](person_candidate &p){ return !p.track(frame, frame_no); });
             }
+            // if (!people.size() || frame_no - last_finding >= refresh) {
             if (!people.size()) {
                 find_people(frame, frame_no);
+                // last_finding = frame_no;
             }
             auto found = std::find_if(people.begin(), people.end(), [frame_no](const person_candidate &p){
                 return p.vault_began(frame_no);
@@ -277,10 +319,24 @@ private:
      */
     void find_people(const cv::Mat &frame, std::size_t frame_no) noexcept {
         std::vector<cv::Rect> detections;
-        hog.detectMultiScale(frame, detections, 0, cv::Size(4, 4), cv::Size(), 1.05, 2, true);
+        hog.detectMultiScale(frame, detections, 0, cv::Size(4, 4), cv::Size(16, 16), 1.05, 2, false);
+
+        detections = nms(detections);
+
+        // std::vector<cv::Rect> new_dets;
+        // for (const auto &detection : detections) {
+        //     auto closest = std::find_if(people.begin(), people.end(), [frame_no, &detection](const person_candidate &p){ return is_inside(get_center(p.bbox(frame_no)), detection); });
+        //     if (closest != people.end()) {
+        //         if (is_inside(closest->bbox(frame_no), detection))
+        //             closest->update_first_bbox(frame_no, detection);
+        //     } else {
+        //         new_dets.push_back(detection);
+        //     }
+        // }
         for (const auto &detection : detections) {
             people.emplace_back(frame_no, frame, fps, detection);
         }
+
     }
 
 };

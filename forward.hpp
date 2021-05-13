@@ -278,6 +278,12 @@ frame_points model_to_frame(const model_points &body) noexcept;
 
 cv::Mat resize(const cv::Mat &frame, std::size_t height = 720) noexcept;
 
+double area(const cv::Rect &r) noexcept;
+
+bool is_inside(const cv::Rect &r, const cv::Rect &s) noexcept;
+
+bool is_inside(const cv::Point2d &p, const cv::Rect &r) noexcept;
+
 //////////////////////////////////////////////////////////////////////////////////////
 // constants
 //////////////////////////////////////////////////////////////////////////////////////

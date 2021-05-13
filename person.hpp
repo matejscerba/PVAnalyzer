@@ -63,10 +63,8 @@ public:
             if (track(frame, frame_no)) {
                 draw(frame, frame_no);
 
-                if (frame_no == 303) {
-                    cv::imshow("frame", frame);
-                    cv::waitKey();
-                }
+                // cv::imshow("frame", frame);
+                // cv::waitKey();
             }
 
             // Save current modified frame.
@@ -196,6 +194,15 @@ private:
         return valid_tracker;
     }
 
+    bool check(const cv::Rect &r, const cv::Rect &s) const noexcept {
+        int top = std::max(r.y, s.y);
+        int right = std::min(r.x + r.width, s.x + s.width);
+        int bottom = std::min(r.y + r.height, s.x + s.height);
+        int left = std::max(r.x, s.x);
+        cv::Rect overlap(left, top, right - left, bottom - top);
+        return area(overlap) / area(r) >= 0.8;
+    }
+
     /**
      * @brief Update tracker's bounding box so that it encloses athlete's torso.
      * 
@@ -235,7 +242,7 @@ private:
                 left = std::min(left, c.x);
             }
             cv::Rect new_bbox(left, top, right - left, bottom - top);
-            return new_bbox;
+            return check(new_bbox, bbox) ? new_bbox : bbox;
         }
         return bbox;
     }

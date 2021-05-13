@@ -40,9 +40,10 @@ public:
         body_detector detector(fps);
 
         std::vector<cv::Mat> found_frames;
-        std::optional<person> athlete = detector.find_athlete(raw_frames, found_frames);
+        // std::optional<person> athlete = detector.find_athlete(raw_frames, found_frames);
+        std::optional<person> athlete = select_athlete(raw_frames, fps);
         write(raw_frames, "raw", filename, fps);
-        write(found_frames, "found", filename, fps);
+        // write(found_frames, "found", filename, fps);
         if (!athlete) {
             std::cout << "Athlete could not be found in video " << filename << std::endl;
             return;
@@ -77,6 +78,27 @@ public:
     }
 
 private:
+
+    /**
+     * @brief Let user select athlete's bounding box in video.
+     * 
+     * @param frames Frames of video to select athlete from.
+     * @param fps Frame rate of processed video.
+     * @returns athlete if user selected valid bounding box.
+     */
+    std::optional<person> select_athlete(const std::vector<cv::Mat> &frames, double fps) const noexcept {
+        cv::Rect bbox;
+        for (std::size_t frame_no = 0; frame_no < frames.size(); ++frame_no) {
+            std::cout << "Skip to next frame by pressing the c button!" << std::endl;
+            bbox = cv::selectROI("Select athlete", frames[frame_no], false, false);
+            if (bbox.width > 0 && bbox.height > 0) {
+                cv::destroyWindow("Select athlete");
+                return person(frame_no, bbox, fps);
+            }
+        }
+        cv::destroyWindow("Select athlete");
+        return std::nullopt;
+    }
 
     /**
      * @brief Analyze model of athlete's movement.
@@ -135,6 +157,14 @@ private:
 
             // Save current frame.
             frames.push_back(resize(frame));
+
+            // std::stringstream sstr;
+            // sstr << "images/" << frames.size() - 1 << ".png";
+            // cv::imwrite(sstr.str(), frames.back());
+
+            // std::cout << frames.size() - 1 << std::endl;
+            // cv::imshow("frame", frames.back());
+            // cv::waitKey();
 
             // Skip frames of tested 120-fps video for efficiency reasons.
             if (filename.find("kolin2.MOV") != std::string::npos) {

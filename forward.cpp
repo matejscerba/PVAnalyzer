@@ -295,6 +295,18 @@ cv::Mat resize(const cv::Mat &frame, std::size_t height) noexcept {
         size = cv::Size(height, width);
     }
     cv::resize(frame, res, size);
-    std::cout << res.size() << std::endl;
     return res;
+}
+
+double area(const cv::Rect &r) noexcept {
+    return r.width * r.height;
+}
+
+bool is_inside(const cv::Rect &r, const cv::Rect &s) noexcept {
+    return cv::norm(s.tl() - s.br()) / cv::norm(r.tl() - r.br()) >= 1.1 &&
+        r.tl().x >= s.tl().x && r.tl().y >= s.tl().y && r.br().x <= s.br().x && r.br().y <= s.br().y;
+}
+
+bool is_inside(const cv::Point2d &p, const cv::Rect &r) noexcept {
+    return p.x >= r.x && p.x <= r.x + r.width && p.y >= r.y && p.y <= r.y + r.height;
 }
