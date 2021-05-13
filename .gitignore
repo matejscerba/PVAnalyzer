@@ -1,4 +1,5 @@
 .DS_Store
+.vscode
 pose/
 build/
 data/BP_videos/
