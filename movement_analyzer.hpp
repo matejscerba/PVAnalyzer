@@ -1,7 +1,7 @@
 #pragma once
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/tracking/tracking.hpp>
+#include <opencv2/tracking.hpp>
 
 #include <cstddef>
 #include <optional>

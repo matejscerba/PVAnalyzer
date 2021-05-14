@@ -104,6 +104,7 @@ private:
         cv::destroyAllWindows();
         cv::waitKey(1);
         return std::nullopt;
+        // [81 x 169 from (477, 325)]
     }
 
     /**

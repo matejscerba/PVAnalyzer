@@ -26,6 +26,7 @@ public:
         last_size = cv::Point2d();
         center_shift = cv::Point2d();
         angle = 0.0;
+        _update_angle = true;
     }
 
     /**
@@ -100,6 +101,8 @@ private:
      * @brief Angle of last torso tilt.
      */
     double angle;
+
+    bool _update_angle;
 
     /**
      * @brief Scale rectangle by given factor and fit it inside frame.
@@ -262,15 +265,18 @@ private:
                 if (dist && *dist > max) max = *dist;
             }
         }
-        if (count(body) == NPOINTS) {
-            if (last_size.x != 0) {
-                last_size *= 2;
-                last_size += cv::Point2d(max, max);
-                last_size /= 3;
-            } else {
-                last_size = cv::Point2d(max, max);
-            }
+        if (count(body) == NPOINTS && max > last_size.x) {
+            last_size = cv::Point2d(max, max);
         }
+        // if (count(body) == NPOINTS) {
+        //     if (last_size.x != 0) {
+        //         last_size *= 2;
+        //         last_size += cv::Point2d(max, max);
+        //         last_size /= 3;
+        //     } else {
+        //         last_size = cv::Point2d(max, max);
+        //     }
+        // }
     }
 
     /**
@@ -283,14 +289,19 @@ private:
      */
     void update_center_shift(const cv::Rect &bbox, const frame_points &body, double distance) noexcept {
         if (bbox != cv::Rect()) {
-            cv::Point2d a = get_center(bbox);
+            cv::Point2d center = get_center(bbox);
             if ((body[body_part::l_hip] || body[body_part::r_hip])) {
-                center_shift = (*body[body_part::l_hip] + *body[body_part::r_hip]) / 2 - a;
+                center_shift = (*body[body_part::l_hip] + *body[body_part::r_hip]) / 2 - center;
+                _update_angle = true;
                 if (std::abs(center_shift.x) > distance) {
                     center_shift *= distance / std::abs(center_shift.x);
+                    center_shift = cv::Point2d(- center_shift.x, center_shift.y);
+                    _update_angle = false;
                 }
                 if (std::abs(center_shift.y) > distance) {
                     center_shift *= distance / std::abs(center_shift.y);
+                    center_shift = cv::Point2d(center_shift.x, - center_shift.y);
+                    _update_angle = false;
                 }
             }
         }
@@ -306,7 +317,7 @@ private:
             (body[body_part::l_hip] + body[body_part::r_hip]) / 2.0,
             body[body_part::head]
         );
-        if (current_angle) angle = *current_angle;
+        if (_update_angle && current_angle) angle = *current_angle;
     }
 
 };

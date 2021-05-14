@@ -1,7 +1,7 @@
 #pragma once
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/tracking/tracking.hpp>
+#include <opencv2/tracking.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -254,7 +254,7 @@ private:
 
     void update_bboxes(const cv::Mat &frame) noexcept {
         std::vector<frame_points> person_offsets = move_analyzer->get_person_offsets();
-        int frames_to_check = (int)(VAULT_CHECK_TIME * fps);
+        int frames_to_check = 3;
         if (move_analyzer->get_direction() != direction::unknown && person_offsets.size() && person_offsets.front().size() > frames_to_check) {
             std::vector<cv::Point2d> mean_deltas;
             cv::Point2d max = cv::Point2d();
