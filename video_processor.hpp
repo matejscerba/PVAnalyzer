@@ -87,23 +87,23 @@ private:
      * @returns athlete if user selected valid bounding box.
      */
     std::optional<person> select_athlete(const std::vector<cv::Mat> &frames, double fps) const noexcept {
-        return person(0, cv::Rect(67, 334, 110, 179), fps);
-        // cv::Rect bbox;
-        // for (std::size_t frame_no = 0; frame_no < frames.size(); ++frame_no) {
-        //     std::cout << "Skip to next frame by pressing the c button!" << std::endl;
-        //     bbox = cv::selectROI("Select athlete", frames[frame_no], false, false);
-        //     if (bbox.width > 0 && bbox.height > 0) {
-        //         std::cout << bbox << std::endl;
-        //         cv::waitKey(1);
-        //         cv::destroyAllWindows();
-        //         cv::waitKey(1);
-        //         return person(frame_no, bbox, fps);
-        //     }
-        // }
-        // cv::waitKey(1);
-        // cv::destroyAllWindows();
-        // cv::waitKey(1);
-        // return std::nullopt;
+        // return person(0, cv::Rect(67, 334, 110, 179), fps);
+        cv::Rect bbox;
+        for (std::size_t frame_no = 0; frame_no < frames.size(); ++frame_no) {
+            std::cout << "Skip to next frame by pressing the c button!" << std::endl;
+            bbox = cv::selectROI("Select athlete", frames[frame_no], false, false);
+            if (bbox.width > 0 && bbox.height > 0) {
+                std::cout << bbox << std::endl;
+                cv::waitKey(1);
+                cv::destroyAllWindows();
+                cv::waitKey(1);
+                return person(frame_no, bbox, fps);
+            }
+        }
+        cv::waitKey(1);
+        cv::destroyAllWindows();
+        cv::waitKey(1);
+        return std::nullopt;
     }
 
     /**
