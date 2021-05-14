@@ -38,7 +38,7 @@ public:
      * @param bbox Athlete's bounding box.
      * @returns detected body parts in `frame`.
      */
-    frame_points detect(const cv::Mat &frame, const cv::Rect &bbox) noexcept {
+    frame_points detect(const cv::Mat &frame, const cv::Rect &bbox, double distance) noexcept {
         cv::Rect2d window_rect = get_window_rect(frame, bbox);
         int best = -1;
         frame_points body;
@@ -60,9 +60,18 @@ public:
             if (best == NPOINTS) break;
         }
         update_size(body);
-        update_center_shift(bbox, body);
+        update_center_shift(bbox, body, distance);
         update_angle(body);
         return body;
+    }
+
+    cv::Point rotate(const cv::Size &s) const noexcept {
+        std::vector<cv::Point2d> src;
+        src.emplace_back(s.width, s.height);
+        cv::Mat rot = cv::getRotationMatrix2D(cv::Point(), angle, 1.0);
+        std::vector<cv::Point2d> res;
+        cv::transform(src, res, rot);
+        return res.front();
     }
 
 private:
@@ -272,16 +281,16 @@ private:
      * @param bbox Athlete's bounding box.
      * @param body Detected body parts.
      */
-    void update_center_shift(const cv::Rect &bbox, const frame_points &body) noexcept {
+    void update_center_shift(const cv::Rect &bbox, const frame_points &body, double distance) noexcept {
         if (bbox != cv::Rect()) {
             cv::Point2d a = get_center(bbox);
             if ((body[body_part::l_hip] || body[body_part::r_hip])) {
                 center_shift = (*body[body_part::l_hip] + *body[body_part::r_hip]) / 2 - a;
-                if (std::abs(center_shift.x) > bbox.width / 2.0) {
-                    center_shift *= (bbox.width / 2.0) / std::abs(center_shift.x);
+                if (std::abs(center_shift.x) > distance) {
+                    center_shift *= distance / std::abs(center_shift.x);
                 }
-                if (std::abs(center_shift.y) > bbox.height / 2.0) {
-                    center_shift *= (bbox.height / 2.0) / std::abs(center_shift.y);
+                if (std::abs(center_shift.y) > distance) {
+                    center_shift *= distance / std::abs(center_shift.y);
                 }
             }
         }

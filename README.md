@@ -16,10 +16,12 @@ Project is created with:
 * argparse version: 1.1 (older versions should work as well)
 
 [OpenCV installation guide for Linux](https://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html)
+
 [OpenCV installation guide for Windows](https://docs.opencv.org/master/d3/d52/tutorial_windows_install.html)
+
 Note: Make sure to download `OpenCV_contrib` modules as well.
 
-Correct functionality requires models for body parts detections. You can download them running script `models.sh`.
+Correct functionality requires trained models for body parts detections. You can download them running script `models.sh`.
 Note that `models.sh` uses `wget` package.
 
 ## Setup

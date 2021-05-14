@@ -22,9 +22,9 @@ public:
      * @param frame First frame, where person was detected.
      * @param bbox Bounding box of person in `frame`.
      */
-    movement_analyzer(std::size_t frame_no, const cv::Mat &frame, const cv::Rect2d &bbox, double fps) noexcept {
-        left_direction_tracker = background_tracker(frame, frame_no, bbox, direction::left);
-        right_direction_tracker = background_tracker(frame, frame_no, bbox, direction::right);
+    movement_analyzer(std::size_t frame_no, const cv::Mat &frame, const std::vector<cv::Rect> &bboxes, double fps) noexcept {
+        left_direction_tracker = background_tracker(frame, frame_no, bboxes, direction::left);
+        right_direction_tracker = background_tracker(frame, frame_no, bboxes, direction::right);
         this->fps = fps;
         dir  = direction::unknown;
     }
@@ -40,14 +40,14 @@ public:
      * @returns false if both trackers failed (unable to determine person's movement direction),
      * true if tracking of at least one background tracker is OK.
     */
-    bool update(const cv::Mat &frame, const cv::Rect2d &bbox, std::size_t frame_no) noexcept {
+    bool update(const cv::Mat &frame, const std::vector<cv::Rect> &bboxes, std::size_t frame_no) noexcept {
         bool res = false;
         if (left_direction_tracker) {
-            if (left_direction_tracker->update(frame, bbox)) {
+            if (left_direction_tracker->update(frame, bboxes)) {
                 // Tracker assuming runup to the left didn't fail.
-                if (!takeoff_frame && left_direction_tracker->is_vault_beginning(bbox.height, fps)) {
-                    takeoff_frame = frame_no;
-                }
+                // if (!takeoff_frame && left_direction_tracker->is_vault_beginning(bbox.height, fps)) {
+                //     takeoff_frame = frame_no;
+                // }
                 res = true;
             } else if (right_direction_tracker) {
                 // Tracker failed, invalidate it.
@@ -55,11 +55,11 @@ public:
             }
         }
         if (right_direction_tracker) {
-            if (right_direction_tracker->update(frame, bbox)) {
+            if (right_direction_tracker->update(frame, bboxes)) {
                 // Tracker assuming runup to the right didn't fail.
-                if (!takeoff_frame && right_direction_tracker->is_vault_beginning(bbox.height, fps)) {
-                    takeoff_frame = frame_no;
-                }
+                // if (!takeoff_frame && right_direction_tracker->is_vault_beginning(bbox.height, fps)) {
+                //     takeoff_frame = frame_no;
+                // }
                 res = true;
             } else if (left_direction_tracker) {
                 // Tracker failed, invalidate it.
@@ -77,6 +77,14 @@ public:
      */
     direction get_direction() const noexcept {
         return dir;
+    }
+
+    std::vector<frame_points> get_person_offsets() const noexcept {
+        if (left_direction_tracker)
+            return left_direction_tracker->get_person_offsets();
+        else if (right_direction_tracker)
+            return right_direction_tracker->get_person_offsets();
+        return {};
     }
 
     /**

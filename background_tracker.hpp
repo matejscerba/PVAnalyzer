@@ -31,15 +31,15 @@ public:
      * @param bbox Bounding box of person in `frame`.
      * @param dir Assumed direction of person's movement.
      */
-    background_tracker(const cv::Mat &frame, std::size_t frame_no, const cv::Rect &bbox, direction dir) noexcept {
+    background_tracker(const cv::Mat &frame, std::size_t frame_no, const std::vector<cv::Rect> &bboxes, direction dir) noexcept {
         backgrounds = std::vector<std::optional<cv::Rect>>(frame_no, std::nullopt);
         background_offsets = frame_points(frame_no, std::nullopt);
-        person_offsets = frame_points(frame_no, std::nullopt);
+        person_offsets = std::vector<frame_points>(bboxes.size(), frame_points(frame_no, std::nullopt));
         frame_offsets = frame_points(frame_no, std::nullopt);
         this->dir = dir;
-        valid_direction_threshold = bbox.width;
+        valid_direction_threshold = width(bboxes);
         tracker = cv::TrackerCSRT::create();
-        update(frame, bbox);
+        update_rect(frame, cv::Rect(), bboxes);
     }
 
     /**
@@ -48,14 +48,10 @@ public:
      * @param frame Frame in which to track background.
      * @param bbox Person's bounding box in `frame`.
      */
-    bool update(const cv::Mat &frame, const cv::Rect &bbox) noexcept {
+    bool update(const cv::Mat &frame, const std::vector<cv::Rect> &bboxes) noexcept {
         cv::Rect background_rect;
-        if (!backgrounds.size() || !backgrounds.back()) {
-            // Tracking was not performed yet, tracker needs to be initialized.
-            update_rect(frame, background_rect, bbox);
-        }
         if (tracker->update(frame, background_rect)) {
-            update_properties(frame, background_rect, bbox);
+            update_properties(frame, background_rect, bboxes);
             return true;
         }
         return false;
@@ -72,7 +68,15 @@ public:
             d = -1;
         else if (dir == direction::right)
             d = 1;
-        return person_offsets.size() && person_offsets.back() && (d * person_offsets.back()->x > valid_direction_threshold);
+        std::size_t valid = 0;
+        for (std::size_t i = 0; i < person_offsets.size(); ++i)
+            if (person_offsets[i].size() && person_offsets[i].back() && (d * person_offsets[i].back()->x > valid_direction_threshold))
+                ++valid;
+        return valid;
+    }
+
+    std::vector<frame_points> get_person_offsets() const noexcept {
+        return person_offsets;
     }
 
     /**
@@ -85,19 +89,19 @@ public:
      * @param fps Frame rate of processed video.
      * @returns true if vault is beginning, false otherwise.
      */
-    bool is_vault_beginning(double person_height, double fps) const noexcept {
-        if (!is_valid_direction())
-            return false;
-        int vault_check_frames = (int)(VAULT_CHECK_TIME * fps);
-        if (person_offsets.size() > 2 * vault_check_frames) {
-            frame_point runup_mean_delta = count_mean_delta(person_offsets.end() - 2 * vault_check_frames, person_offsets.end() - vault_check_frames);
-            frame_point vault_mean_delta = count_mean_delta(person_offsets.end() - vault_check_frames, person_offsets.end());
+    // bool is_vault_beginning(double person_height, double fps) const noexcept {
+    //     if (!is_valid_direction())
+    //         return false;
+    //     int vault_check_frames = (int)(VAULT_CHECK_TIME * fps);
+    //     if (person_offsets.size() > 2 * vault_check_frames) {
+    //         frame_point runup_mean_delta = count_mean_delta(person_offsets.end() - 2 * vault_check_frames, person_offsets.end() - vault_check_frames);
+    //         frame_point vault_mean_delta = count_mean_delta(person_offsets.end() - vault_check_frames, person_offsets.end());
 
-            if (runup_mean_delta && vault_mean_delta && (vault_mean_delta->y - runup_mean_delta->y) * person_height < VAULT_THRESHOLD)
-                return true;
-        }
-        return false;
-    }
+    //         if (runup_mean_delta && vault_mean_delta && (vault_mean_delta->y - runup_mean_delta->y) * person_height < VAULT_THRESHOLD)
+    //             return true;
+    //     }
+    //     return false;
+    // }
 
     /**
      * @brief Get offset of frame specified by its number.
@@ -148,7 +152,7 @@ private:
      * 
      * Offset of person's bounding box center and initial person's bounding box center.
      */
-    frame_points person_offsets;
+    std::vector<frame_points> person_offsets;
 
     /**
      * @brief Vector of offsets of frames' origins and person's initial position.
@@ -180,38 +184,15 @@ private:
      * @param bbox Bounding box of person in `frame`.
      * @returns updated background bounding box.
      */
-    cv::Rect update_rect(const cv::Mat &frame, const cv::Rect &background, const cv::Rect &bbox) noexcept {
-        // TODO: Handle if bg rect is too small.
+    cv::Rect update_rect(const cv::Mat &frame, const cv::Rect &background, const std::vector<cv::Rect> &bboxes) noexcept {
         cv::Rect bg = background;
         if (!backgrounds.size() || !backgrounds.back() || bg.x <= 0 || bg.y <= 0 ||
-            bg.x + bg.width >= (double)frame.cols ||
+            bg.x + bg.width >= (double)frame.cols || area(bg & rect(bboxes)) > 0 ||
             bg.y + bg.height >= (double)frame.rows || !bg.width || !bg.height) {
-                int x = bbox.x;
-                int y = std::max(bbox.y + bbox.height, frame.rows - bbox.height);
-                int width = bbox.width;
-                int height = frame.rows - y;
-                if (frame.rows - y < 10) {
-                    y = 0;
-                    height = std::min(bbox.height, bbox.y);
-                }
-
-                // Compute horizontal shift for new background.
-                // int d = 0;
-                // if (dir == direction::left)
-                //     d = 1;
-                // else if (dir == direction::right)
-                //     d = -1;
-                // int shift = d * bbox.width;
-                // int x = std::max(0, bbox.x + shift);
-                // int width = std::min(bbox.width, frame.cols - x);
-                // width = std::max(10, width);
-                // std::cout << width << std::endl;
-                // if (x + width > frame.cols) x = frame.cols - width;
-                // Create new background inside frame.
-                bg = cv::Rect(
-                    x, y,
-                    width, height
-                );
+                cv::Rect bbox = rect(bboxes);
+                cv::Rect left(0, frame.rows / 4, frame.cols / 4, frame.rows / 2);
+                cv::Rect right(3 * frame.cols / 4, frame.rows / 4, frame.cols / 4, frame.rows / 2);
+                bg = area(left & bbox) <= area(right & bbox) ? left : right;
                 // Initialize tracker with new background.
                 tracker->init(frame, bg);
         }
@@ -229,8 +210,8 @@ private:
      * 
      * @note All offsets are computed against person's initial position.
      */
-    void update_properties(const cv::Mat &frame, const cv::Rect &background, const cv::Rect &bbox) noexcept {
-        cv::Rect new_background = update_rect(frame, background, bbox);
+    void update_properties(const cv::Mat &frame, const cv::Rect &background, const std::vector<cv::Rect> &bboxes) noexcept {
+        cv::Rect new_background = update_rect(frame, background, bboxes);
         backgrounds.push_back(new_background);
         if (background_offsets.size() && background_offsets.back()) {
             // Compare last background's bounding box and current background's bounding box.
@@ -239,10 +220,12 @@ private:
             cv::Point2d offset_change = get_center(new_background) - get_center(background);
             background_offsets.push_back(last_offset + offset_change);
         } else {
-            background_offsets.push_back(get_center(new_background) - get_center(bbox));
+            background_offsets.push_back(get_center(new_background) - get_center(rect(bboxes)));
         }
-        person_offsets.push_back(get_center(bbox) - get_center(new_background) + background_offsets.back());
-        frame_offsets.push_back(person_offsets.back() - get_center(bbox));
+        for (std::size_t i = 0; i < bboxes.size(); ++i) {
+            person_offsets[i].push_back(get_center(bboxes[i]) - get_center(new_background) + background_offsets.back());
+        }
+        frame_offsets.push_back(*background_offsets.back() - get_center(*backgrounds.back()));
     }
 
 };

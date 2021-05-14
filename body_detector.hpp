@@ -84,7 +84,7 @@ private:
          * @param bbox Bounding box of person in given frame.
          */
         person_candidate(std::size_t frame_no, const cv::Mat &frame, double fps, const cv::Rect &bbox) noexcept
-            : move_analyzer(frame_no, frame, bbox, fps) {
+            : move_analyzer(frame_no, frame, split(bbox), fps) {
                 this->fps = fps;
                 first_frame = frame_no;
                 tracker = cv::TrackerCSRT::create();
@@ -106,7 +106,7 @@ private:
                 bboxes.push_back(bbox);
                 return is_inside(bbox, frame)
                     && is_moving(frame_no)
-                    && move_analyzer.update(frame, bbox, frame_no);
+                    && move_analyzer.update(frame, split(bbox), frame_no);
             }
 
             return false;

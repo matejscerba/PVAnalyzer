@@ -292,7 +292,7 @@ cv::Mat resize(const cv::Mat &frame, std::size_t height) noexcept {
     std::size_t width = height * ((double)frame.cols / (double)frame.rows);
     cv::Size size(width, height);
     if (frame.cols < frame.rows) {
-        size = cv::Size(height, width);
+        size = cv::Size(height, height * ((double)frame.rows / (double)frame.cols));
     }
     cv::resize(frame, res, size);
     return res;
@@ -309,4 +309,48 @@ bool is_inside(const cv::Rect &r, const cv::Rect &s) noexcept {
 
 bool is_inside(const cv::Point2d &p, const cv::Rect &r) noexcept {
     return p.x >= r.x && p.x <= r.x + r.width && p.y >= r.y && p.y <= r.y + r.height;
+}
+
+cv::Rect rect(const std::vector<cv::Rect> &rs) noexcept {
+    if (!rs.size()) return cv::Rect();
+    cv::Rect res = rs.front();
+    for (const auto &r : rs) {
+        res |= r;
+    }
+    return res;
+}
+
+int width(const std::vector<cv::Rect> &rs) noexcept {
+    return rect(rs).width;
+}
+
+std::vector<cv::Rect> split(const cv::Rect &bbox) noexcept {
+    std::vector<cv::Rect> bboxes;
+    cv::Point offset;
+    cv::Rect smaller = bbox - cv::Size(2 * bbox.width / 3, 2 * bbox.height / 3);
+    for (std::size_t i = 0; i < 3; ++i) {
+        offset = cv::Point(0, i * bbox.height / 3);
+        for (std::size_t j = 0; j < 3; ++j) {
+            offset = cv::Point(j * bbox.width / 3, offset.y);
+            bboxes.push_back(smaller + offset);
+        }
+    }
+    return bboxes;
+}
+
+double average_dist(const std::vector<cv::Rect> &rs) noexcept {
+    int n_distances = 0;
+    double res = 0.0;
+    for (std::size_t i = 0; i < rs.size(); ++i)
+        for (std::size_t j = i + 1; j < rs.size(); ++j, ++n_distances) {
+            res += cv::norm(get_center(rs[i]) - get_center(rs[j]));
+        }
+    return (n_distances) ? res / n_distances : 0;
+}
+
+cv::Rect fit_inside(const cv::Mat &frame, const cv::Rect &r) noexcept {
+    return cv::Rect(
+        cv::Point(std::max(0, r.x), std::max(0, r.y)),
+        cv::Point(std::min(frame.cols, r.x + r.width), std::min(frame.rows, r.y + r.height))
+    );
 }
