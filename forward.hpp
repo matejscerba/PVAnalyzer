@@ -150,6 +150,8 @@ model_point operator/(const model_point &lhs, double rhs) noexcept;
  */
 std::optional<double> operator*(double lhs, const std::optional<double> &rhs) noexcept;
 
+cv::Size operator*(double lhs, const cv::Size &rhs) noexcept;
+
 /**
  * @brief Write model_point to output stream.
  */
@@ -284,15 +286,13 @@ bool is_inside(const cv::Rect &r, const cv::Rect &s) noexcept;
 
 bool is_inside(const cv::Point2d &p, const cv::Rect &r) noexcept;
 
-cv::Rect rect(const std::vector<cv::Rect> &rs) noexcept;
+cv::Rect rect(const cv::Mat &rs) noexcept;
 
-int width(const std::vector<cv::Rect> &rs) noexcept;
+cv::Rect rect(const std::vector<cv::Rect> &rs) noexcept;
 
 std::vector<cv::Rect> split(const cv::Rect &bbox) noexcept;
 
 double average_dist(const std::vector<cv::Rect> &rs) noexcept;
-
-cv::Rect fit_inside(const cv::Mat &frame, const cv::Rect &r) noexcept;
 
 //////////////////////////////////////////////////////////////////////////////////////
 // constants

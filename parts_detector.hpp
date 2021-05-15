@@ -24,6 +24,7 @@ public:
     parts_detector() noexcept {
         net = cv::dnn::readNet(PROTOFILE, CAFFEMODEL);
         last_size = cv::Point2d();
+        first_size = cv::Point2d();
         center_shift = cv::Point2d();
         angle = 0.0;
         _update_angle = true;
@@ -75,6 +76,11 @@ public:
         return res.front();
     }
 
+    double get_scale_factor() const noexcept {
+        return 1.0;
+        // return (first_size.x) ? last_size.x / first_size.x : 1.0;
+    }
+
 private:
 
     /**
@@ -91,6 +97,8 @@ private:
      * @note Valid detection holds all body parts.
      */
     cv::Point2d last_size;
+
+    cv::Point2d first_size;
 
     /**
      * @brief Position of center of athlete's body parts detection window against athlete's bounding box.
@@ -267,6 +275,9 @@ private:
         }
         if (count(body) == NPOINTS && max > last_size.x) {
             last_size = cv::Point2d(max, max);
+            if (!first_size.x) {
+                first_size = last_size;
+            }
         }
         // if (count(body) == NPOINTS) {
         //     if (last_size.x != 0) {
@@ -295,12 +306,10 @@ private:
                 _update_angle = true;
                 if (std::abs(center_shift.x) > distance) {
                     center_shift *= distance / std::abs(center_shift.x);
-                    center_shift = cv::Point2d(- center_shift.x, center_shift.y);
                     _update_angle = false;
                 }
                 if (std::abs(center_shift.y) > distance) {
                     center_shift *= distance / std::abs(center_shift.y);
-                    center_shift = cv::Point2d(center_shift.x, - center_shift.y);
                     _update_angle = false;
                 }
             }

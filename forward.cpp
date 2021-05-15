@@ -50,6 +50,10 @@ std::optional<double> operator*(double lhs, const std::optional<double> &rhs) no
     return std::nullopt;
 }
 
+cv::Size operator*(double lhs, const cv::Size &rhs) noexcept {
+    return cv::Size(lhs * rhs.width, lhs * rhs.height);
+}
+
 std::ostream& operator<<(std::ostream& os, const model_point &p) noexcept {
     if (p) {
         os << p->x << "," << p->y << "," << p->z;
@@ -311,6 +315,10 @@ bool is_inside(const cv::Point2d &p, const cv::Rect &r) noexcept {
     return p.x >= r.x && p.x <= r.x + r.width && p.y >= r.y && p.y <= r.y + r.height;
 }
 
+cv::Rect rect(const cv::Mat &frame) noexcept {
+    return cv::Rect(0, 0, frame.cols, frame.rows);
+}
+
 cv::Rect rect(const std::vector<cv::Rect> &rs) noexcept {
     if (!rs.size()) return cv::Rect();
     cv::Rect res = rs.front();
@@ -318,10 +326,6 @@ cv::Rect rect(const std::vector<cv::Rect> &rs) noexcept {
         res |= r;
     }
     return res;
-}
-
-int width(const std::vector<cv::Rect> &rs) noexcept {
-    return rect(rs).width;
 }
 
 std::vector<cv::Rect> split(const cv::Rect &bbox) noexcept {
@@ -346,11 +350,4 @@ double average_dist(const std::vector<cv::Rect> &rs) noexcept {
             res += cv::norm(get_center(rs[i]) - get_center(rs[j]));
         }
     return (n_distances) ? res / n_distances : 0;
-}
-
-cv::Rect fit_inside(const cv::Mat &frame, const cv::Rect &r) noexcept {
-    return cv::Rect(
-        cv::Point(std::max(0, r.x), std::max(0, r.y)),
-        cv::Point(std::min(frame.cols, r.x + r.width), std::min(frame.rows, r.y + r.height))
-    );
 }

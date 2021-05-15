@@ -39,6 +39,7 @@ public:
         this->first_frame = frame_no;
         this->first_bbox = box;
         this->fps = fps;
+        this->end = false;
         tracker = cv::TrackerCSRT::create();
         parts_dtor = parts_detector();
     }
@@ -61,11 +62,11 @@ public:
             frame = raw_frames[frame_no].clone();
 
             // Detect athlete's body in current frame.
-            if (track(frame, frame_no)) {
+            if (!end && track(frame, frame_no)) {
                 draw(frame, frame_no);
 
-                cv::imshow("frame", frame);
-                cv::waitKey(1);
+                // cv::imshow("frame", frame);
+                // cv::waitKey(1);
             }
 
             // Save current modified frame.
@@ -137,6 +138,8 @@ private:
      */
     double fps;
 
+    bool end;
+
     /**
      * @brief Tracker used to track athlete in frames.
      */
@@ -203,23 +206,34 @@ private:
         } else if (frame_no < first_frame) {
             return false;
         }
-        if (!update_trackers(frame, frame_no)) return false;
-        bbox = filter(frame, trackers_bboxes.back());
+        if (!update_trackers(frame, frame_no)) {
+            end = true;
+            return false;
+        }
+        bbox = rect(frame) & rect(trackers_bboxes.back());
         frame_points body = parts_dtor.detect(frame, bbox, average_dist(trackers_bboxes.back()));
         points[frame_no] = std::move(body);
         return true;
     }
 
-    cv::Rect filter(const cv::Mat &frame, const std::vector<cv::Rect> &bboxes) const noexcept {
-        cv::Rect fr(0, 0, frame.cols, frame.rows);
-        cv::Rect res = rect(bboxes);
-        // bool found = false;
-        // for (std::size_t i = 0; i < bboxes.size(); ++i) {
-        //     if ()
-        // }
-        //
-        return res & fr;
+    std::vector<cv::Rect> get_valid(const std::vector<cv::Rect> &bboxes) const noexcept {
+        std::vector<cv::Rect> res;
+        for (std::size_t i = 0; i < valid.size(); ++i) {
+            if (valid[i]) res.push_back(bboxes[i]);
+        }
+        return res;
     }
+
+    // cv::Rect filter(const cv::Mat &frame, const std::vector<cv::Rect> &bboxes) const noexcept {
+    //     cv::Rect fr(0, 0, frame.cols, frame.rows);
+    //     cv::Rect res = rect(bboxes);
+    //     // bool found = false;
+    //     // for (std::size_t i = 0; i < bboxes.size(); ++i) {
+    //     //     if ()
+    //     // }
+    //     //
+    //     return res & fr;
+    // }
 
     void init_trackers(const cv::Mat &frame, const std::vector<cv::Rect> &bboxes) noexcept {
         trackers.clear();
@@ -234,12 +248,14 @@ private:
 
     bool update_trackers(const cv::Mat &frame, std::size_t frame_no) noexcept {
         // std::cout << "b" << std::endl;
-        trackers_bboxes.push_back(std::vector<cv::Rect>(trackers.size(), cv::Rect()));
         bool res = false;
         // std::cout << trackers.size() << std::endl;
+        trackers_bboxes.emplace_back();
         for (std::size_t i = 0; i < trackers.size(); ++i) {
             // std::cout << trackers_bboxes.back()[i] << std::endl;
-            if (valid[i] && trackers[i]->update(frame, trackers_bboxes.back()[i])) {
+            cv::Rect bbox;
+            if (valid[i] && trackers[i]->update(frame, bbox)) {
+                trackers_bboxes.back().push_back(bbox);
                 res = true;
                 // std::cout << trackers_bboxes.back()[i] << std::endl << std::endl;
             } else {
@@ -254,7 +270,7 @@ private:
 
     void update_bboxes(const cv::Mat &frame) noexcept {
         std::vector<frame_points> person_offsets = move_analyzer->get_person_offsets();
-        int frames_to_check = 3;
+        int frames_to_check = 2;
         if (move_analyzer->get_direction() != direction::unknown && person_offsets.size() && person_offsets.front().size() > frames_to_check) {
             std::vector<cv::Point2d> mean_deltas;
             cv::Point2d max = cv::Point2d();
@@ -262,43 +278,99 @@ private:
             std::size_t max_idx;
             for (std::size_t i = 0; i < person_offsets.size(); ++i) {
                 frame_point m = count_mean_delta(person_offsets[i].end() - frames_to_check, person_offsets[i].end());
-                if (valid[i] && !dont_update[i] && m && cv::norm(*m) > cv::norm(max)) {
+                if (valid[i] && !dont_update[i] && m && cv::norm(*m) > cv::norm(max) && check_direction(m)) {
                     max = *m;
                     mean_deltas.push_back(*m);
                     max_rect = trackers_bboxes.back()[i];
+                    // std::cout << max_rect << std::endl;
                     max_idx = i;
+                    // std::cout << max_idx << std::endl;
                 } else {
                     mean_deltas.emplace_back();
                 }
                 if (!valid[i]) dont_update[i] = 0; // Invalid tracker, update ASAP.
             }
-            cv::Size size(max_rect.br() - max_rect.tl());
-            cv::Point offset_x = parts_dtor.rotate(cv::Size(size.width, 0));
-            cv::Point offset_y = parts_dtor.rotate(cv::Size(0, size.height));
-            int valid_row = max_idx / 3;
-            int valid_col = max_idx % 3;
-            for (std::size_t i = 0; i < mean_deltas.size(); ++i) {
-                if (!dont_update[i] && cv::norm(2 * mean_deltas[i]) < cv::norm(max)) {
-                    int row = i / 3;
-                    int col = i % 3;
-                    cv::Point origin = max_rect.tl() + cv::Point((col - valid_col) * offset_x) + cv::Point((row - valid_row) * offset_y);
-                    trackers[i]->init(frame, fit_inside(frame, cv::Rect(origin, size)));
-                    valid[i] = true;
-                    // std::cout << "updating " << row << ":" << col << " from " << trackers_bboxes.back()[i] << std::endl;
-                    dont_update[i] = frames_to_check;
-                } else {
-                    dont_update[i] = std::max(0, --dont_update[i]);
+
+            if (max == cv::Point2d()) {
+                for (auto &val : dont_update) {
+                    val = std::max(--val, 0);
+                }
+                return;
+            }
+
+            cv::Size grid_size = parts_dtor.get_scale_factor() * first_bbox.size();
+            cv::Size win_size = grid_size / 3;
+            std::size_t row = max_idx / 3;
+            std::size_t col = max_idx % 3;
+            cv::Point offset(col * win_size.width, row * win_size.height);
+            cv::Point grid_tl = get_center(max_rect);
+            grid_tl -= cv::Point(win_size.width / 2, win_size.height / 2);
+            grid_tl -= offset;
+            // std::cout << grid_tl << grid_size << rect(frame) << std::endl;
+            cv::Rect grid = cv::Rect(grid_tl, grid_size) & rect(frame);
+            // std::cout << grid << std::endl;
+            
+
+            for (row = 0; row < 3; ++row) {
+                offset = cv::Point(0, row * win_size.height);
+                for (col = 0; col < 3; ++col) {
+                    if (cv::norm(mean_deltas[row * 3 + col]) < cv::norm(max) / 2) {
+                        offset = cv::Point(col * win_size.width, offset.y);
+                        trackers[row * 3 + col]->init(frame, cv::Rect(grid.tl() + offset, grid.size() / 3));
+                        valid[row * 3 + col] = true;
+                        dont_update[row * 3 + col] = frames_to_check;
+                    }
                 }
             }
+
+            // std::cout << max_rect.tl() << " " << max_rect.br() << std::endl;
+            // cv::Size size(max_rect.br() - max_rect.tl());
+            // cv::Point offset_x = parts_dtor.rotate(cv::Size(size.width, 0));
+            // cv::Point offset_y = parts_dtor.rotate(cv::Size(0, size.height));
+            // size = cv::Size(parts_dtor.get_scale_factor() * size.width, parts_dtor.get_scale_factor() * size.height);
+            // int valid_row = max_idx / 3;
+            // int valid_col = max_idx % 3;
+            // for (std::size_t i = 0; i < mean_deltas.size(); ++i) {
+            //     if (valid[i] && !dont_update[i] && cv::norm(2 * mean_deltas[i]) < cv::norm(max)) {
+            //         if (max.x || max.y) {
+            //             int row = i / 3;
+            //             int col = i % 3;
+            //             cv::Point origin = max_rect.tl() + cv::Point((col - valid_col) * offset_x) + cv::Point((row - valid_row) * offset_y);
+            //             // std::cout << parts_dtor.get_scale_factor() << cv::Rect(origin, size) << fit_inside(frame, cv::Rect(origin, size));
+            //             // std::cout << "updating" << i << std::endl;
+            //             if (area(cv::Rect(origin, size) & rect(frame)) == 0 ||
+            //                 (cv::Rect(origin, size) & rect(frame)).width < 3 ||
+            //                 (cv::Rect(origin, size) & rect(frame)).height < 3) {
+            //                     valid[i] = false;
+            //                     continue;
+            //             }
+            //             // std::cout << "init" << i << cv::Rect(origin, size) << fit_inside(frame, cv::Rect(origin, size)) << std::endl;
+            //             trackers[i]->init(frame, rect(frame) & cv::Rect(origin, size));
+            //             // std::cout << "done" << std::endl;
+            //             valid[i] = true;
+            //             // std::cout << "updating " << row << ":" << col << " from " << trackers_bboxes.back()[i] << std::endl;
+            //             dont_update[i] = frames_to_check;
+            //         }
+            //     } else {
+            //         dont_update[i] = std::max(0, --dont_update[i]);
+            //     }
+            // }
         }
     }
 
+    bool check_direction(const frame_point &p) const noexcept {
+        direction dir = move_analyzer->get_direction();
+        double mul = 0;
+        if (dir == direction::left) {
+            mul = -1;
+        } else if (dir == direction::right) {
+            mul = 1;
+        }
+        return (p) ? p->x * mul > 0 : false;
+    }
+
     bool check(const cv::Rect &r, const cv::Rect &s) const noexcept {
-        int top = std::max(r.y, s.y);
-        int right = std::min(r.x + r.width, s.x + s.width);
-        int bottom = std::min(r.y + r.height, s.x + s.height);
-        int left = std::max(r.x, s.x);
-        cv::Rect overlap(left, top, right - left, bottom - top);
+        cv::Rect overlap = r & s;
         return area(overlap) / area(r) >= 0.8 && area(overlap) / area(s) >= 0.8;
     }
 
@@ -366,8 +438,10 @@ private:
         // }
 
         if (trackers_bboxes.size() > frame_no) {
+            std::size_t i = 0;
             for (const auto &bbox : trackers_bboxes[frame_no]) {
-                cv::rectangle(frame, bbox.tl(), bbox.br(), cv::Scalar(0, 0, 255), 1);
+                cv::rectangle(frame, bbox.tl(), bbox.br(), cv::Scalar(i * 30, i * 30, i * 30), 1);
+                ++i;
             }
         }
 

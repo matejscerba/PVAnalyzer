@@ -1,1 +1,51 @@
 \chapter{Realizace}
+
+\section{Návrh řešení}
+
+\subsection{Zpracování videa}
+
+...opencv
+
+\subsection{Nalezení atletova těla ve videu}
+
+Prvním krokem k~analýze videozáznamu je nalezení pozice atletova těla ve videu. Pro její určení stačí znát pozici ohraničujícího rámečku atletova těla ve snímku, v~němž je poprvé vidět. Může se stát, že v~prvním snímku videa atlet vidět není, a tedy je nutné specifikovat i~číslo snímku, ve kterém atletův ohraničující rámeček znám.
+
+K~zisku těchto informací lze přistoupit dvěma metodami. První z~nich je manuální zadání ohraničujícího rámečku uživatelem. Pro jednoduchst práce s~programem je vhodné použít grafické rozhraní, které dovolí uživateli definovat rámeček pohybem myši po snímku videa. K~tomuto účelu se výborně hodí metoda \texttt{cv::selectROI}.
+
+Druhou metodou nalezení atletovy pozice ve videu je automatická detekce. K~její realizaci nejprve detekuji ohraničující rámečky postav ve snímku videa a~následně budu sledovat jejich pohyb.
+
+Pro detekci postav ve snímku lze použít strukturu \texttt{cv::HOGDescriptor} a~její metodu \texttt{detectMultiScale}, která je schopná detekovat několik postav různých velikostí v~daném snímku. K~detekci postav ve snímku využívá HOG a~SVM.
+
+Detekované postavy je potřeba trasovat i v~následujících snímcích. K~tomu využiji třídu \texttt{cv::Tracker}.
+
+Jelikož je mým cílem detekce atleta, stačí sledovat jen postavy, které se hýbou. Pohyb postavy určím podle vzájemného pohybu ohraničujícího rámečku postavy a~pozadí snímku. Pohyb pozadí ve videu budu trasovat stejně jako pohyb postav. Vyberu si část pozadí a~její pohyb získám s~použitím třídy \texttt{cv::Tracker}.
+
+Atleta odliším od ostatních pohybujících se postav tak, že provede odraz, tedy se směr jeho pohybu změní směrem vzhůru. Jakmile k~odrazu dojde, zapamatuji si číslo snímku, v~němž jsem atleta poprvé detekoval, a~pozici jeho ohraničujícího rámečku v daném snímku.
+
+\subsection{Detekce kostry atleta}
+
+
+
+\subsection{Zisk modelu atleta z~detekované kostry}
+
+\subsection{Analýza pohybu atletova těla}
+
+\subsection{Zobrazení výstupu analýzy}
+
+
+
+
+
+\section{Detekce kostry atletova těla}
+
+Řešení detekce kostry atletova těla ve videozáznamu jsem rozdělil na tři úkoly. Prvním z~nich je nalezení pozice atletova těla ve snímku videa. Následujícím úkolem je sledování pohybu atletova těla průběhu videa a~poslední částí je detekce kostry těla v jednotlivých snímcích.
+
+\subsection{Nalezení pozice těla}
+
+Prvním krokem k~detekci kostry atletova těla je určení pozice těla ve snímku videa. Pozici těla budu odhadovat obdélníkem ve videu, který tělo atleta obklopuje, tedy ohraničujícím rámečkem.
+
+Nabízí se dvě možnosti, jak pozici příslušného ohraničujícího rámečku
+
+\subsection{Sledování pohybu těla}
+
+\subsection{Detekce částí těla}

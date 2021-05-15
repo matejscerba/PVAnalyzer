@@ -37,7 +37,7 @@ public:
         person_offsets = std::vector<frame_points>(bboxes.size(), frame_points(frame_no, std::nullopt));
         frame_offsets = frame_points(frame_no, std::nullopt);
         this->dir = dir;
-        valid_direction_threshold = width(bboxes);
+        valid_direction_threshold = rect(bboxes).width;
         tracker = cv::TrackerCSRT::create();
         update_rect(frame, cv::Rect(), bboxes);
     }
@@ -194,7 +194,9 @@ private:
                 cv::Rect right(3 * frame.cols / 4, frame.rows / 4, frame.cols / 4, frame.rows / 2);
                 bg = area(left & bbox) <= area(right & bbox) ? left : right;
                 // Initialize tracker with new background.
+                // std::cout << "initbg" << std::endl;
                 tracker->init(frame, bg);
+                // std::cout << "done" << std::endl;
         }
         return bg;
     }
