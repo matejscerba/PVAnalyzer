@@ -1,6 +1,6 @@
 .DS_Store/
 .vscode/
-pose/
+pose/mpi/*.caffemodel
 build/
 data/BP_videos/
 outputs/*/*.avi
