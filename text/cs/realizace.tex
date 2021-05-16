@@ -1,10 +1,42 @@
 \chapter{Realizace}
 
+\section{Související práce}
+
+\section{Rešerše dostupných knihoven}
+
+\subsection{Počítačové vidění a~zpracování obrazu}
+
+Pro potřeby počítačového vidění a~zpracování obrazu lze využít několik knihoven. Jednou z~nejrozšířenějších open-source knihoven je OpenCV. Mezi její výhody patří všestrannost. Je vhodnou volbou pro zpracování obrazu, videí a~vytváření modelů počítačového vidění a~strojového učení. OpenCV vznikla již v~roce 2000, což je jedním z~důvodů, proč ji využívá a~udržuje mnoho vývojářů. Na internetu lze tedy najít mnoho informací o~naprosté většině funkcionality, kterou tato knihovna disponuje.
+
+OpenCV lze spustit na různých platformách a~je vhodnou volbou i~pro mobilní zařízení, což může být užitečné pro budoucí rozšíření aplikace. Tuto knihovnu lze použít v~programu psaném v jazycích C, C++, Python nebo Octave.
+
+Další možností je využití knihovny OpenVINO. Tato knihovna existuje ve dvou verzích, jako open-source a~distribuce spravovaná společností Intel. Knihovna disponuje solidní zásobou modelů hlubokého učení pro potřeby počítačového vidění a~jejich optimalizací pro procesory společnosti Intel. Ačkoliv se vývojáři snaží podporovat i~jiné procesory, může být spuštění této knihovny na procesorech s~jinou architekturou značně probematické. Možnosti knihovny pro zpracování obrazu jsou omezené, takže se často používá v~kombinaci s~OpenCV.
+
+VisionWorks je zajímavá knihovna od společnosti NVidia. Jedná se o~knihovnu, která využívá rychlosti grafických karet. Tato knihovna slouží především k~detekci a~trasování objektů. Tato knihovna má výborné výsledky v~oblasti autonomního řízení, ale pro mé potřeby není lepším řešením než OpenCV.
+
+NASA spravuje vlastní knihovnu zabývající se počítačovým viděním a~zpracováním obrazu. Hlavním cílem této knihovny je zpracování obrazu a~počítačové vidění pro vesmírné roboty, což není příliš vhodné pro můj projekt.
+
+\subsection{Generování grafů}
+
+Jedním z~nejrozšířenějších programů pro tvorbu grafů je gnuplot. Program se spouští z~příkazové řádky a~běží na několika platformách. Jedná se o~program, jehož první verze vznikla už v~roce 1986, takže má, podobně jako OpenCV, velké množství uživatelů, kteří s~ním mají bohaté zkušenosti.
+
+Gnuplot zpracovává vstup z~příkazové řádky nebo skriptů, které popisují, jaká data se mají vykreslit. Příkazy nejsou psané v~žádném programovacím jazyce, ale mají vlastní syntaxi.
+
+Velké množstí vědců používá pro práci s~daty MATLAB. Jedná se o~programovací jazyk, který se specializuje například na numerické výpočty, práci s~maticemi nebo zanášení dat do grafů. MATLAB je možné provázat s~jinými programovacími jazyky, mezi něž patří C, Java nebo Python.
+
+Stále větší oblibě se těší programovací jazyk Python, který disponuje knihovnou pro generování grafů. Tato knihovna se jmenuje Matplotlib, která se používá pouze pomocí jazyka Python. Standordním způsobem práce s~touto knihovnou je přes modul Pyplot, jehož funcionalita je podobná MATLABu. Pyplot disponuje množinou funkcí, které umí vykreslit různé typy grafů. Výhodou použití Pythonu je také snadné spouštění skriptů, které není potřeba manuálně kompilovat před jejich spuštěním.
+
+Skripty psané v~Pythonu lze spouštět přímo z~kódu jazyka C++, což umožňuje automatické zobrazení grafů po doběhnutí analýzy videa skoku o~tyči.
+
 \section{Návrh řešení}
+
+K~implementaci zpracování obrazu a~počítačového vidění využiji knihovnu OpenCV, program budu psát v~jazyce C++, jelikož je běh výsledného programu rychlejší než při použití Pythonu. Také mám s~jazykem C++ více zkušeností. Pro trasování objektů ve videu použiji \texttt{cv::TrackerCSRT}, který využívá Discriminative Correlation Filter with Channel and Spatial Reliability.
+
+Výstupní soubory popisující model a~parametry skoku zpracuji skripty napsanými v~Pythonu. Výsledné grafy zanesu do grafů s~využitím knihovny Matplotlib.
 
 \subsection{Zpracování videa}
 
-Ke zpracování videa využiji třídu \texttt{cv::VideoCapture}, která otevře video a~uloží jednotlivé snímky videa. Následně budu zpracovávat video prostřednictvím těchto snímků, aby video nebylo otevřené příliš dlouho.
+Ke zpracování videa využiji třídu \texttt{cv::VideoCapture}, která otevře video a~uloží jednotlivé snímky videa, aby video nebylo otevřené po celou dobu běhu programu. Snímky videa budou reprezentovat instance \texttt{cv::Mat}, což jsou $n$-dimenzionální pole.
 
 \subsection{Nalezení atletova těla ve videu}
 
@@ -24,7 +56,7 @@ Atleta odliším od ostatních pohybujících se postav tak, že provede odraz, 
 
 \subsection{Detekce kostry atleta}
 
-Pro detekci atletovy kostry využiji natrénovaný model projektu OpenPose\footnote{https://github.com/CMU-Perceptual-Computing-Lab/openpose}. Model je natrénovaný na množině MPII Human Pose Dataset \citep{MPIIHPE}, která obsahuje 25~tisíc obrázků s~více než 40~tisíci postavami s~anotovanými částmi těla. Množina obsahuje postavy vykonávající 410~aktivit, které jsou u~daného obrázku specifikované.
+Pro detekci atletovy kostry využiji natrénovaný model projektu OpenPose \citep{OpenPose}. Model je natrénovaný na množině MPII Human Pose Dataset \citep{MPIIHPE}, která obsahuje 25~tisíc obrázků s~více než 40~tisíci postavami s~anotovanými částmi těla. Množina obsahuje postavy vykonávající 410~aktivit, které jsou u~daného obrázku specifikované.
 
 Počet částí těla, které model specifikuje je 16, ale poslední z~nich je pozadí, které budu ignorovat. Tedy se budu zajímat pouze o~prvních 15 částí těla. Jedná se o
 \begin{enumerate}
@@ -56,6 +88,8 @@ Abych mohl síti předat obrázek, je nutné ho nejprve překonvertovat metodou 
 \item šířka obrázků.
 \end{itemize}
 
+Barevné kanály jsou v~rámci knihovny OpenCV i~frameworku Caffe reprezentovány modelem BGR, tedy jsou po složkách uloženy hodnoty modré, zelené a~červené barvy, a~tudíž není nutné řešit konverzi barevných kanálů.
+
 Výsledná instance \texttt{cv::Mat} se následně zpracuje sítí a~vydá výstup, což je opět čtyřdimenzionální instance \texttt{cv::Mat}, jejíž rozměry jsou
 \begin{itemize}
 \item počet vstupních obrázků,
@@ -65,16 +99,53 @@ Výsledná instance \texttt{cv::Mat} se následně zpracuje sítí a~vydá výst
 \end{itemize}
 Počet výstupních parametrů je 44, ale budu používat pouze prvních 15, které reprezentují části atletova těla potřebné pro vytvoření kostry. Výslednou hodnotou ve výstupu na dané pozici $(i,n,x,y)$ je pravděpodobnost, že bod na řádku $x$, ve sloupci $y$ ve výstupu odpovídá části těla $n$ ve vstupním obrázku $i$. Abych dostal pozici výstupního bodu ve vstupním obrázku, je nutné výstupní souřadnice škálovat poměrem velikostí vstupu a~výstupu sítě.
 
-Jelikož se atlet při skoku otáčí a~model je natrénovaný na postavách, které otočené nejsou, bude pro lepší přesnost detekce potřeba otáčet také vstupní obrázek. Detekci tedy bude vhodné spouštět na více obrázcích zároveň, což siť umožňuje. Vstupy sítě vytvořím z~obrázků metodou \texttt{cv::dnn::blobFromImages}, která k~tomuto účelu slouží.
+Jelikož se atlet při skoku otáčí a~model je natrénovaný na postavách, které otočené nejsou, bude pro lepší přesnost detekce potřeba otáčet také vstupní obrázek. Detekci tedy může být vhodné spouštět na více obrázcích zároveň, což síť umožňuje. Vstup sítě vytvořím z~více obrázků metodou \texttt{cv::dnn::blobFromImages}, která k~tomuto účelu slouží.
 
 \subsection{Zisk modelu atleta z~detekované kostry}
 
-\subsection{Analýza pohybu atletova těla}
+\subsubsection{Souřadný systém}
 
-\subsection{Zobrazení výstupu analýzy}
+Pozice částí těla atleta budu reprezentovat v~trojrozměrném souřadném systému, jehož počátek bude v~místě kotníku odrazové nohy při odrazu. Ideálním počátkem souřadné soustavy by byl střed zadní hrany kastlíku, ten je bohužel ve videu skrytý za doskočištěm, a~tedy bych jeho pozici musel aproximovat s~pomocí detekce tyče.
+
+Konstantní polohu bude zaujímat pozadí videozáznamu, které bude trasováno instancí třídy \texttt{cv::Tracker}.
+
+Body budu reprezentovat jako uspořádané trojice $(x,y,z)$, kde $x$ bude reprezentovat pozici podle horizontální osy rovnoběžné s~rozběžištěm, $y$ pozici podle horizontální osy kolmé na rozběžiště a~$z$ pozici podle vertikální osy. Hodnoty složek bodů budou růst ve směru rozběhu, od kamery a~vzhůru.
+
+Za jednotku souřadného systému zvolím pixel. Výhodou tohoto řešení je jednodušší převod detekované kostry do souřadného systému a~poměrně přesné porovnání podobných videozáznamů. Nevýhodou je naopak horší přesnost porovnání videí s~různým rozlišením a~jinou vzdáleností kamery od rozběžiště. Tento systém také neřeší vzdálenost atleta od kamery, a~tedy se pohyb atleta na konci rozběhu bude zdát výraznější než na jeho začátku. Tato skutečnost je ještě umocněna faktem, že se atlet nehýbe kolmo k~ose kamery, ale pod jiným úhlem, který horizontální pohyb atleta ještě více potlačuje.
+
+\subsubsection{Přenesení kostry do souřadného systému}
+
+Ve snímku videa je pozice pixelu určena uspořádanou dvojicí $(x,y)$, počátek je v~levém horním rohu a~hodnoty rostou doprava dolů. První složka reprezentuje vzdálenost bodu od levé hrany snímku, druhá vzdálenost bodu od horní hrany snímku.
+
+Při přenesení kostry do souřadného systému bude tedy třeba převrátit hodnoty ve druhé složce. Podle směru atletova rozběhu, který určím podle vzájemného pohybu pozadí videa a~atletova těla, budu muset určit, zda převracet také hodnoty v~první složce. Pokud atlet běží doleva, tak je nutné hodnoty převrátit, pokud poběží doleva, tak nikoliv.
+
+Tímto procesem získám posunuté hodnoty dvou složek ve výsledném souřadném systému. Hodnotu ve složce určené horizontální osou kolmou na rozběžiště nastavím pro jednoduchost na nulu. Hodnotu by bylo možné aproximovat při rozběhu, ale při skoku se atlet otáčí kolem své osy, což zvyšuje obtížnost případné aproximace této hodnoty. Skok může být křivý, tedy atlet nedopadne na doskočiště do osy rozběhu, což je další aspekt, který by bylo nutné vzít v~potaz.
+
+Nakonec bude tedy potřeba posunout hodnoty bodů tak, aby se počátek soustavy posunul do místa kotníku odrazové nohy v~momentu odrazu.
+
+\subsubsection{Určení pohybu jednotlivých snímků}
+
+Kamera není při natáčení skoku o~tyči statická, tedy je nutné vzít v~potaz její pohyb při analýze pohybu atleta. Pro převod kostry detekované ve snímku do souřadného systému bude potřeba zjistit pohyb kamery.
+
+Dostatečným řešením bude určení vzájemné pozice levého horního rohu snímku a pozadí videa. Při zpracování snímku tedy budu znát pozici pozadí v~předešlém a~právě zpracovávaném snímku. Bude stači pozice středu části pozadí, kterou budu sledovat trackerem. Na základě toho, že se pozadí v~souřadném systému nepohybuje, určím vzájemný pohyb levých horních rohů po sobě jdoucích snímků, čímž získám i~vzájemnou polohu atletova těla v~po sobě jdoucích snímcích.
+
+\subsection{Výstup analýzy}
+
+Výsledky analýzy bude potřeba uložit a~zobrazit uživateli. Výsledkem je model a~hodnoty detekovaných parametrů, které uložím do souborů. Soubor popisující model bude možné předat programu jako vstup, aby nemusel v~již analyzovaném videu detekovat atleta znovu, a~provedlo se jen vyhodnocení parametrů.
+
+Jelikož se jedná o~analýzu videa, je vhodné, aby si uživatel mohl prohlédnout video a v~něm detekované body. Tím získá zpětnou vazbu, zda analýza proběhla v~pořádku a~má smysl zkoumat hodnoty parametrů.
+
+Video zobrazím jako prohlížeč jednotlivých snímků videa, k~aktuálně zobrazenému snímku vypíšu hodnoty parametrů, které s~daným snímkem souvisí. Uživatel bude moci zobrazit nebo~skrýt detekce kostry těla.
+
+Po ukončení prohlížeče se zobrazí grafy popisující hodnoty parametrů skoku.
+
+\subsection{Analýza parametrů skoku}
 
 
 
+\section{Popis konečného řešení}
+
+\subsection{Struktura programu}
 
 
 

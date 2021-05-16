@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.4.21)  16 MAY 2021 00:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.4.21)  16 MAY 2021 22:42
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -535,24 +535,24 @@ File: l3backend-pdftex.def 2021-03-18 L3 backend support: PDF output (pdfTeX)
 (./experimenty.aux) (./zaver.aux) (./literatura.aux))
 \openout1 = `prace.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 126.
-LaTeX Font Info:    ... okay on input line 126.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 128.
+LaTeX Font Info:    ... okay on input line 128.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 128.
+LaTeX Font Info:    ... okay on input line 128.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 128.
+LaTeX Font Info:    ... okay on input line 128.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 128.
+LaTeX Font Info:    ... okay on input line 128.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 128.
+LaTeX Font Info:    ... okay on input line 128.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 128.
+LaTeX Font Info:    ... okay on input line 128.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 128.
+LaTeX Font Info:    ... okay on input line 128.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 128.
+LaTeX Font Info:    ... okay on input line 128.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 128.
+LaTeX Font Info:    ... okay on input line 128.
 
 (/usr/local/texlive/2021/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -576,7 +576,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring OFF on input line 126.
+Package hyperref Info: Link coloring OFF on input line 128.
 
 (/usr/local/texlive/2021/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -590,9 +590,9 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count297
 )
-LaTeX Info: Redefining \ref on input line 126.
-LaTeX Info: Redefining \pageref on input line 126.
-LaTeX Info: Redefining \nameref on input line 126.
+LaTeX Info: Redefining \ref on input line 128.
+LaTeX Info: Redefining \pageref on input line 128.
+LaTeX Info: Redefining \nameref on input line 128.
  (./prace.out) (./prace.out)
 \@outlinefile=\write5
 \openout5 = `prace.out'.
@@ -601,7 +601,7 @@ LaTeX Info: Redefining \nameref on input line 126.
 
  (./titulka.tex
 Package hyperref Info: Option `pageanchor' set `false' on input line 6.
-<../img/logo-cs.pdf, id=103, 506.4591pt x 156.49065pt>
+<../img/logo-cs.pdf, id=131, 506.4591pt x 156.49065pt>
 File: ../img/logo-cs.pdf Graphic file (type pdf)
 <use ../img/logo-cs.pdf>
 Package pdftex.def Info: ../img/logo-cs.pdf  used on input line 10.
@@ -685,16 +685,16 @@ LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 8
 .
  (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-))
+)
 [2
 
 
-]
+]) [3]
 \openout2 = `teorie.aux'.
 
  (./teorie.tex
 Kapitola 1.
-[3
+[4
 
 
 
@@ -711,22 +711,45 @@ Underfull \hbox (badness 10000) in paragraph at lines 27--27
 Men % 27s % 20pole % 20vault % 20-[] %
  []
 
-[4] [5]) [6]
+[5] [6]) [7]
 \openout2 = `realizace.aux'.
 
  (./realizace.tex
 Kapitola 2.
-) [7
+
+Overfull \hbox (1.29807pt too wide) in paragraph at lines 13--14
+\T1/lmr/m/n/12 dvou ver-zích, jako open-source a dis-tri-buce spra-vo-vaná spo-
+le£-ností In-tel. Knihovna
+ []
+
+[8
 
 
 
 
 ]
+Overfull \hbox (3.86566pt too wide) in paragraph at lines 39--40
+[]\T1/lmr/m/n/12 Ke zpra-co-vání vi-dea vy-u-ºiji t°ídu \T1/lmtt/m/n/12 cv::Vid
+eoCapture\T1/lmr/m/n/12 , která ote-v°e vi-deo a uloºí
+ []
+
+[9]
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 8
+5.
+ (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+) [10] [11]
+Overfull \hbox (1.98073pt too wide) in paragraph at lines 130--131
+[]\T1/lmr/m/n/12 Dostate£ným °e-²e-ním bude ur-£ení vzá-jemné po-zice le-vého h
+or-ního rohu snímku
+ []
+
+[12]) [13]
 \openout2 = `experimenty.aux'.
 
  (./experimenty.tex
 Kapitola 3.
-) [8
+) [14
 
 
 
@@ -734,7 +757,7 @@ Kapitola 3.
 ]
 \openout2 = `zaver.aux'.
 
- (./zaver.tex) [9
+ (./zaver.tex) [15
 
 
 
@@ -742,16 +765,17 @@ Kapitola 3.
 ]
 \openout2 = `literatura.aux'.
 
- (./literatura.tex
-No file prace.bbl.
-) (./prace.lof)
+ (./literatura.tex (./prace.bbl)) [16
+
+
+
+
+] (./prace.lof)
 \tf@lof=\write7
 \openout7 = `prace.lof'.
 
- [10
 
-
-
+[17
 
 
 
@@ -759,39 +783,44 @@ No file prace.bbl.
 \tf@lot=\write8
 \openout8 = `prace.lot'.
 
- [11
+ [18
 
-] [12
+] [19
 
 ]
 P\v {r}\'{\i }loha A.
-[13
+[20
 
 ] (./prace.aux (./titulka.aux) (./uvod.aux) (./teorie.aux) (./realizace.aux) (.
 /experimenty.aux) (./zaver.aux) (./literatura.aux))
 Package rerunfilecheck Info: File `prace.out' has not changed.
-(rerunfilecheck)             Checksum: F80A5FE3930E6FE97FC12E6A9C899C24;3648.
+(rerunfilecheck)             Checksum: FAB4E6EE9D17641BBEC9D834FEE9ED28;4877.
  ) 
 Here is how much of TeX's memory you used:
- 15293 strings out of 478994
- 216490 string characters out of 5858184
- 528388 words of memory out of 5000000
- 32343 multiletter control sequences out of 15000+600000
- 489254 words of font info for 92 fonts, out of 8000000 for 9000
+ 15387 strings out of 478994
+ 217987 string characters out of 5858184
+ 528640 words of memory out of 5000000
+ 32394 multiletter control sequences out of 15000+600000
+ 496686 words of font info for 95 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  88i,8n,90p,1194b,2364s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}</usr/local/
-texlive/2021/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/local/texlive/20
-21/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2021/texmf-di
-st/fonts/type1/public/lm/lmr12.pfb></usr/local/texlive/2021/texmf-dist/fonts/ty
-pe1/public/lm/lmr17.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/
-lm/lmr7.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr8.pfb>
-</usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/loca
-l/texlive/2021/texmf-dist/fonts/type1/public/lm/lmtt12.pfb>
-Output written on prace.pdf (17 pages, 539318 bytes).
+{/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/
+texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2021/t
+exmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/local/texlive/2021/texmf-dist/fon
+ts/enc/dvips/lm/lm-mathit.enc}</usr/local/texlive/2021/texmf-dist/fonts/type1/p
+ublic/lm/lmbx12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/l
+mcsc10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmmi12.pfb
+></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/loca
+l/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr12.pfb></usr/local/texlive/2
+021/texmf-dist/fonts/type1/public/lm/lmr17.pfb></usr/local/texlive/2021/texmf-d
+ist/fonts/type1/public/lm/lmr7.pfb></usr/local/texlive/2021/texmf-dist/fonts/ty
+pe1/public/lm/lmr8.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/l
+m/lmri12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmtt10.p
+fb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmtt12.pfb>
+Output written on prace.pdf (24 pages, 614607 bytes).
 PDF statistics:
- 291 PDF objects out of 1000 (max. 8388607)
- 245 compressed objects within 3 object streams
- 54 named destinations out of 1000 (max. 500000)
- 210 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 414 PDF objects out of 1000 (max. 8388607)
+ 352 compressed objects within 4 object streams
+ 89 named destinations out of 1000 (max. 500000)
+ 266 words of extra memory for PDF output out of 10000 (max. 10000000)
 
