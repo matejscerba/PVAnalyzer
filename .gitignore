@@ -4,3 +4,4 @@ pose/mpi/*.caffemodel
 build/
 data/BP_videos/
 outputs/*/*.avi
+opencv/

@@ -9,20 +9,17 @@
 ## Technologies
 Project is created with:
 * OpenCV version: 4.5.1
-* OpenCV_contrib modules: tracking (it is recommended to install all modules)
+* OpenCV_contrib modules version: 4.5.1
 * cmake version: 3.1 or later
 * python version: 3.8.2 (older versions should work as well)
 * matplotlib version: 3.3.2 (older versions should work as well)
 * argparse version: 1.1 (older versions should work as well)
 
-[OpenCV installation guide for Linux](https://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html)
-
-[OpenCV installation guide for Windows](https://docs.opencv.org/master/d3/d52/tutorial_windows_install.html)
-
-Note: Make sure to download `OpenCV_contrib` modules as well.
+To install OpenCV and OpenCV_contrib, run script `install_opencv.sh`. The library will be installed to `~/.local`.
 
 Correct functionality requires trained models for body parts detections. You can download them running script `models.sh`.
-Note that `models.sh` uses `wget` package.
+
+Note that `models.sh` and `install_opencv.sh` uses `wget` package.
 
 ## Setup
 To run this project, install it by running script `install.sh`.

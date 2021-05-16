@@ -118,6 +118,7 @@ std::string body_part_name(const body_part part) noexcept {
         case body_part::chest:
             return "Chest";
     }
+    return "";
 }
 
 std::optional<double> distance(const frame_point &a, const frame_point &b) noexcept {
