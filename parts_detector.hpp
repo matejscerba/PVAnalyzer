@@ -43,24 +43,17 @@ public:
     frame_points detect(const cv::Mat &frame, const cv::Rect &bbox, double distance) noexcept {
         cv::Rect2d window_rect = get_window_rect(frame, bbox);
         int best = -1;
-        frame_points body;
+        std::vector<cv::Mat> windows;
+        cv::Point2d center = get_center(bbox) + center_shift;
         for (auto shift : SHIFTS) {
-            cv::Mat rotation;
-            cv::Mat back_rot;
-            cv::Point2d center = get_center(bbox) + center_shift;
-            cv::Mat window = crop_window(frame, window_rect, center, shift, rotation, back_rot);
-
-            cv::Mat blob = cv::dnn::blobFromImage(window, 1.0 / 255, cv::Size(), cv::Scalar(), false, false, CV_32F);
-            net.setInput(blob);
-            frame_points detected = extract_points(window, net.forward());
-            fit_in_frame(detected, window_rect, back_rot);
-
-            if (count(detected) > best) {
-                best = count(detected);
-                body = detected;
-            }
-            if (best == NPOINTS) break;
+            windows.push_back(crop_window(frame, window_rect, center, shift));
         }
+
+        cv::Mat blob = cv::dnn::blobFromImages(windows, 1.0 / 255, cv::Size(), cv::Scalar(), false, false, CV_32F);
+        net.setInput(blob);
+        cv::Mat back_rot;
+        frame_points body = extract_points(windows.front(), net.forward(), center, back_rot);
+        fit_in_frame(body, window_rect, back_rot);
         update_size(body);
         update_center_shift(bbox, body, distance);
         update_angle(body);
@@ -164,21 +157,16 @@ private:
      * @param window_rect Rectangle specifying window used for body parts detection.
      * @param center Center of rotation.
      * @param shift Shift added to last angle during rotation.
-     * @param[out] rot Rotation matrix.
-     * @param[out] back_rot Inverse rotation matrix.
      * @returns part of frame in which body parts detections will be made.
      */
     cv::Mat crop_window(const cv::Mat &frame,
                         const cv::Rect2d &window_rect,
                         const cv::Point2d &center,
-                        double shift,
-                        cv::Mat &rot,
-                        cv::Mat &back_rot) const noexcept {
+                        double shift) const noexcept {
 
         cv::Mat res;
         double current_angle = angle + shift;
-        rot = cv::getRotationMatrix2D(center, current_angle, 1.0);
-        back_rot = cv::getRotationMatrix2D(center, - current_angle, 1.0);
+        cv::Mat rot = cv::getRotationMatrix2D(center, current_angle, 1.0);
         cv::warpAffine(frame, res, rot, frame.size());
         return res(window_rect);
     }
@@ -200,33 +188,41 @@ private:
      * @param output Output of net.
      * @returns detections fitted inside `input`.
      */
-    frame_points extract_points(const cv::Mat &input, cv::Mat &&output) noexcept {
-        frame_points body(NPOINTS, std::nullopt);
-        int h = output.size[2];
-        int w = output.size[3];
+    frame_points extract_points(const cv::Mat &input, cv::Mat &&output, const cv::Point2d &center, cv::Mat &back_rot) noexcept {
+        frame_points best_body(NPOINTS, std::nullopt);
+        for (std::size_t idx = 0; idx < output.size[0]; ++idx) {
+            frame_points body(NPOINTS, std::nullopt);
+            int h = output.size[2];
+            int w = output.size[3];
 
-        double sx = (double)input.cols / (double)w;
-        double sy = (double)input.rows / (double)h;
+            double sx = (double)input.cols / (double)w;
+            double sy = (double)input.rows / (double)h;
 
-        // Get points from output.
-        for (std::size_t i = 0; i < NPOINTS; ++i) {
-            cv::Mat probMat(h, w, CV_32F, output.ptr(0, i));
+            // Get points from output.
+            for (std::size_t i = 0; i < NPOINTS; ++i) {
+                cv::Mat probMat(h, w, CV_32F, output.ptr(idx, i));
 
-            // Get point in output with maximum probability of "being point `i`".
-            frame_point p = std::nullopt;
-            cv::Point max;
-            double prob;
-            cv::minMaxLoc(probMat, 0, &prob, 0, &max);
+                // Get point in output with maximum probability of "being point `i`".
+                frame_point p = std::nullopt;
+                cv::Point max;
+                double prob;
+                cv::minMaxLoc(probMat, 0, &prob, 0, &max);
 
-            // Check point probability against a threshold.
-            if (prob > DET_THRESHOLD) {
-                p = max;
-                p->x *= sx; p->y *= sy; // Scale point so it fits input.
+                // Check point probability against a threshold.
+                if (prob > DET_THRESHOLD) {
+                    p = max;
+                    p->x *= sx; p->y *= sy; // Scale point so it fits input.
+                }
+
+                body[i] = p;
             }
-
-            body[i] = p;
+            if (count(body) > count(best_body)) {
+                best_body = std::move(body);
+                double current_angle = angle + SHIFTS[idx];
+                back_rot = cv::getRotationMatrix2D(center, - current_angle, 1.0);
+            }
         }
-        return body;
+        return best_body;
     }
 
     /**
