@@ -4,7 +4,7 @@
 
 \subsection{Zpracování videa}
 
-...opencv
+Ke zpracování videa využiji třídu \texttt{cv::VideoCapture}, která otevře video a~uloží jednotlivé snímky videa. Následně budu zpracovávat video prostřednictvím těchto snímků, aby video nebylo otevřené příliš dlouho.
 
 \subsection{Nalezení atletova těla ve videu}
 
@@ -24,12 +24,54 @@ Atleta odliším od ostatních pohybujících se postav tak, že provede odraz, 
 
 \subsection{Detekce kostry atleta}
 
+Pro detekci atletovy kostry využiji natrénovaný model projektu OpenPose\footnote{https://github.com/CMU-Perceptual-Computing-Lab/openpose}. Model je natrénovaný na množině MPII Human Pose Dataset \citep{MPIIHPE}, která obsahuje 25~tisíc obrázků s~více než 40~tisíci postavami s~anotovanými částmi těla. Množina obsahuje postavy vykonávající 410~aktivit, které jsou u~daného obrázku specifikované.
+
+Počet částí těla, které model specifikuje je 16, ale poslední z~nich je pozadí, které budu ignorovat. Tedy se budu zajímat pouze o~prvních 15 částí těla. Jedná se o
+\begin{enumerate}
+\setcounter{enumi}{-1}
+\item hlavu,
+\item krk,
+\item pravé rameno,
+\item pravý loket,
+\item pravé zápěstí,
+\item levé rameno,
+\item levý loket,
+\item levé zápěstí,
+\item pravou kyčel,
+\item pravé koleno,
+\item pravý kotník
+\item levou kyčel,
+\item levé koleno,
+\item levý kotník a
+\item hrudník.
+\end{enumerate}
+
+Model následně načtu do hluboké neuronové sítě \texttt{cv::dnn::Net} pomocí metody \texttt{cv::dnn::readNetFromCaffe}, jelikož je model uložený ve formátu používaného frameworkem Caffe \citep{Caffe}.
+
+Abych mohl síti předat obrázek, je nutné ho nejprve překonvertovat metodou \texttt{cv::dnn::blobFromImage}. Výsledek této konverze je validní vstup pro síť. Jedná se o~čtyřdimenzionální instanci \texttt{cv::Mat}, jejíž rozměry jsou
+\begin{itemize}
+\item počet vstupních obrázků,
+\item počet kanálů vstupních obrázků,
+\item výška obrázků a
+\item šířka obrázků.
+\end{itemize}
+
+Výsledná instance \texttt{cv::Mat} se následně zpracuje sítí a~vydá výstup, což je opět čtyřdimenzionální instance \texttt{cv::Mat}, jejíž rozměry jsou
+\begin{itemize}
+\item počet vstupních obrázků,
+\item počet výstupních parametrů,
+\item výška výstupů a
+\item šířka výstupů.
+\end{itemize}
+Počet výstupních parametrů je 44, ale budu používat pouze prvních 15, které reprezentují části atletova těla potřebné pro vytvoření kostry. Výslednou hodnotou ve výstupu na dané pozici $(i,n,x,y)$ je pravděpodobnost, že bod na řádku $x$, ve sloupci $y$ ve výstupu odpovídá části těla $n$ ve vstupním obrázku $i$. Abych dostal pozici výstupního bodu ve vstupním obrázku, je nutné výstupní souřadnice škálovat poměrem velikostí vstupu a~výstupu sítě.
+
+Jelikož se atlet při skoku otáčí a~model je natrénovaný na postavách, které otočené nejsou, bude pro lepší přesnost detekce potřeba otáčet také vstupní obrázek. Detekci tedy bude vhodné spouštět na více obrázcích zároveň, což siť umožňuje. Vstupy sítě vytvořím z~obrázků metodou \texttt{cv::dnn::blobFromImages}, která k~tomuto účelu slouží.
+
 \subsection{Zisk modelu atleta z~detekované kostry}
 
 \subsection{Analýza pohybu atletova těla}
 
 \subsection{Zobrazení výstupu analýzy}
-
 
 
 
