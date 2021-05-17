@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.4.21)  16 MAY 2021 22:42
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.4.21)  16 MAY 2021 23:04
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -799,7 +799,7 @@ Package rerunfilecheck Info: File `prace.out' has not changed.
 Here is how much of TeX's memory you used:
  15387 strings out of 478994
  217987 string characters out of 5858184
- 528640 words of memory out of 5000000
+ 528678 words of memory out of 5000000
  32394 multiletter control sequences out of 15000+600000
  496686 words of font info for 95 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -817,7 +817,7 @@ ist/fonts/type1/public/lm/lmr7.pfb></usr/local/texlive/2021/texmf-dist/fonts/ty
 pe1/public/lm/lmr8.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/l
 m/lmri12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmtt10.p
 fb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmtt12.pfb>
-Output written on prace.pdf (24 pages, 614607 bytes).
+Output written on prace.pdf (24 pages, 614461 bytes).
 PDF statistics:
  414 PDF objects out of 1000 (max. 8388607)
  352 compressed objects within 4 object streams

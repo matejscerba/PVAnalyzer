@@ -29,7 +29,7 @@ public:
      * @param video_filename Path to video from which this model is created.
      */
     model(const person &athlete, const std::string &video_filename) noexcept {
-        // std::cout << "TODO : X ROSTE VE SMĚRU ROZBĚHU" << std::endl;
+        std::cout << "TODO : X ROSTE VE SMĚRU ROZBĚHU" << std::endl;
         this->model_filename = "";
         this->video_filename = video_filename;
         compute_frame_points(athlete.get_points());
