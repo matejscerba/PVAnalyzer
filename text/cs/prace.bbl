@@ -1,31 +1,46 @@
-\begin{thebibliography}{3}
+\begin{thebibliography}{6}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
-\bibitem[Andriluka a~kol.(2014)Andriluka, Pishchulin, Gehler a
-  Schiele]{MPIIHPE}
-{\sc Andriluka, M., Pishchulin, L., Gehler, P. {\rm a} Schiele, B.} (2014).
-\newblock 2{D} {H}uman {P}ose {E}stimation: {N}ew {B}enchmark and {S}tate of
-  the {A}rt {A}nalysis.
-\newblock In \emph{IEEE Conference on Computer Vision and Pattern Recognition
-  (CVPR)}.
+\bibitem[Athletics(2021)]{IAAFBR}
+{\sc Athletics, W.} (2021).
+\newblock Research centre.
+\newblock [online].
+\newblock URL
+  \url{https://www.worldathletics.org/about-iaaf/documents/research-centre}.
+\newblock Naposledy navštíveno 17.~5.~2021.
 
-\bibitem[Cao a~kol.(2021)Cao, Hidalgo, Simon, Wei a Sheikh]{OpenPose}
-{\sc Cao, Z., Hidalgo, G., Simon, T., Wei, S.-E. {\rm a} Sheikh, Y.} (2021).
-\newblock Openpose: Realtime multi-person 2d pose estimation using part
-  affinity fields.
-\newblock \emph{IEEE Transactions on Pattern Analysis and Machine
-  Intelligence}, {\bf 43}\penalty0 (1), \penalty0 172--186.
-\newblock \doi{10.1109/TPAMI.2019.2929257}.
+\bibitem[Bradski(2000)]{OpenCV}
+{\sc Bradski, G.} (2000).
+\newblock {The OpenCV Library}.
+\newblock \emph{Dr. Dobb's Journal of Software Tools}.
 
-\bibitem[Jia a~kol.(2014)Jia, Shelhamer, Donahue, Karayev, Long, Girshick,
-  Guadarrama a Darrell]{Caffe}
-{\sc Jia, Y., Shelhamer, E., Donahue, J., Karayev, S., Long, J., Girshick, R.,
-  Guadarrama, S. {\rm a} Darrell, T.} (2014).
-\newblock Caffe: Convolutional architecture for fast feature embedding.
-\newblock \emph{arXiv preprint arXiv:1408.5093}.
+\bibitem[Gravestock a~kol.(2017)Gravestock, Bissas a Merlino]{IAAF2017}
+{\sc Gravestock, H., Bissas, A. {\rm a} Merlino, S.} (2017).
+\newblock {Biomechanical report for the IAAF World Championships London 2017:
+  Pole Vault Men's}.
+\newblock URL
+  \url{https://www.worldathletics.org/download/download?filename=e2903e25-0ee3-43d2-b031-1af5a3b84fb8.pdf&urlslug=Men%27s%20pole%20vault%20-%202017%20IAAF%20World%20Championships%20Biomechanical%20report}.
+
+\bibitem[Hunter(2007)]{Matplotlib}
+{\sc Hunter, J.~D.} (2007).
+\newblock {Matplotlib: A 2D graphics environment}.
+\newblock \emph{Computing in Science \& Engineering}, {\bf 9}\penalty0 (3),
+  \penalty0 90--95.
+\newblock \doi{10.1109/MCSE.2007.55}.
+
+\bibitem[MATLAB(2010)]{MATLAB}
+{\sc MATLAB} (2010).
+\newblock \emph{{version 7.10.0 (R2010a)}}.
+\newblock The MathWorks Inc., Natick, Massachusetts.
+
+\bibitem[Williams a~kol.(2013)Williams, Kelley a {many others}]{gnuplot}
+{\sc Williams, T., Kelley, C. {\rm a} {many others}} (2013).
+\newblock Gnuplot 4.6: an interactive plotting program.
+\newblock [online].
+\newblock URL \url{http://gnuplot.sourceforge.net/}.
 
 \end{thebibliography}

@@ -65,8 +65,8 @@ public:
             if (!end && track(frame, frame_no)) {
                 draw(frame, frame_no);
 
-                // cv::imshow("frame", frame);
-                // cv::waitKey(1);
+                cv::imshow("frame", frame);
+                cv::waitKey(1);
             }
 
             // Save current modified frame.
@@ -259,6 +259,7 @@ private:
                 res = true;
                 // std::cout << trackers_bboxes.back()[i] << std::endl << std::endl;
             } else {
+                trackers_bboxes.back().emplace_back();
                 valid[i] = false;
             }
         }
@@ -306,9 +307,7 @@ private:
             cv::Point grid_tl = get_center(max_rect);
             grid_tl -= cv::Point(win_size.width / 2, win_size.height / 2);
             grid_tl -= offset;
-            // std::cout << grid_tl << grid_size << rect(frame) << std::endl;
             cv::Rect grid = cv::Rect(grid_tl, grid_size) & rect(frame);
-            // std::cout << grid << std::endl;
             
 
             for (row = 0; row < 3; ++row) {

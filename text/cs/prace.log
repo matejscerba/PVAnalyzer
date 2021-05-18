@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.4.21)  16 MAY 2021 23:04
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.4.21)  18 MAY 2021 15:04
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -601,7 +601,7 @@ LaTeX Info: Redefining \nameref on input line 128.
 
  (./titulka.tex
 Package hyperref Info: Option `pageanchor' set `false' on input line 6.
-<../img/logo-cs.pdf, id=131, 506.4591pt x 156.49065pt>
+<../img/logo-cs.pdf, id=147, 506.4591pt x 156.49065pt>
 File: ../img/logo-cs.pdf Graphic file (type pdf)
 <use ../img/logo-cs.pdf>
 Package pdftex.def Info: ../img/logo-cs.pdf  used on input line 10.
@@ -674,19 +674,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 \openout2 = `uvod.aux'.
 
 
-(./uvod.tex
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 8.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 8.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 8.
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 8
-.
- (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/t1lmtt.fd
-File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-[2
+(./uvod.tex [2
 
 
 ]) [3]
@@ -699,19 +687,7 @@ Kapitola 1.
 
 
 
-]
-Underfull \hbox (badness 10000) in paragraph at lines 27--27
-[][][]\T1/lmr/m/n/10 Ke sta-ºení na []$\T1/lmtt/m/n/10 https : / / www . worlda
-thletics . org / download / download ? filename =
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 27--27
-\T1/lmtt/m/n/10 e2903e25-[]0ee3-[]43d2-[]b031-[]1af5a3b84fb8 . pdf & urlslug = 
-Men % 27s % 20pole % 20vault % 20-[] %
- []
-
-[5] [6]) [7]
+] [5] [6]) [7]
 \openout2 = `realizace.aux'.
 
  (./realizace.tex
@@ -728,28 +704,17 @@ le£-ností In-tel. Knihovna
 
 
 ]
-Overfull \hbox (3.86566pt too wide) in paragraph at lines 39--40
-[]\T1/lmr/m/n/12 Ke zpra-co-vání vi-dea vy-u-ºiji t°ídu \T1/lmtt/m/n/12 cv::Vid
-eoCapture\T1/lmr/m/n/12 , která ote-v°e vi-deo a uloºí
+Overfull \hbox (3.16002pt too wide) in paragraph at lines 49--50
+[]\T1/lmr/m/n/12 P·vodní ohra-ni-£u-jící rá-me-£ek roz-d¥-lím na m°íºku 3x3 men
+-²ích rá-me£k·. Kaºdý
  []
 
-[9]
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 8
-5.
- (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/ts1lmr.fd
-File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [10] [11]
-Overfull \hbox (1.98073pt too wide) in paragraph at lines 130--131
-[]\T1/lmr/m/n/12 Dostate£ným °e-²e-ním bude ur-£ení vzá-jemné po-zice le-vého h
-or-ního rohu snímku
- []
-
-[12]) [13]
+[9] [10]) [11]
 \openout2 = `experimenty.aux'.
 
  (./experimenty.tex
 Kapitola 3.
-) [14
+) [12
 
 
 
@@ -757,7 +722,7 @@ Kapitola 3.
 ]
 \openout2 = `zaver.aux'.
 
- (./zaver.tex) [15
+ (./zaver.tex) [13
 
 
 
@@ -765,7 +730,43 @@ Kapitola 3.
 ]
 \openout2 = `literatura.aux'.
 
- (./literatura.tex (./prace.bbl)) [16
+ (./literatura.tex (./prace.bbl
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 1
+3.
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/lm/t1lmtt.fd
+File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+Underfull \hbox (badness 1205) in paragraph at lines 22--27
+[]\T1/lmr/m/sc/12 Gravestock, H., Bis-sas, A. \T1/lmr/m/n/12 a \T1/lmr/m/sc/12 
+Mer-lino, S. \T1/lmr/m/n/12 (2017).  Bi-o-me-cha-ni-cal
+ []
+
+
+Underfull \hbox (badness 2103) in paragraph at lines 22--27
+\T1/lmr/m/n/12 re-port for the IAAF World Cham-pi-on-ships Lon-don 2017: Pole V
+ault
+ []
+
+
+Underfull \hbox (badness 6063) in paragraph at lines 22--27
+\T1/lmr/m/n/12 Men's.  URL []$\T1/lmtt/m/n/12 https : / / www . worldathletics 
+. org / download / download ?
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 22--27
+\T1/lmtt/m/n/12 filename = e2903e25-[]0ee3-[]43d2-[]b031-[]1af5a3b84fb8 . pdf &
+ urlslug = Men %
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 22--27
+\T1/lmtt/m/n/12 27s % 20pole % 20vault % 20-[] % 202017 % 20IAAF % 20World % 20
+Championships %
+ []
+
+)) [14
 
 
 
@@ -774,8 +775,7 @@ Kapitola 3.
 \tf@lof=\write7
 \openout7 = `prace.lof'.
 
-
-[17
+ [15
 
 
 
@@ -783,44 +783,43 @@ Kapitola 3.
 \tf@lot=\write8
 \openout8 = `prace.lot'.
 
- [18
+ [16
 
-] [19
+] [17
 
 ]
 P\v {r}\'{\i }loha A.
-[20
+[18
 
 ] (./prace.aux (./titulka.aux) (./uvod.aux) (./teorie.aux) (./realizace.aux) (.
 /experimenty.aux) (./zaver.aux) (./literatura.aux))
 Package rerunfilecheck Info: File `prace.out' has not changed.
-(rerunfilecheck)             Checksum: FAB4E6EE9D17641BBEC9D834FEE9ED28;4877.
+(rerunfilecheck)             Checksum: DC26F414FBE17ED4B777AE90DCD010E3;5525.
  ) 
 Here is how much of TeX's memory you used:
- 15387 strings out of 478994
- 217987 string characters out of 5858184
- 528678 words of memory out of 5000000
- 32394 multiletter control sequences out of 15000+600000
- 496686 words of font info for 95 fonts, out of 8000000 for 9000
+ 15304 strings out of 478994
+ 216761 string characters out of 5858184
+ 529669 words of memory out of 5000000
+ 32348 multiletter control sequences out of 15000+600000
+ 467190 words of font info for 67 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 88i,8n,90p,1194b,2364s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 88i,6n,90p,1194b,2364s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/
-texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2021/t
-exmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/local/texlive/2021/texmf-dist/fon
-ts/enc/dvips/lm/lm-mathit.enc}</usr/local/texlive/2021/texmf-dist/fonts/type1/p
-ublic/lm/lmbx12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/l
-mcsc10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmmi12.pfb
-></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/loca
-l/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr12.pfb></usr/local/texlive/2
-021/texmf-dist/fonts/type1/public/lm/lmr17.pfb></usr/local/texlive/2021/texmf-d
-ist/fonts/type1/public/lm/lmr7.pfb></usr/local/texlive/2021/texmf-dist/fonts/ty
-pe1/public/lm/lmr8.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/l
-m/lmri12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmtt10.p
-fb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmtt12.pfb>
-Output written on prace.pdf (24 pages, 614461 bytes).
+texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/20
+21/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2021/texmf-dist/
+fonts/enc/dvips/lm/lm-mathit.enc}</usr/local/texlive/2021/texmf-dist/fonts/type
+1/public/lm/lmbx12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/l
+m/lmcsc10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmmi12.
+pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr12.pfb></usr/l
+ocal/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr17.pfb></usr/local/texliv
+e/2021/texmf-dist/fonts/type1/public/lm/lmr8.pfb></usr/local/texlive/2021/texmf
+-dist/fonts/type1/public/lm/lmri12.pfb></usr/local/texlive/2021/texmf-dist/font
+s/type1/public/lm/lmsy10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/pu
+blic/lm/lmtt12.pfb>
+Output written on prace.pdf (22 pages, 541078 bytes).
 PDF statistics:
- 414 PDF objects out of 1000 (max. 8388607)
- 352 compressed objects within 4 object streams
- 89 named destinations out of 1000 (max. 500000)
- 266 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 406 PDF objects out of 1000 (max. 8388607)
+ 350 compressed objects within 4 object streams
+ 74 named destinations out of 1000 (max. 500000)
+ 298 words of extra memory for PDF output out of 10000 (max. 10000000)
 
