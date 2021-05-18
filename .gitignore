@@ -5,3 +5,13 @@ build/
 data/BP_videos/
 outputs/*/*.avi
 opencv/
+*.log
+*.dvi
+*.aux
+*.toc
+*.lof
+*.lot
+*.out
+*.bbl
+*.blg
+*.xmpi
