@@ -7,6 +7,10 @@
 
 
 
+\section{tmp0}
+
+Každému snímku také nastavím velikost, aby odpovídala rozlišení 720p. Video v~portétním režimu upravím, aby mělo šířku 720~pixelů, pokud je video natočeno na šířku, změním jeho výšku na 720~pixelů.
+
 \section{tmp}
 
 Ve snímku, ve kterém detekuji objekt, vyberu část snímku, ve které se objekt, jehož pohyb určuji, nenachází. Tím získám pozadí, jehož pozice je statická v~průběhu celého videa. Pozici objektu budu následně vztahovat ke středu této oblasti. Určení pozice je v~prvním snímku snadné, lze ji vyjídřit výrazem $p_0=o_0-b_0$, kde $o_0$~je pozice středu objektu ve snímku, $b_0$~pozice středu pozadí ve snímku a $p_0$~výsledná pozice objektu vůči pozadí. Také určím pozici $t_0$ levého horního rohu snímku vůči středu pozadí, ta je rovna $t_0=-b_0$. Na základě pozice levého horního rohu snímku lze snadno určit pozici objektu: $p_0=t_0+o_0=o_0-b_0$.
@@ -20,16 +24,6 @@ Tyto výpočty vycházejí z~vlastností souřadného systému snímku, který p
 \section{tmp2}
 
 Klouby kostry reprezentuji v~souřadném systému snímku videa. Bod nacházející se na pozici $(x,y)$ ve snímku se nachází ve vzdálenosti $x$\,\rm pixelů od levé strany snímku a~ve vzdálenosti $y$\,\rm pixelů od horní strany snímku.
-
-Jednotkou souřadného systému 3D modelu je pixel. Odhad reálných vzdáleností z~videa je poměrně komplikovaný a~pro základní parametry skoku bude tento systém dostačující. Pro případnou konverzi na metry lze systém vhodně přeškálovat v~budoucnu. Musí se ovšem brát v~potaz vzdálenost atleta od kamery, jelikož se jeho velikost v~průběhu videa mění. Pro přesnější konverzi bych tedy musel zvolit jiný výpočet reálného pohybu objektů ve videu.
-
-Kloub výsledného 3D modelu reprezentuji jako uspořádanou trojici $(x,y,z)$, počátek této soustavy umístím do místa kotníku odrazové nohy při odrazu atleta. Ideální by bylo počátek umístit na zadní hranu kastlíku. Kastlík je schovaný za doskočištěm, tudíž bych jeho pozici musel odhadovat na základě detekce tyče, což by mohlo být nepřesné.
-
-Hodnota první složky určuje horizontální vzdálenost bodu od počátku ve směru rovnoběžným s~osou rozběžiště. Tato hodnota stoupá ve směru rozběhu.
-
-Hodnota druhé složky určuje horizontální vzdálenost bodu od počátku ve směru kolmým na osu rozběžiště. Tato hodnota stoupá ve směru od kamery.
-
-Hodnota třetí složky určuje vertikální vzdálenost bodu od počátku. Tato hodnota stoupá ve směru vzhůru.
 
 Pro převod kostry do 3D modelu je tedy třeba sečíst pozici levého horního rohu vůči pozadí a~pozici kloubu kostry ve snímku, abych získal pozici $(x,y)$ kloubu kostry vůči pozadí. Následně převrátím první složku, pokud atlet běží doleva, jinak ji nechám beze změny. Druhou složce výsledného bodu nastavím na $0$. Jako hodnotu poslední složky uložím hotnotu $-y$. Výsledný bod posunu o~$-d$, kde $d$ je pozice kotníku odrazové nohy při odrazu. Tuto hodnotu získám až po analýze parametrů skoku (popsané v~sekci \ref{ssec:analyza}), kterou provádím v~posunutém souřadném systému, což na parametry skoku nemá vliv.
 

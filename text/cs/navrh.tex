@@ -2,42 +2,43 @@
 
 \section{Algoritmus}
 
-V~této sekci se věnuji stručnému popisu programu bez konkrétních implementačních praktik. Ty rozebírám v~kapitole \ref{chap:realizace}.
+Vstupem programu je video skoku o~tyči. Toto video program nejprve zpracuje do vhodné reprezentace, následně ve videu nalezne atleta. Na základě pozice atleta v~jednotlivých snímcích detekuje kostru atleta, kterou převede do 3D modelu. Podle pohybu atletova těla, který je reprezentovaný získaným modelem, analyzuje parametry skoku a~určí jejich hodnoty. Výstupem programu je model atletova těla a~hodnoty definovaných parametrů. Tento výstup následně uloží a~zobrazí uživateli.
 
-\paragraph{Vstup}
+\subsection{Vstup programu}
 
-\paragraph{Výstup}
+Vstupem programu je video skoku o~tyči pořízené běžnými prostředky, jakými jsou mobilní telefon nebo tablet.
+
+Videa skoku o~tyči se nejčastěji natáčí ze strany. Kamera se standardně nachází na kolmici k~rozběžišti, která prochází místem odrazu. [OBRÁZEK] Můj program takovéto video očekává, ale pozice kamery nemusí být na konkrétním místě. Pro přesnost hodnot výsledných parametrů je vhodné, aby byla kamera na úrovni odrazu. Pro potřebu přesnější analýzy běhu atleta je možné natočit video na úrovni poloviny rozběhu. [OBRÁZEK + odkaz na pozici kamery]
+
+Při trénincích se kamera nachází ve vzdálenosti okolo 10 metrů od rozběžiště, závodní skoky jsou často natáčeny z~tribuny, tudíž je vzdálenost větší, v~řádu desítek metrů. Velikost atleta ve videu nemá na fukncionalitu programu vliv, ale detekce menší postavy může vyústit v~horší přesnost. [Otestovat program na videu, kam se atlet nevejde]
 
 \subsection{Zpracování videa}
 
-Prvním krokem k~provedení analýzy je zpracování videa. Aby video nebylo otevřené po celou dobu analýzy, rozhodl jsem se při analýze pracovat s~jednotlivými snímky, které si ukládám při jediném průchodu videem. Každému snímku také nastavím velikost, aby odpovídala rozlišení 720p. Video v~portétním režimu upravím, aby mělo šířku 720~pixelů, pokud je video natočeno na šířku, změním jeho výšku na 720~pixelů.
+Prvním krokem k~provedení analýzy je zpracování videa. Aby video nebylo otevřené po celou dobu analýzy, rozhodl jsem se při analýze pracovat s~jednotlivými snímky, které si ukládám při jediném průchodu videem. Rozlišení vídea může být libovolné, ale z~důvodu časové náročnosti rozlišení snímků videa před jejich analýzou zmenším
 
-\subsection{Trasování objektů}
+\subsection{Souřadné systémy}
 
-Pro analýzu videa bylo nutné implementovat trasování objektů. Základ této funkcionality zajišťuje knihovní implementace, ale přesnost trasování atleta při skoku bez modifikací není dostačující.
+Pro reprezentaci pozic obejktů je potřeba zvolit vhodné souřadné systémy, aby nezkreslovaly hodnoty parametrů.
 
-Trasování atleta při rozběhu nedělá knihovním trackerům problém. Nepřesné trasování nastává při skoku. Důvodem těchto nepřesností je rotace atletova těla. Tato rotace je při skoku výrazná a~při vodorovné pozici trupu nemusí atletovo tělo zabírat věšinu ohraničujícího rámečku, což způsobí, že tracker začne trasovat pozadí videa a~ztratí atleta. [OBRÁZKY RÁMEČKŮ PŘI ROZBĚHU A SKOKU - MOMENT ZTRACENÍ ATLETA A PÁR SNÍMKŮ POTÉ a výsledného řešení ve stejných momentech se stejnou inicializací postavy atleta]
-
-Modifikací vedoucích ke zlepšení přesnosti jsem zkusil několik.
-
-Nejprve jsem otáčel video podle naklonění trupu, které jsem získal detekcí kostry (popsané v~sekci \ref{ssec:kostra}). Následně jsem aktualizoval tracker, aby trasoval pouze trup. Jeho pozici jsem opět získával z~detekované kostry. Tyto metody selhávaly při chybné detekci kostry, ačkoliv jsem se snažil implementovat kontrolní mechanismus. Například jsem neaktualizoval tracker kostře, jejíž trup byl příliš daleko od právě trasovaného trupu. [OBRÁZEK TOHOTO PROBLÉMU]
-
-Nakonec jsem implementoval metodu, která nezávisí na detekci kostry atleta. Atletovo tělo netrasuji jako celek, ale po částech.
-
-Původní ohraničující rámeček rozdělím na mřížku 3x3~menších rámečků. Každý rámeček trasuji zvlášť a~průběžně aktualizuji ty, které netrasují atleta.
-
-Po každých dvou snímcích zkoumám reálný pohyb jednotlivých rámečků za tyto dva snímky (popisu pohybu se věnuji v~sekci \ref{ssec:pohyb}). Určím rámeček, který se pohnul nejvíce. Pohyb rámečku musí být horizontálně ve stejném směru, jako je rozběh atleta. Následně posunu mřížku tak, aby odpovídala pozici nejvíce se pohybujícího rámečku. [OBRÁZEK s podrobnějším popisem] Do mřížky poté přesunu rámečky, jejichž trasování selhalo. Selhané rámečky přesunu na původní místo v~nové mřížce. [OBRÁZEK před a po]
-
-Mřížku používám pouze pro trasování atleta při detekci kostry, při hledání atleta ve videu není potřeba rámeček rozdělovat, jelikož atleta identifikuji před odrazem.
-
-\subsection{Reálný pohyb objektů}
-\label{ssec:pohyb}
+\subsubsection{Video}
 
 Kamera nemusí typicky není při natáčení skoků statická, tudíž je potřeba reprezetovat pohyb obejktů jinak než pouze jejich pozicí ve snímcích videa.
 
 Rozhodl jsem se pro určení pohybu podle vzájemné pozice objektu a~pozadí videa. Polohu pozadí považuji za statickou. Jedná se o~jistou formu projekce 3D prostoru do 2D, která zkresluje realitu.
 
 Pozice pozadí v~prvním snímku je počátkem souřadného systému, který pro určení pohybu objektů používám. Jedná se tedy o~posunutí souřadného systému jednotlivých snímků. [OBRÁZEK]
+
+\subsubsection{3D model}
+
+Jednotkou souřadného systému 3D modelu je pixel. Odhad reálných vzdáleností z~videa je poměrně komplikovaný a~pro základní parametry skoku bude tento systém dostačující. Pro případnou konverzi na metry lze systém vhodně přeškálovat v~budoucnu. Musí se ovšem brát v~potaz vzdálenost atleta od kamery, jelikož se jeho velikost v~průběhu videa mění. Pro přesnější konverzi bych tedy musel zvolit jiný výpočet reálného pohybu objektů ve videu.
+
+Kloub výsledného 3D modelu reprezentuji jako uspořádanou trojici $(x,y,z)$, počátek této soustavy umístím do místa kotníku odrazové nohy při odrazu atleta. Ideální by bylo počátek umístit na zadní hranu kastlíku. Kastlík je schovaný za doskočištěm, tudíž bych jeho pozici musel odhadovat na základě detekce tyče, což by mohlo být nepřesné.
+
+Hodnota první složky určuje horizontální vzdálenost bodu od počátku ve směru rovnoběžným s~osou rozběžiště. Tato hodnota stoupá ve směru rozběhu.
+
+Hodnota druhé složky určuje horizontální vzdálenost bodu od počátku ve směru kolmým na osu rozběžiště. Tato hodnota stoupá ve směru od kamery.
+
+Hodnota třetí složky určuje vertikální vzdálenost bodu od počátku. Tato hodnota stoupá ve směru vzhůru.
 
 \subsection{Nalezení atleta}
 
@@ -59,8 +60,32 @@ Pokud se postava v~horizontálním směru nepohne za určitou dobu alespoň o~da
 
 V opačném případě považuji postavu za atleta. Tímto okamžikem hledání atleta ve videu končí, jelikož vím, ve kterém snímku jsem atleta detekoval poprvé, jaký byl jeho ohraničující rámeček v~daném snímku a~směr jeho pohybu.
 
-\subsection{Detekce atletovy kostry}
-\label{ssec:kostra}
+\subsubsection{Trasování postav}
+
+Trasování postav ve videu používám k~odlišení atleta od ostatních postav. Trasování atleta provádím také při detekci kloubů kostry, ale modifikovaným způsobem, který je popsaný v~sekci \ref{sssec:trasovanidetekce}.
+
+Pro trasování postav ve videu stačí knihovní implementace trackerů, velikost postav se ve videu dramaticky nemění a~jejich pohyby jsou plynulé.
+
+\subsection{Detekce kostry}
+
+\subsubsection{Trasování atleta}
+
+Trasování atleta při rozběhu nedělá knihovním trackerům problém. Nepřesné trasování nastává při skoku. Důvodem těchto nepřesností je rotace atletova těla. Tato rotace je při skoku výrazná a~při vodorovné pozici trupu nemusí atletovo tělo zabírat věšinu ohraničujícího rámečku, což způsobí, že tracker začne trasovat pozadí videa a~ztratí atleta. [OBRÁZKY RÁMEČKŮ PŘI ROZBĚHU A SKOKU - MOMENT ZTRACENÍ ATLETA A PÁR SNÍMKŮ POTÉ a výsledného řešení ve stejných momentech se stejnou inicializací postavy atleta]
+
+Modifikací vedoucích ke zlepšení přesnosti jsem zkusil několik.
+
+Nejprve jsem otáčel video podle naklonění trupu, které jsem získal detekcí kostry (popsané v~sekci \ref{ssec:trasovanidetekce}). Následně jsem aktualizoval tracker, aby trasoval pouze trup. Jeho pozici jsem opět získával z~detekované kostry. Tyto metody selhávaly při chybné detekci kostry, ačkoliv jsem se snažil implementovat kontrolní mechanismus. Například jsem neaktualizoval tracker kostře, jejíž trup byl příliš daleko od právě trasovaného trupu. [OBRÁZEK TOHOTO PROBLÉMU]
+
+Nakonec jsem implementoval metodu, která nezávisí na detekci kostry atleta. Atletovo tělo netrasuji jako celek, ale po částech.
+
+Původní ohraničující rámeček rozdělím na mřížku menších rámečků. Každý rámeček trasuji zvlášť a~průběžně aktualizuji ty, které netrasují atleta.
+
+Po každých několika snímcích zkoumám reálný pohyb jednotlivých rámečků za tyto dva snímky (popisu pohybu se věnuji v~sekci \ref{ssec:pohyb}). Určím rámeček, který se pohnul nejvíce. Pohyb rámečku musí být horizontálně ve stejném směru, jako je rozběh atleta. Následně posunu mřížku tak, aby odpovídala pozici nejvíce se pohybujícího rámečku. [OBRÁZEK s podrobnějším popisem] Do mřížky poté přesunu rámečky, jejichž trasování selhalo. Selhané rámečky přesunu na původní místo v~nové mřížce. [OBRÁZEK před a po]
+
+Mřížku používám pouze pro trasování atleta při detekci kostry, při hledání atleta ve videu není potřeba rámeček rozdělovat, jelikož atleta identifikuji před odrazem.
+
+\subsubsection{Detekce kloubů těla}
+\label{sssec:trasovanidetekce}
 
 Pro určení atletovy kostry stačí detekovat klouby, které následně spojím úsečkami. Klouby detekuji pomocí konvoluční sítě. Jelikož má implementace očekává, že na snímku je jediná postava, bylo pro dostatečnou kvalitu detekce kloubů potřeba vyříznout ze snímku okno, v~němž se nachází atlet a~příslušně okno rotovat, aby byl atlet v~co nejvzpřímenější pozici. Síť, kterou používám, je totiž natrénovaná na databázi \citep{MPIIHPE}, v~níž je většina postav ve vzpřímené poloze.
 
@@ -72,15 +97,11 @@ Pokud se mi nepodaří detekovat celou kostru, zkusím okno rotovat o~určitý �
 
 Jelikož atlet mění v~průběhu videa velikost - standardně se zvětšuje, protože se přibližuje ke kameře - je potřeba okno postupně zvětšovat. První okno je dané původním ohraničujícím rámečkem, který pro jistotu lehce zvětším. Velikosti následujících oken určuji podle dosud největší validně detekované kostry. Velikost se rovná vzdálenosti dvou nejvzdálenějších kloubů kostry, ale pro jistotu okno lehce zvětším. Okno je tedy čtvercové, jehož strana má délku velikosti dosud největší validně detekované kostry, která je zvětšena konstantou.
 
-Detekované klouby v~okně následně převedu podle pozice okna do souradného systému snímku, který popíšu v~sekci \ref{ssec:konverze}.
+\subsection{Konverze kostry do 3D modelu}
 
-\subsection{Konverze detekované kostry do 3D modelu}
-\label{ssec:konverze}
+Konverzi detekované kostry do 3D modelu provedu pomocí algoritmu pro převod mezi souřadnými systémy videa a~3D modelu. Tyto souřadné systémy jsou popsané v~sekci \ref{sec:ssystemy} a~implementace algoritmu v~sekci [ODKAZ].
 
-
-
-\subsection{Analýza parametrů skoku}
-\label{ssec:analyza}
+\subsection{Analýza parametrů}
 
 Vzhledem k~vlastnostem mnou zvoleného modelu nebude vhodné analyzovat některé parametry skoku. Rozeberu proveditelnost analýzy biomechanických parametrů popsaných v~sekci \ref{ssec:parametry}.
 
@@ -154,15 +175,15 @@ Parametrem souvisejícím s~dobou oporové fáze kroku je úhel došlapu. Jedná
 
 Hodnota tohoto parametru není příliš přesná na začátku rozběhu, ale s~postupem času se přesnost zvětšuje díky lepšímu úhlu záběru. Náklon trupu počítám dvěma způsoby. Mezi hlavou, středem kyčlí a~vertikálou a~mezi středem ramen, středem kyčlí a~vertikálou.
 
-\subsection{Zobrazení parametrů skoku}
+\subsubsection{Důležité momenty skoku}
 
-Výsledné parametry je vhodné uživateli přehledně zobrazit. Rozhodl jsem se pro vlastní prohlížeč snímků videa. Lze se mezi snímky pohybovat dopředu i~dozadu. Ve výchozím režimu se zobrazí video se zakreslenou kostrou, jejíž zakreslení do snímku lze vypnout a~znovu zapnout.
+Kromě parametrů ve videu detekuji podstatné momenty, mezi něž považuji začátek rozběhu, odraz a~moment kulminace boků nad laťkou.
 
-Při prohlížení daného snímku vypíše program do konzole hodnoty příslušných parametrů. Parametry jsem rozdělil do kategorií podle části skoku, při které jsou podstatné. Například úhel došlapu je irelevantní při skoku, ale je důležitý při rozběhu. Tedy při snímku rozběhu se vypíše například úhel naklonění trupu v~daném snímku a~doba trvání právě probíhajícího kroku. Parametry související s~odrazem vypíše program při zobrazení snímku, který reprezentuje moment odrazu. [OBRÁZKY]
+\subsection{Výstup}
 
-Po ukončení prohlížeče snímků zobrazím uživateli hodnoty parametrů zanesených do grafů.
+Výstupem programu je model reprezentující pohyb atleta v~průběhu rozběhu i~skoku a~hodnoty definovaných parametrů.
 
-\subsection{Uložení výstupu}
+\subsubsection{Uložení výstupu}
 
 Hodnoty parametrů vypíšu do souboru pro případnou hlubší biomechanickou analýzu. Jedná se o~\texttt{.csv} soubor, jehož formát je následující.
 
@@ -182,6 +203,14 @@ Aby uživatel nemusel video analyzovat znovu, je mu umožněno načtení modelu 
 Po analýze videa se výsledný model uloží do textového souboru. První řádek obsahuje název analyzovaného videa.
 
 Následně se opakují části reprezentující detekce daného snímku. Na prvním čádku této části je číslo snímku videa, následuje pozice levého hodního rohu snímku (ve 3D souřadnicích). Na dalším řádku následuje pozice kloubu kostry těla ve 3D souřadnicích. Tyto klouby jsou uloženy postupně, podle zvoleného modelu reprezentace těla, ten je popsán v~sekci ?. [UKÁZKA]
+
+\subsubsection{Zobrazení výstupu uživateli}
+
+Výstup programu je vhodné uživateli přehledně zobrazit. Rozhodl jsem se pro vlastní prohlížeč snímků videa. Lze se mezi snímky pohybovat dopředu i~dozadu. Ve výchozím režimu se zobrazí video se zakreslenou kostrou, jejíž zakreslení do snímku lze vypnout a~znovu zapnout.
+
+Při prohlížení daného snímku vypíše program do konzole hodnoty příslušných parametrů. Parametry jsem rozdělil do kategorií podle části skoku, při které jsou podstatné. Například úhel došlapu je irelevantní při skoku, ale je důležitý při rozběhu. Tedy při snímku rozběhu se vypíše například úhel naklonění trupu v~daném snímku a~doba trvání právě probíhajícího kroku. Parametry související s~odrazem vypíše program při zobrazení snímku, který reprezentuje moment odrazu. [OBRÁZKY]
+
+Po ukončení prohlížeče snímků zobrazím uživateli hodnoty parametrů zanesených do grafů.
 
 \section{Programové vybavení}
 
