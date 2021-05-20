@@ -20,42 +20,54 @@
  * @brief Wrapper of whole program's functionality.
  * 
  * This class is intented to be used for default functionality. It processes
- * the video and passes individual frames to other parts of the program.
+ * the video or model and passes individual frames to other parts of the program.
  */
 class video_processor {
 public:
 
     /**
-     * @brief Process video at certain path frame by frame.
+     * @brief Process video at given path frame by frame.
      * 
      * Extract frames, find athlete, detect athlete's body
      * and analyze movements. Write output.
      * 
      * @param filename Path to video file to be processed.
+     * @param find Find athlete automatically if true, let user select athlete
+     *      manually if false.
      */
-    void process_video(const std::string &filename) const noexcept {
+    void process_video(const std::string &filename, bool find) const noexcept {
+        // Extract frames.
         double fps;
         std::vector<cv::Mat> raw_frames = extract_frames(filename, fps);
         if (!raw_frames.size()) return;
 
         body_detector detector(fps);
 
+        // Find athlete.
         std::vector<cv::Mat> found_frames;
-        // std::optional<person> athlete = detector.find_athlete(raw_frames, found_frames);
-        std::optional<person> athlete = select_athlete(raw_frames, fps, filename);
-        write(raw_frames, "raw", filename, fps);
-        // write(found_frames, "found", filename, fps);
+        std::optional<person> athlete = std::nullopt;
+        if (find)
+            athlete = detector.find_athlete(raw_frames, found_frames);
+        else
+            athlete = select_athlete(raw_frames, fps, filename);
         if (!athlete) {
             std::cout << "Athlete could not be found in video " << filename << std::endl;
             return;
         }
+
+        // Detect athlete's body.
         std::vector<cv::Mat> frames = athlete->detect(raw_frames);
 
+        // Create model from detections.
+        model m(*athlete, filename);
+
+        // Save output.
+        m.save();
+        write(raw_frames, "raw", filename, fps);
+        write(found_frames, "found", filename, fps);
         write(frames, "detections", filename, fps);
 
-        model m(*athlete, filename);
-        m.save();
-
+        // Analyze movement.
         analyze(m, filename, fps, raw_frames, frames, true);
     }
 
@@ -232,21 +244,11 @@ private:
             // Video ended.
             if (frame.empty()) break;
 
-            // Save current frame.
-            // cv::imshow("frame", frame);
-            // cv::imshow("frame_sm", resize(frame));
-            // cv::waitKey();
+            // Resize and save current frame.
             frames.push_back(resize(frame));
 
-            // std::stringstream sstr;
-            // sstr << "images/" << frames.size() - 1 << ".png";
-            // cv::imwrite(sstr.str(), frames.back());
-
-            // std::cout << frames.size() - 1 << std::endl;
-            // cv::imshow("frame", frames.back());
-            // cv::waitKey();
-
             // Skip frames of tested 120-fps video for efficiency reasons.
+            // TODO: remove
             if (filename.find("kolin2.MOV") != std::string::npos) {
                 video >> frame; video >> frame; video >> frame;
             }
@@ -265,6 +267,7 @@ private:
      * @param fps
      */
     void write(const std::vector<cv::Mat> &frames, const std::string &output_filename, const std::string &input_filename, double fps) const noexcept {
+        if (!frames.size()) return;
         std::string output_dir = get_output_dir(input_filename);
         std::string path = output_dir + "/" + output_filename + ".avi";
         cv::VideoWriter writer(

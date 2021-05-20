@@ -1,15 +1,101 @@
 \chapter{Realizace}
-\label{chap:realizace}
 
 \section{Zvolené prostředky}
+\label{sec:prostredky}
 
-\section{Schéma programu}
+Pro potřeby analýzy videa jsem použil jazyk C++ a~knihovnu OpenCV. Jelikož je analýza výpočetně náročná, dal jsem z~rychlostních důvodů přednost jazyku C++ před jazykem Python. Také mám s~jazykem C++ více zkušeností.
+
+Pro zobrazení parametrů v~grafické podobě jsem se rozhodl využít Matplotlib. Pro využití této knihovny není potřeba znát speciální syntaxi, základní znalosti Pythonu jsou dostačující. Jelikož je knihovna Matplotlib určena pro Python, je snadné napsat skript, který nejen vygeneruje grafy, ale také zpracuje data, která se mají zobrazit.
+
+Program lze spustit na počítači s~Unixovým operačním systémem.
 
 
 
-\section{tmp0}
 
-Každému snímku také nastavím velikost, aby odpovídala rozlišení 720p. Video v~portétním režimu upravím, aby mělo šířku 720~pixelů, pokud je video natočeno na šířku, změním jeho výšku na 720~pixelů.
+\section{Souřadné systémy}
+
+Nyní popíšu konverze mezi souřadnými systémy.
+
+Souřadné systémy snímku a~videa jsou jen posunuté o~vzájemnou pozici levého horního rohu snímku a~pozadí v~prvním snímku. Tudíž jejich konverzi reprezentuje operace posunutí.
+
+Konverze mezi souřadným systémem videa a~prostoru je složitější. Jednotka systémů je stejná, tudíž škálování není třeba provádět. První složky bodů v~obou systémech spolu korespondují. Druhá složka bodu v~souřadném systému videa odpovídá třetí složce bodu v~prostoru. Tuto konverzi používám jen pro určení pozice kloubů těla atleta.
+
+Je třeba zohlednit směr rozběhu atleta. Pokud běží doleva, musím převrátit hodnotu první složky. Pokud běží doprava, hodnotu první složky nechám stejnou.
+
+Hodnotu druhé složky nastavím na $0$. Odhad pozice kloubu v~tomto směru je problematický, jelikož se atlet při skoku otáčí podél své osy, tudíž její implementaci ponechám do budoucích verzí programu.
+
+Hodnotu třetí složky v~prostoru získám převrácením druhé složky bodu v~souřadném systému videa.
+
+Výsledkem tohoto postupu je posunutý prostor, musím ho tedy posunout s~využitím pozice kotníku odrazové nohy v~momentu odrazu.
+
+Konverzi bodu kostry $(x',y')$ v~souřadném systému videa do prostoru lze reprezentovat takto:
+\begin{alignat*}{3}
+&\text{Při běhu doprava:} &\qquad (x,y,z)&=(x',&0,-y')-d. \\
+&\text{Při běhu doleva:} &\qquad (x,y,z)&=(-x',&0,-y')-d.
+\end{alignat*}
+$d$ značí pozici kotníku odrazové nohy při odrazu v~prostoru.
+
+Pozici kotníku odrazové nohy získám až po analýze parametrů, tudíž při analýze pracuji s~posunutým prostorem. Na vliv většiny parametrů to vliv nemá, některé poté musím spočítat znovu (například výšku boků).
+
+
+
+
+\section{Struktura programu}
+
+[SCHÉMA PROGRAMU A POPIS TŘÍD]
+
+
+
+
+\section{Vstup programu}
+
+Programu jsou při jeho spuštění předány parametry. Parametry specifikují mód, ve kterém si uživatel přeje program spustit a~obsahují cesty k~souborům, které má program zpracovat.
+
+O~zpracování parametrů se stará soubor \texttt{main.cpp}, který definuje vstupní bod aplikace a~volá metody třídy \texttt{video\_processor}, která zpracuje video, případně model, a~výsledek předá k~analýze.
+
+
+
+
+\section{Analýza videa}
+
+\subsection{Zpracování videa}
+
+Zpracování videa má na starosti třída \texttt{video\_processor}. 
+
+Video načtu s~použitím třídy \texttt{cv::VideoCapture}. Z~videa získám hodnotu frekvence snímků a~jednotlivé snímky videa uložím při průchodu do vektoru $3$-rozměrných matic \texttt{cv::Mat}, které reprezentují snímky videa.
+
+Z~důvodu časové náročnosti videí s~velikým rozlišením zmenším každý snímek metodou \texttt{cv::resize}. Výsledný snímek videa má rozlišení 720p. Při zpracování videa na šířku je výška videa 720\,\rm pixelů, šířka se změní, aby byl poměr stran snímku zachován. Při zpracování videa na výšku je šířka výsledného snímku 720\,\rm pixelů, výška se změní v~odpovídajícím poměru.
+
+Vzorce pro změnu velikosti snímku videa s~rozlišením $x'\times y'$ na výsledné rozlišení $x\times y$, reprezentující 720p jsou následující:
+\begin{alignat*}{3}
+&\text{Na výšku:}   &\qquad (x, y) &= (720 * x' / y',  &720) \\
+&\text{Na šířku:}   &\qquad (x, y) &= (720,            &720 * y' / x')
+\end{alignat*}
+První složka udává šířku snímku, druhá výšku.
+
+
+
+
+
+
+
+
+
+\section{Analýza modelu}
+
+\subsection{}
+
+
+
+\subsection{Zpracování videa}
+
+
+
+
+\subsection{Konverze souřadných systémů}
+\label{ssec:konverze}
+
+
 
 \section{tmp}
 
@@ -21,18 +107,9 @@ V~průbehu videa pravděpodobně dojde k~momentu, kdy se pozorovaná část poza
 
 Tyto výpočty vycházejí z~vlastností souřadného systému snímku, který popisuji v~sekci \ref{ssec:konverze}.
 
-\section{tmp2}
+\section{tmp3}
 
-Klouby kostry reprezentuji v~souřadném systému snímku videa. Bod nacházející se na pozici $(x,y)$ ve snímku se nachází ve vzdálenosti $x$\,\rm pixelů od levé strany snímku a~ve vzdálenosti $y$\,\rm pixelů od horní strany snímku.
-
-Pro převod kostry do 3D modelu je tedy třeba sečíst pozici levého horního rohu vůči pozadí a~pozici kloubu kostry ve snímku, abych získal pozici $(x,y)$ kloubu kostry vůči pozadí. Následně převrátím první složku, pokud atlet běží doleva, jinak ji nechám beze změny. Druhou složce výsledného bodu nastavím na $0$. Jako hodnotu poslední složky uložím hotnotu $-y$. Výsledný bod posunu o~$-d$, kde $d$ je pozice kotníku odrazové nohy při odrazu. Tuto hodnotu získám až po analýze parametrů skoku (popsané v~sekci \ref{ssec:analyza}), kterou provádím v~posunutém souřadném systému, což na parametry skoku nemá vliv.
-
-Konverzi bodu kostry $(x',y')$ ve snímku, jehož levý horní roh má pozici $(x'',y'')$ vůči pozadí, do 3D modelu lze reprezentovat takto:
-\begin{alignat*}{3}
-&\text{Při běhu doprava:} &\qquad (x,y,z)&=(x'+x'',&0,-y'-y'')-d. \\
-&\text{Při běhu doleva:} &\qquad (x,y,z)&=(-x'-x'',&0,-y'-y'')-d.
-\end{alignat*}
-$d$ značí pozici kotníku odrazové nohy při odrazu vůči pozadí.
+Pro přesnost je potřeba vyfiltrovat snímky, ve kterých nedochází ke kroku, příkladem je chvíle po odrazu, při níž atlet švihá odrazovou nohou dopředu. Odrazová noha se tedy po odrazu pohybuje vzhůru a~následně dolů, což může být z~hlediska algoritmu vnímáno jako krok. Snímek označím za krok jen v~případě, že je noha dostatečně nízko. Také je potřeba ohlídat nepřesné detekce kostry, vertikální pohyb nohy tedy musí překročit jistou hodnotu, aby byl snímek považován za moment došlapu, případně odrazu. [OBRÁZEK pohybu nohou s ukázkou švihu při skoku]
 
 
 

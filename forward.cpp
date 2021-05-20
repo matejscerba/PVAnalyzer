@@ -296,9 +296,12 @@ cv::Mat resize(const cv::Mat &frame, std::size_t height) noexcept {
     cv::Mat res;
     std::size_t width = height * ((double)frame.cols / (double)frame.rows);
     cv::Size size(width, height);
+    
+    // Portrait mode.
     if (frame.cols < frame.rows) {
         size = cv::Size(height, height * ((double)frame.rows / (double)frame.cols));
     }
+    
     cv::resize(frame, res, size);
     return res;
 }
