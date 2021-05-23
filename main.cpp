@@ -11,7 +11,7 @@
  * 
  * @param name Name of program.
  */
-void write_usage_msg(char *name) noexcept {
+void write_usage_msg(char *name) {
     std::cout <<
     "usage: " << name << " " << "--help | vid1 ... | -m mod1 ..." << std::endl <<
     "  vid1: path to video" << std::endl <<

@@ -11,50 +11,54 @@ const std::string PROTOFILE = "pose/mpi/pose_deploy_linevec_faster_4_stages.prot
 
 const std::string CAFFEMODEL = "pose/mpi/pose_iter_160000.caffemodel";
 
-frame_point operator+(const frame_point &lhs, const frame_point &rhs) noexcept {
+const std::string MODEL_FILE = "model.txt";
+
+const std::string PARAMETERS_FILE = "parameters.csv";
+
+frame_point operator+(const frame_point &lhs, const frame_point &rhs) {
     if (lhs && rhs) return *lhs + *rhs;
     return std::nullopt;
 }
 
-frame_point operator-(const frame_point &lhs, const frame_point &rhs) noexcept {
+frame_point operator-(const frame_point &lhs, const frame_point &rhs) {
     if (lhs && rhs) return *lhs - *rhs;
     return std::nullopt;
 }
 
-frame_point operator/(const frame_point &lhs, double rhs) noexcept {
+frame_point operator/(const frame_point &lhs, double rhs) {
     if (lhs) return *lhs / rhs;
     return std::nullopt;
 }
 
-model_point operator+(const model_point &lhs, const model_point &rhs) noexcept {
+model_point operator+(const model_point &lhs, const model_point &rhs) {
     if (lhs && rhs) return *lhs + *rhs;
     return std::nullopt;
 }
 
-model_point operator-(const model_point &p) noexcept {
+model_point operator-(const model_point &p) {
     if (p) return -*p;
     return std::nullopt;
 }
 
-model_point operator-(const model_point &lhs, const model_point &rhs) noexcept {
+model_point operator-(const model_point &lhs, const model_point &rhs) {
     return lhs + (- rhs);
 }
 
-model_point operator/(const model_point &lhs, double rhs) noexcept {
+model_point operator/(const model_point &lhs, double rhs) {
     if (lhs) return *lhs / rhs;
     return std::nullopt;
 }
 
-std::optional<double> operator*(double lhs, const std::optional<double> &rhs) noexcept {
+std::optional<double> operator*(double lhs, const std::optional<double> &rhs) {
     if (rhs) return lhs * (*rhs);
     return std::nullopt;
 }
 
-cv::Size operator*(double lhs, const cv::Size &rhs) noexcept {
+cv::Size operator*(double lhs, const cv::Size &rhs) {
     return cv::Size(lhs * rhs.width, lhs * rhs.height);
 }
 
-std::ostream& operator<<(std::ostream& os, const model_point &p) noexcept {
+std::ostream& operator<<(std::ostream& os, const model_point &p) {
     if (p) {
         os << p->x << "," << p->y << "," << p->z;
     } else {
@@ -63,7 +67,7 @@ std::ostream& operator<<(std::ostream& os, const model_point &p) noexcept {
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const frame_point &p) noexcept {
+std::ostream& operator<<(std::ostream& os, const frame_point &p) {
     if (p) {
         os << p->x << "," << p->y;
     } else {
@@ -72,20 +76,18 @@ std::ostream& operator<<(std::ostream& os, const frame_point &p) noexcept {
     return os;
 }
 
-cv::Point2d get_center(const cv::Rect &rect) noexcept {
+cv::Point2d get_center(const cv::Rect &rect) {
     return cv::Point2d((double)rect.x + (double)rect.width / 2, (double)rect.y + (double)rect.height / 2);
 }
 
-frame_point count_mean_delta(frame_points::const_iterator begin, frame_points::const_iterator end) noexcept {
-    auto n = end - begin - 1;
-    if (n > 0 && *(--end) && *begin) {
-        cv::Point2d sum = **end - **begin;
-        return sum / (double)n;
+frame_point count_offset(frame_points::const_iterator begin, frame_points::const_iterator end) {
+    if (*(--end) && *begin) {
+        return **end - **begin;
     }
     return std::nullopt;
 }
 
-std::string body_part_name(const body_part part) noexcept {
+std::string body_part_name(const body_part part) {
     switch (part) {
         case body_part::head:
             return "Head";
@@ -121,21 +123,21 @@ std::string body_part_name(const body_part part) noexcept {
     return "";
 }
 
-std::optional<double> distance(const frame_point &a, const frame_point &b) noexcept {
+std::optional<double> distance(const frame_point &a, const frame_point &b) {
     if (a && b) {
         return cv::norm(*a - *b);
     }
     return std::nullopt;
 }
 
-std::optional<double> distance(const model_point &a, const model_point &b) noexcept {
+std::optional<double> distance(const model_point &a, const model_point &b) {
     if (a && b) {
         return cv::norm(*a - *b);
     }
     return std::nullopt;
 }
 
-model_point get_part(const model_point &a, const model_point &b, std::function<bool (double, double)> compare) noexcept {
+model_point get_part(const model_point &a, const model_point &b, std::function<bool (double, double)> compare) {
     if (a && b) {
         if (compare(a->z, b->z))
             return a;
@@ -148,79 +150,143 @@ model_point get_part(const model_point &a, const model_point &b, std::function<b
     return std::nullopt;
 }
 
-std::optional<double> get_height(const model_point &a, const model_point &b, std::function<bool (double, double)> compare) noexcept {
+std::optional<double> get_height(const model_point &a, const model_point &b, std::function<bool (double, double)> compare) {
     model_point p = get_part(a, b, compare);
     if (p) return p->z;
     return std::nullopt;
 }
 
+double size(const model_points &body) {
+    double res = 0;
+    for (const auto &p : body) {
+        for (const auto &q : body) {
+            if (p && q) {
+                if (cv::norm(*p - *q) > res) {
+                    res = cv::norm(*p - *q);
+                }
+            }
+        }
+    }
+    return res;
+}
+
 std::vector<std::size_t> get_frame_numbers( std::vector<model_points>::const_iterator begin,
                                             std::vector<model_points>::const_iterator end,
-                                            std::function<bool (double, double)> compare) noexcept {
+                                            std::function<bool (double, double)> compare,
+                                            double fps) {
     std::vector<std::size_t> res;
     std::optional<double> last_height = std::nullopt;
     std::size_t index = 0;
     bool correct_diff = false;
-    for (; begin != end; ++begin) {
+    double threshold = STEP_THRESHOLD / fps;
+    for (; begin != end; ++begin, ++index) {
         std::optional<double> height = get_height((*begin)[body_part::l_ankle], (*begin)[body_part::r_ankle], compare);
         if (height && last_height) {
             // Current and last value is valid.
-            if (correct_diff && !compare(*height, *last_height) && std::abs(*height - *last_height) > 1) {
+            if (correct_diff && !compare(*height, *last_height) && std::abs(*height - *last_height) > threshold * size(*begin)) {
                 // Value was changing in the right direction, it stopped changing and is changing in the wrong direction.
                 correct_diff = false;
                 res.push_back(index - 1);
             }
-            if (compare(*height, *last_height)) {
-                correct_diff = true;
-            }
+            correct_diff = compare(*height, *last_height);
         }
         last_height = height;
-        ++index;
     }
     return res;
 }
 
-std::vector<std::size_t> get_step_frames(const model_video_points &points) noexcept {
+std::vector<std::size_t> get_step_frames(const model_video_points &points, double fps) {
     std::vector<std::size_t> res;
     std::less<double> low;
-    std::vector<std::size_t> lows = get_frame_numbers(points.begin(), points.end(), low);
+    // Numbers of frames, in whose athlete's lower foot starts moving up.
+    std::vector<std::size_t> lows = get_frame_numbers(points.begin(), points.end(), low, fps);
     std::greater<double> high;
-    std::vector<std::size_t> highs = get_frame_numbers(points.begin(), points.end(), high);
-    double center = 0;
-    for (std::size_t i = 0; i < std::min(lows.size(), highs.size()); ++i) {
-        model_points l_body = points[lows[i]];
-        model_points h_body = points[highs[i]];
-        double l = *get_height(l_body[body_part::l_ankle], l_body[body_part::r_ankle], low);
-        double h = *get_height(h_body[body_part::l_ankle], h_body[body_part::r_ankle], high);
-        if (i > 0) {
-            if (high(l, center)) continue; // Low point is above center of previous points.
-            if (low(h, center)) continue;  // High point is below center of previous points.
+    // Max height of lower foot in frames between `lows[i]` and `lows[i+1]` is stored at `highs[i]`.
+    std::vector<double> highs;
+    for (std::size_t i = 1; i < lows.size(); ++i) {
+        std::size_t begin = lows[i - 1];
+        std::size_t end = lows[i];
+        model_points body = points[begin];
+        double max = *get_height(body[body_part::l_ankle], body[body_part::r_ankle], low);
+        for (++begin; begin < end; ++begin) {
+            body = points[begin];
+            std::optional<double> current = get_height(body[body_part::l_ankle], body[body_part::r_ankle], low);
+            if (current && high(*current, max)) {
+                max = *current;
+            }
         }
-        center = (l + h) / 2.0;
-        res.push_back(lows[i]);
+        highs.push_back(max);
+    }
+    // Filter steps frames.
+    if (lows.size()) {
+        res.push_back(lows.front());
+        double highest_possible;
+        if (highs.size()) {
+            highest_possible = highs.front();
+        } else {
+            model_points first = points[lows.front()];
+            highest_possible = *get_height(first[body_part::l_ankle], first[body_part::r_ankle], low);
+        }
+        for (std::size_t i = 1; i < lows.size(); ++i) {
+            model_points body = points[lows[i - 1]];
+            double lower = *get_height(body[body_part::l_ankle], body[body_part::r_ankle], low);
+            double higher = highs[i - 1];
+            double center = (lower + higher) / 2.0;
+
+            body = points[lows[i]];
+            lower = *get_height(body[body_part::l_ankle], body[body_part::r_ankle], low);
+            if (!low(lower, highest_possible)) break;
+            if (low(lower, center)) {
+                res.push_back(lows[i]);
+            }
+        }
     }
     return res;
 }
 
-std::optional<double> get_vertical_tilt_angle(const model_point &a, const model_point &b) noexcept {
+std::optional<double> get_vertical_tilt_angle(const model_point &a, const model_point &b, tilt_angle_side tilt_side) {
     if (a && b) {
-        double z = a->z - b->z;
-        double x = a->x - b->x;
-        return std::atan(x / z) * 180.0 / M_PI;
+        double mult1 = 1;
+        if (tilt_side == tilt_angle_side::bottom)
+            mult1 = -1;
+        cv::Point3d v1(0, 0, mult1 * 1); // Point straight up.
+        cv::Point3d v2 = *b - *a;
+        double mult2 = 1;
+        if (v2.x != 0)
+            mult2 = v2.x / std::abs(v2.x);
+        double dot = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+        double val = dot / (cv::norm(v1) * cv::norm(v2));
+        return mult2 * std::acos(val) * 180.0 / M_PI;
     }
     return std::nullopt;
 }
 
-std::optional<double> get_vertical_tilt_angle(const frame_point &a, const frame_point &b) noexcept {
+double get_horizontal_tilt_angle(const cv::Point3d &a, const cv::Point3d &b) {
+    cv::Point3d v1(1, 0, 0);
+    cv::Point3d v2 = b - a;
+    double mult = 1;
+    if (v2.x != 0)
+        mult = v2.x / std::abs(v2.x);
+    double dot = v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+    double val = dot / (cv::norm(v1) * cv::norm(v2));
+    return mult * std::acos(val) * 180.0 / M_PI;
+}
+
+std::optional<double> get_vertical_tilt_angle(const frame_point &a, const frame_point &b) {
     if (a && b) {
-        double y = a->y - b->y;
-        double x = a->x - b->x;
-        return std::atan(x / y) * 180.0 / M_PI;
+        cv::Point2d v1(0, - 1); // Point straight up.
+        cv::Point2d v2 = *b - *a;
+        double dot = v1.x * v2.x + v1.y * v2.y;
+        double val = dot / (cv::norm(v1) * cv::norm(v2));
+        double mult = 1;
+        if (v2.x != 0)
+            mult = v2.x / std::abs(v2.x);
+        return mult * std::acos(val) * 180.0 / M_PI;
     }
     return std::nullopt;
 }
 
-std::string get_output_dir(const std::string &video_filename) noexcept {
+std::string get_output_dir(const std::string &video_filename) {
     std::stringstream path(video_filename);
     std::string part;
     std::vector<std::string> parts;
@@ -240,15 +306,15 @@ std::string get_output_dir(const std::string &video_filename) noexcept {
     }
     // Create directory.
     std::filesystem::create_directory(dir);
-    return dir;
+    return dir + "/";
 }
 
-bool is_inside(const cv::Rect &rect, const cv::Mat &frame) noexcept {
+bool is_inside(const cv::Rect &rect, const cv::Mat &frame) {
     return rect.tl().x >= 0 && rect.tl().y >= 0 &&
         rect.br().x <= frame.cols && rect.br().y <= frame.rows;
 }
 
-void draw_body(cv::Mat &frame, const frame_points &body) noexcept {
+void draw_body(cv::Mat &frame, const frame_points &body) {
     for (std::size_t i = 0; i < NPAIRS; ++i) {
         std::size_t a_idx = PAIRS[i][0];
         std::size_t b_idx = PAIRS[i][1];
@@ -280,7 +346,7 @@ void draw_body(cv::Mat &frame, const frame_points &body) noexcept {
     }
 }
 
-frame_points model_to_frame(const model_points &body) noexcept {
+frame_points model_to_frame(const model_points &body) {
     frame_points res;
     for (const auto &p : body) {
         if (p) {
@@ -292,7 +358,7 @@ frame_points model_to_frame(const model_points &body) noexcept {
     return res;
 }
 
-cv::Mat resize(const cv::Mat &frame, std::size_t height) noexcept {
+cv::Mat resize(const cv::Mat &frame, std::size_t height) {
     cv::Mat res;
     std::size_t width = height * ((double)frame.cols / (double)frame.rows);
     cv::Size size(width, height);
@@ -306,24 +372,19 @@ cv::Mat resize(const cv::Mat &frame, std::size_t height) noexcept {
     return res;
 }
 
-double area(const cv::Rect &r) noexcept {
+double area(const cv::Rect &r) {
     return r.width * r.height;
 }
 
-bool is_inside(const cv::Rect &r, const cv::Rect &s) noexcept {
-    return cv::norm(s.tl() - s.br()) / cv::norm(r.tl() - r.br()) >= 1.1 &&
-        r.tl().x >= s.tl().x && r.tl().y >= s.tl().y && r.br().x <= s.br().x && r.br().y <= s.br().y;
-}
-
-bool is_inside(const cv::Point2d &p, const cv::Rect &r) noexcept {
+bool is_inside(const cv::Point2d &p, const cv::Rect &r) {
     return p.x >= r.x && p.x <= r.x + r.width && p.y >= r.y && p.y <= r.y + r.height;
 }
 
-cv::Rect rect(const cv::Mat &frame) noexcept {
+cv::Rect rect(const cv::Mat &frame) {
     return cv::Rect(0, 0, frame.cols, frame.rows);
 }
 
-cv::Rect rect(const std::vector<cv::Rect> &rs) noexcept {
+cv::Rect rect(const std::vector<cv::Rect> &rs) {
     if (!rs.size()) return cv::Rect();
     cv::Rect res = rs.front();
     for (const auto &r : rs) {
@@ -332,7 +393,7 @@ cv::Rect rect(const std::vector<cv::Rect> &rs) noexcept {
     return res;
 }
 
-std::vector<cv::Rect> split(const cv::Rect &bbox) noexcept {
+std::vector<cv::Rect> split(const cv::Rect &bbox) {
     std::vector<cv::Rect> bboxes;
     cv::Point offset;
     cv::Rect smaller = bbox - cv::Size(2 * bbox.width / 3, 2 * bbox.height / 3);
@@ -346,7 +407,7 @@ std::vector<cv::Rect> split(const cv::Rect &bbox) noexcept {
     return bboxes;
 }
 
-double average_dist(const std::vector<cv::Rect> &rs) noexcept {
+double average_dist(const std::vector<cv::Rect> &rs) {
     int n_distances = 0;
     double res = 0.0;
     for (std::size_t i = 0; i < rs.size(); ++i)

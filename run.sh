@@ -1,5 +1,5 @@
 #!/bin/bash
-for FILE in data/BP_videos/*
+for FILE in data/*
 do
 ./build/PVAnalyzer $FILE
 done

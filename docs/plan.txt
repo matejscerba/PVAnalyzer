@@ -1,7 +1,0 @@
-Plán na rozšíření programu (2.3.2021):
-
-Program bych nadále rád rozšířil tak, aby byl schopen pracovat bez parametrů. Tedy aby ve videu sám našel sportovce. Tuto funkcionalitu bych implementoval tak, že bych video procházel dvakrát. Poprvé bych trasoval obrysy všech lidí, které najde funkce detectMultiScale a vyřazoval ty, které se dostanou mimo záběr. Pokud se mimo záběr dostanou všechny, mohu detectMultiScale spustit znovu. Bylo by vhodné, aby program držel jednu postavu dostatečně dlouho - aby provedla skok. Tuto postavu pak mohu považovat za skokana a spustit na něm podrobnou detekci. Druhý průchod videem bude už jen průchod výřezy snímků, které si bude udržovat instance skokana, především kvůli rychlosti běhu programu.
-
-Z podrobné detekce bude poté vhodné získat body těla ve vhodných souřadnicích. Dobrým systémem by mohly být hodnoty vůči původnímu bodu v pozadí, podle kterého určuji směr běhu a to, zda začal skok. Stále si udržuji hodnotu tohoto bodu v pozadí, takže výpočet nebude náročný. Podle takto zmodifikovaných bodů následně získám příslušné parametry, které budu chtít zkoumat. Pro tento úkol bude vhodné navrhnout uživatelsky přívětivou datovou strukturu, aby s výstupem tohoto programu mohl případně pracovat někdo, kdo se chce více zabývat studiem skoku z mechanického hlediska.
-
-Posledním krokem bude podrobné sepsání uživatelské a programátorské dokumentace spolu s návodem k instalaci a testovacími daty, na kterých si uživatel vyzkouší, zda program funguje. Následně bude moci program spouštět na svých vlastních videích.

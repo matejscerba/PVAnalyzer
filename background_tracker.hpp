@@ -29,15 +29,12 @@ public:
      * @param frame Frame in which person was detected.
      * @param frame_no Number of frame in which person was detected.
      * @param bbox Bounding box of person in `frame`.
-     * @param dir Assumed direction of person's movement.
      */
-    background_tracker(const cv::Mat &frame, std::size_t frame_no, const std::vector<cv::Rect> &bboxes, direction dir) noexcept {
+    background_tracker(const cv::Mat &frame, std::size_t frame_no, const std::vector<cv::Rect> &bboxes) {
         backgrounds = std::vector<std::optional<cv::Rect>>(frame_no, std::nullopt);
         background_offsets = frame_points(frame_no, std::nullopt);
         person_offsets = std::vector<frame_points>(bboxes.size(), frame_points(frame_no, std::nullopt));
         frame_offsets = frame_points(frame_no, std::nullopt);
-        this->dir = dir;
-        valid_direction_threshold = rect(bboxes).width;
         tracker = cv::TrackerCSRT::create();
         update_rect(frame, cv::Rect(), bboxes);
     }
@@ -48,7 +45,7 @@ public:
      * @param frame Frame in which to track background.
      * @param bbox Person's bounding box in `frame`.
      */
-    bool update(const cv::Mat &frame, const std::vector<cv::Rect> &bboxes) noexcept {
+    bool update(const cv::Mat &frame, const std::vector<cv::Rect> &bboxes) {
         cv::Rect background_rect;
         if (tracker->update(frame, background_rect)) {
             update_properties(frame, background_rect, bboxes);
@@ -58,50 +55,31 @@ public:
     }
 
     /**
-     * @brief Check if assumed direction is correct.
+     * @brief Get last offset of person.
      * 
-     * @returns true if assumed direction is correct, false otherwise.
+     * @returns maximal offset of all bounding boxes.
      */
-    bool is_valid_direction() const noexcept {
-        double d = 0;
-        if (dir == direction::left)
-            d = -1;
-        else if (dir == direction::right)
-            d = 1;
-        std::size_t valid = 0;
+    frame_point get_person_offset() const {
+        frame_point res = std::nullopt;
+        double max = 0.0;
         for (std::size_t i = 0; i < person_offsets.size(); ++i)
-            if (person_offsets[i].size() && person_offsets[i].back() && (d * person_offsets[i].back()->x > valid_direction_threshold))
-                ++valid;
-        return valid;
+            if (person_offsets[i].size() && person_offsets[i].back())
+                if (cv::norm(*person_offsets[i].back()) > max) {
+                    res = person_offsets[i].back();
+                    max = cv::norm(*person_offsets[i].back());
+                }
+        return res;
     }
 
-    std::vector<frame_points> get_person_offsets() const noexcept {
-        return person_offsets;
-    }
 
     /**
-     * @brief Check if vault is beginning.
+     * @brief Get offsets of all person's bounding boxes.
      * 
-     * Compute difference of vertical movement changes of last `vault_check_frames`
-     * and `vault_check_frames` before that and decide whether tracked person takes off.
-     * 
-     * @param person_height Height of person in frame.
-     * @param fps Frame rate of processed video.
-     * @returns true if vault is beginning, false otherwise.
+     * @returns offsets of all person's bounding boxes.
      */
-    // bool is_vault_beginning(double person_height, double fps) const noexcept {
-    //     if (!is_valid_direction())
-    //         return false;
-    //     int vault_check_frames = (int)(VAULT_CHECK_TIME * fps);
-    //     if (person_offsets.size() > 2 * vault_check_frames) {
-    //         frame_point runup_mean_delta = count_mean_delta(person_offsets.end() - 2 * vault_check_frames, person_offsets.end() - vault_check_frames);
-    //         frame_point vault_mean_delta = count_mean_delta(person_offsets.end() - vault_check_frames, person_offsets.end());
-
-    //         if (runup_mean_delta && vault_mean_delta && (vault_mean_delta->y - runup_mean_delta->y) * person_height < VAULT_THRESHOLD)
-    //             return true;
-    //     }
-    //     return false;
-    // }
+    std::vector<frame_points> get_person_offsets() const {
+        return person_offsets;
+    }
 
     /**
      * @brief Get offset of frame specified by its number.
@@ -111,7 +89,7 @@ public:
      * 
      * @see movement_analyzer::frame_offset.
      */
-    std::optional<cv::Point2d> frame_offset(std::size_t frame_no) const noexcept {
+    std::optional<cv::Point2d> get_frame_offset(std::size_t frame_no) const {
         if (frame_no < frame_offsets.size())
             return frame_offsets[frame_no];
         return std::nullopt;
@@ -123,7 +101,7 @@ public:
      * @param frame Frame in which bounding box should be drawn.
      * @param frame_no Number of given frame.
     */
-    void draw(cv::Mat &frame, std::size_t frame_no) const noexcept {
+    void draw(cv::Mat &frame, std::size_t frame_no) const {
         if (frame_no < backgrounds.size() && backgrounds[frame_no])
             cv::rectangle(frame, backgrounds[frame_no]->tl(), backgrounds[frame_no]->br(), cv::Scalar(255, 0, 0), 2);
     }
@@ -148,9 +126,11 @@ private:
     frame_points background_offsets;
 
     /**
-     * @brief Vector of offsets of person and its initial position.
+     * @brief Vector of vector of offsets of person and its initial position.
      * 
      * Offset of person's bounding box center and initial person's bounding box center.
+     * 
+     * @note First dimension specifies number of bounding box, second number of frame.
      */
     std::vector<frame_points> person_offsets;
 
@@ -162,18 +142,6 @@ private:
     frame_points frame_offsets;
 
     /**
-     * @brief Assumed direction, which person is moving.
-     * 
-     * @see movement_analyzer::direction.
-     */
-    direction dir;
-
-    /**
-     * @brief Horizontal distance, that person must move in assumed direction in order to mark that direction as valid.
-     */
-    double valid_direction_threshold;
-
-    /**
      * @brief Update background part to be tracked.
      * 
      * Change background part to be tracked if no part was tracked before or
@@ -181,10 +149,10 @@ private:
      * 
      * @param frame Frame in which to update background part.
      * @param background Last background part that was tracked.
-     * @param bbox Bounding box of person in `frame`.
-     * @returns updated background bounding box.
+     * @param bboxes Bounding boxes of person in `frame`.
+     * @returns updated background's bounding box.
      */
-    cv::Rect update_rect(const cv::Mat &frame, const cv::Rect &background, const std::vector<cv::Rect> &bboxes) noexcept {
+    cv::Rect update_rect(const cv::Mat &frame, const cv::Rect &background, const std::vector<cv::Rect> &bboxes) {
         cv::Rect bg = background;
         if (!backgrounds.size() || !backgrounds.back() || bg.x <= 0 || bg.y <= 0 ||
             bg.x + bg.width >= (double)frame.cols || area(bg & rect(bboxes)) > 0 ||
@@ -194,9 +162,7 @@ private:
                 cv::Rect right(3 * frame.cols / 4, frame.rows / 4, frame.cols / 4, frame.rows / 2);
                 bg = area(left & bbox) <= area(right & bbox) ? left : right;
                 // Initialize tracker with new background.
-                // std::cout << "initbg" << std::endl;
                 tracker->init(frame, bg);
-                // std::cout << "done" << std::endl;
         }
         return bg;
     }
@@ -208,11 +174,11 @@ private:
      * 
      * @param frame Frame in which properties should be computed.
      * @param background Last tracked background's bounding box.
-     * @param bbox Person's bounding box in `frame`.
+     * @param bboxes Person's bounding boxes in `frame`.
      * 
      * @note All offsets are computed against person's initial position.
      */
-    void update_properties(const cv::Mat &frame, const cv::Rect &background, const std::vector<cv::Rect> &bboxes) noexcept {
+    void update_properties(const cv::Mat &frame, const cv::Rect &background, const std::vector<cv::Rect> &bboxes) {
         cv::Rect new_background = update_rect(frame, background, bboxes);
         backgrounds.push_back(new_background);
         if (background_offsets.size() && background_offsets.back()) {

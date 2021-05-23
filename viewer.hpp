@@ -1,6 +1,7 @@
 #pragma once
 
 #include <opencv2/opencv.hpp>
+#include <Python.h>
 
 #include <cstddef>
 #include <ios>
@@ -23,7 +24,7 @@ public:
     /**
      * @brief Default constructor.
      */
-    viewer() noexcept {
+    viewer() {
         reset();
     }
 
@@ -37,36 +38,35 @@ public:
      * @param raw_frames Unmodified frames of processed video.
      * @param analyzer Analyzer after analyzing athlete's movement.
      */
-    void show(const std::vector<cv::Mat> &frames, const std::vector<cv::Mat> &raw_frames, const vault_analyzer &analyzer) noexcept {
+    void show(const std::vector<cv::Mat> &frames, const std::vector<cv::Mat> &raw_frames, const vault_analyzer &analyzer) {
+        if (!frames.size() || frames.size() != raw_frames.size()) {
+            std::cout << "Unable to show frames" << std::endl;
+            return;
+        }
+
         reset(analyzer);
         
         std::cout << std::fixed << std::setprecision(2);
         for (;;) {
             cv::imshow("window", drawing ? frames[frame_no] : raw_frames[frame_no]);
 
-            std::cout << "Frame " << frame_no << "/" << frames.size() - 1 << ":" << std::endl;
+            std::cout << "Frame " << frame_no + 1 << "/" << frames.size() << ":" << std::endl;
             write_parameters();
 
             switch (cv::waitKey()) {
                 case 2:
                     // Left arrow pressed.
-                    if (frame_no) {
-                        --frame_no;
-                    } else {
-                        std::cout << "No frame before this one is available" << std::endl;
-                    }
+                    frame_no = std::max(--frame_no, 0);
                     break;
                 case 3:
                     // Right arrow pressed.
-                    if (frame_no < frames.size() - 1) {
-                        ++frame_no;
-                    } else {
-                        std::cout << "No frame after this one is available" << std::endl;
-                    }
+                    frame_no = std::min(++frame_no, (int)frames.size() - 1);
                     break;
                 case 27:
                     // Esc key pressed.
                     cv::destroyAllWindows();
+                    cv::waitKey(1); // Forces windows to close immediately.
+                    show_parameters();
                     return;
                 case 32:
                     // Space key pressed.
@@ -81,7 +81,7 @@ private:
     /**
      * @brief Current number of frame.
      */
-    std::size_t frame_no;
+    int frame_no;
 
     /**
      * @brief Whether to show detections' drawings.
@@ -109,12 +109,21 @@ private:
     std::size_t culmination;
 
     /**
+     * @brief Path to file containing values of all analyzed parameters.
+     */
+    std::string params_filename;
+
+    /**
      * @brief Set initial values.
      */
-    void reset() noexcept {
+    void reset() {
         frame_no = 0;
         drawing = true;
-
+        parameters.clear();
+        start = 0;
+        takeoff = 0;
+        culmination = 0;
+        params_filename = "";
     }
 
     /**
@@ -124,12 +133,13 @@ private:
      * 
      * @see analyzer.
      */
-    void reset(const vault_analyzer &analyzer) noexcept {
+    void reset(const vault_analyzer &analyzer) {
         reset();
         parameters = analyzer.get_parameters();
         start = analyzer.get_start();
         takeoff = analyzer.get_takeoff();
         culmination = analyzer.get_culmination();
+        params_filename = analyzer.get_params_filename();
     }
 
     /**
@@ -137,8 +147,8 @@ private:
      * 
      * @returns all vault parts valid for current frame number.
      */
-    std::vector<vault_part> get_current_parts() const noexcept {
-        std::vector<vault_part> res;
+    std::vector<vault_part> get_current_parts() const {
+        std::vector<vault_part> res{vault_part::all};
         // No frame part is valid.
         if (!start && !takeoff && !culmination) return res;
 
@@ -170,7 +180,7 @@ private:
      * 
      * Write only parameters valid for current vault part.
      */
-    void write_parameters() const noexcept {
+    void write_parameters() const {
         // Filter parameters valid for current frame.
         std::vector<vault_part> parts = get_current_parts();
         std::vector<std::shared_ptr<parameter>> to_write;
@@ -188,6 +198,27 @@ private:
             std::cout << std::endl;
         }
         std::cout << std::endl;
+    }
+
+    /**
+     * @brief Run python script to plot parameters from generated file.
+     */
+    void show_parameters() const {
+        Py_Initialize();
+
+        FILE *file = fopen("plot_parameters.py", "r");
+        if(file) {
+            wchar_t *argv[3] = {
+                Py_DecodeLocale("plot_parameters.py", NULL),
+                Py_DecodeLocale("--file", NULL),
+                Py_DecodeLocale(params_filename.c_str(), NULL)
+            };
+            PySys_SetArgv(3, argv);
+            PyRun_SimpleFile(file, "plot_parameters.py");
+            fclose(file);
+        }
+
+        Py_Finalize();
     }
 
 };

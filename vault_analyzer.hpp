@@ -34,11 +34,9 @@ public:
      * 
      * @param athlete Athlete to be analyzed.
      * @param filename Path to analyzed video.
-     * @param frames Number of frames in video.
      * @param fps Frame rate of processed video.
-     * @param save Whether to save parameters to file.
      */
-    void analyze(const model &athlete, const std::string &filename, double fps, bool save) noexcept {
+    void analyze(const model &athlete, const std::string &filename, double fps) {
         points_frame = athlete.get_frame_points();
         points_real = athlete.get_real_points();
 
@@ -46,7 +44,7 @@ public:
         this->filename = filename;
         this->fps = fps;
 
-        if (compute_parameters(points_real) && save) {
+        if (compute_parameters(points_real)) {
             write_parameters();
         }
     }
@@ -54,29 +52,36 @@ public:
     /**
      * @brief Get parameters including their values.
      */
-    std::vector<std::shared_ptr<parameter>> get_parameters() const noexcept {
+    std::vector<std::shared_ptr<parameter>> get_parameters() const {
         return parameters;
     }
 
     /**
      * @brief Get number of frame in which attempt begins.
      */
-    std::size_t get_start() const noexcept {
+    std::size_t get_start() const {
         return start;
     }
 
     /**
      * @brief Get number of frame in which athlete takes off.
      */
-    std::size_t get_takeoff() const noexcept {
+    std::size_t get_takeoff() const {
         return takeoff;
     }
 
     /**
      * @brief Get number of frame in which athlete's hips are highest.
      */
-    std::size_t get_culmination() const noexcept {
+    std::size_t get_culmination() const {
         return culmination;
+    }
+
+    /**
+     * @brief Get path to file where parameters will be saved.
+     */
+    std::string get_params_filename() const {
+        return get_output_dir(filename) + PARAMETERS_FILE;
     }
 
 private:
@@ -134,7 +139,7 @@ private:
      * @param points Input points.
      * @returns shifted points.
      */
-    model_video_points update_coords(const model_video_points &points) const noexcept {
+    model_video_points update_coords(const model_video_points &points) const {
         model_point left = points[takeoff][body_part::l_ankle];
         model_point right = points[takeoff][body_part::r_ankle];
         model_point foot = get_part(left, right, std::less<double>()); // Lower foot.
@@ -160,7 +165,7 @@ private:
      * @returns true if computation was successful (if beginning of attampt,
      * takeoff and culmination moments were found).
      */
-    bool compute_parameters(const model_video_points &points) noexcept {
+    bool compute_parameters(const model_video_points &points) {
         if (!find_moments_of_interest(points))
             return false;
 
@@ -170,14 +175,12 @@ private:
         parameters.push_back(std::make_shared<body_part_height>(body_part::l_ankle));
         parameters.push_back(std::make_shared<body_part_height>(body_part::r_ankle));
         parameters.push_back(std::make_shared<vertical_tilt>(
-            "Torso tilt", body_part::l_hip, body_part::r_hip, body_part::neck, body_part::neck, dir));
-        parameters.push_back(std::make_shared<vertical_tilt>(
-            "Shoulders tilt", body_part::l_hip, body_part::r_hip, body_part::l_shoulder, body_part::r_shoulder, dir));
+            "Torso tilt", body_part::l_hip, body_part::r_hip, body_part::head, body_part::head));
         parameters.push_back(std::make_shared<steps_duration>(fps));
-        parameters.push_back(std::make_shared<steps_angle>(dir));
-        parameters.push_back(std::make_shared<hips_velocity_loss>(takeoff));
-        parameters.push_back(std::make_shared<shoulders_velocity_loss>(takeoff));
-        parameters.push_back(std::make_shared<takeoff_angle>(takeoff));
+        parameters.push_back(std::make_shared<steps_angle>(fps));
+        parameters.push_back(std::make_shared<hips_velocity_loss>(takeoff, fps));
+        parameters.push_back(std::make_shared<shoulders_velocity_loss>(takeoff, fps));
+        parameters.push_back(std::make_shared<takeoff_angle>(takeoff, fps));
 
         // Compute corresponding values.
         for (auto &param : parameters) {
@@ -201,7 +204,7 @@ private:
      * 
      * @note Returns last frame in which ankles are static.
      */
-    std::optional<std::size_t> find_start(const model_video_points &points) noexcept {
+    std::optional<std::size_t> find_start(const model_video_points &points) {
         std::size_t index = 0;
         // Values in previous frame.
         model_point left = std::nullopt;
@@ -229,8 +232,8 @@ private:
      * @returns frame number in which athlete takes off, no value if no such
      * frame was found.
      */
-    std::optional<std::size_t> find_takeoff(const model_video_points &points) noexcept {
-        std::vector<std::size_t> steps = get_step_frames(points);
+    std::optional<std::size_t> find_takeoff(const model_video_points &points) {
+        std::vector<std::size_t> steps = get_step_frames(points, fps);
         if (steps.size()) return steps.back();
         return std::nullopt;
     }
@@ -242,7 +245,7 @@ private:
      * @returns frame number in which athlete's hips are highest, no value if no such
      * frame was found.
      */
-    std::optional<std::size_t> find_culmination(const model_video_points &points) noexcept {
+    std::optional<std::size_t> find_culmination(const model_video_points &points) {
         std::optional<double> highest;
         std::size_t highest_idx;
         bool found = false;
@@ -264,7 +267,7 @@ private:
      * @param points Athlete's body parts detected in the whole video.
      * @returns true if all moments were found, false otherwise.
      */
-    bool find_moments_of_interest(const model_video_points &points) noexcept {
+    bool find_moments_of_interest(const model_video_points &points) {
         std::optional<std::size_t> val = find_start(points);
         if (val) start = *val;
         else return false;
@@ -290,9 +293,9 @@ private:
      * 
      * @note Units of parameters' values are omitted.
      */
-    void write_parameters() const noexcept {
+    void write_parameters() const {
         std::ofstream output;
-        std::string o_filename = get_output_dir(filename) + "/parameters.csv";
+        std::string o_filename = get_params_filename();
         output.open(o_filename);
         if (!output.is_open()) {
             std::cout << "Output file \"" << o_filename << "\" could not be opened" << std::endl;
@@ -300,15 +303,22 @@ private:
         output << std::fixed << std::setprecision(2);
         output << filename << std::endl;
         
-        output << "Frame number";
+        output << "Time";
         // Write names of parameters.
         for (const auto &param : parameters) {
             output << "," << param->name;
         }
+        output << std::endl;
+
+        // Write units.
+        output << "s";
+        for (const auto &param : parameters) {
+            output << "," << ((param->unit != "" && param->unit[0] == ' ') ? param->unit.substr(1) : param->unit);
+        }
 
         // Write values of parameters.
         for (std::size_t i = 0; i < points_frame.size(); ++i) {
-            output << std::endl << (int)i - (int)takeoff;
+            output << std::endl << (double)((int)i - (int)takeoff) / fps;
             for (const auto &param : parameters) {
                 output << ",";
                 if (i < param->size()) {

@@ -28,13 +28,12 @@ public:
      * @param athlete Athlete whose model should be created.
      * @param video_filename Path to video from which this model is created.
      */
-    model(const person &athlete, const std::string &video_filename) noexcept {
-        std::cout << "TODO : X ROSTE VE SMĚRU ROZBĚHU" << std::endl;
+    model(const person &athlete, const std::string &video_filename) {
         this->model_filename = "";
         this->video_filename = video_filename;
         compute_frame_points(athlete.get_points());
         compute_frame_offsets(athlete.get_offsets());
-        compute_real_points();
+        compute_real_points(athlete.get_direction());
     }
 
     /**
@@ -42,7 +41,7 @@ public:
      * 
      * @param filename Path to file containing saved model.
      */
-    model(const std::string &filename) noexcept {
+    model(const std::string &filename) {
         this->model_filename = filename;
         this->video_filename = "";
     }
@@ -52,10 +51,10 @@ public:
      * 
      * Create file and save this model to it.
      */
-    void save() const noexcept {
+    void save() const {
         std::string output_dir = get_output_dir(video_filename);
         std::ofstream output;
-        output.open(output_dir + "/model.txt");
+        output.open(output_dir + MODEL_FILE);
         if (!output.is_open()) {
             std::cout << "Could not save detected model to file \"" << output_dir << "/model.txt" << "\"." << std::endl;
             return;
@@ -72,52 +71,12 @@ public:
     }
 
     /**
-     * @brief Get points in frame coordinates.
-     */
-    model_video_points get_frame_points() const noexcept {
-        return points_frame_c;
-    }
-
-    /**
-     * @brief Get points in real-life coordinates.
-     */
-    model_video_points get_real_points() const noexcept {
-        return points_real_c;
-    }
-
-    /**
-     * @brief Get direction of athlete's runup.
-     * 
-     * Compare x coordinate of first and last offset of frame.
-     * 
-     * @returns direction of camera's movement direction.
-     * 
-     * @note Camera's movement direction corresponds to athlete's movement direction.
-     */
-    direction get_direction() const noexcept {
-        auto first = std::find_if(frame_offsets.begin(), frame_offsets.end(), [](const model_point &p) {
-            return p;
-        });
-        auto last = std::find_if(frame_offsets.rbegin(), frame_offsets.rend(), [](const model_point &p) {
-            return p;
-        });
-        if (first != frame_offsets.end()) {
-            if ((*first)->x > (*last)->x) {
-                return direction::left;
-            } else if ((*first)->x < (*last)->x) {
-                return direction::right;
-            }
-        }
-        return direction::unknown;
-    }
-
-    /**
      * @brief Load model from file.
      * 
-     * @param[out] video_filename Path to video from which model was created.
+     * @param[out] video_fn Path to video from which model was created.
      * @returns true if model was loaded correctly.
      */
-    bool load(std::string &video_fn) noexcept {
+    bool load(std::string &video_fn) {
         points_frame_c.clear();
         points_real_c.clear();
         frame_offsets.clear();
@@ -145,8 +104,48 @@ public:
             }
         }
         input.close();
-        compute_real_points();
+        compute_real_points(get_direction());
         return true;
+    }
+
+    /**
+     * @brief Get points in frame coordinates.
+     */
+    model_video_points get_frame_points() const {
+        return points_frame_c;
+    }
+
+    /**
+     * @brief Get points in real-life coordinates.
+     */
+    model_video_points get_real_points() const {
+        return points_real_c;
+    }
+
+    /**
+     * @brief Get direction of athlete's runup.
+     * 
+     * Compare x coordinate of first and last offset of frame.
+     * 
+     * @returns direction of camera's movement direction.
+     * 
+     * @note Camera's movement direction corresponds to athlete's movement direction.
+     */
+    direction get_direction() const {
+        auto first = std::find_if(frame_offsets.begin(), frame_offsets.end(), [](const model_point &p) {
+            return p;
+        });
+        auto last = std::find_if(frame_offsets.rbegin(), frame_offsets.rend(), [](const model_point &p) {
+            return p;
+        });
+        if (first != frame_offsets.end()) {
+            if ((*first)->x > (*last)->x) {
+                return direction::left;
+            } else if ((*first)->x < (*last)->x) {
+                return direction::right;
+            }
+        }
+        return direction::unknown;
     }
 
     /**
@@ -155,7 +154,7 @@ public:
      * @param frames Frames in which model should be drawn.
      * @returns frames with drawed model.
      */
-    std::vector<cv::Mat> draw(const std::vector<cv::Mat> &frames) const noexcept {
+    std::vector<cv::Mat> draw(const std::vector<cv::Mat> &frames) const {
         std::vector<cv::Mat> res;
         cv::Mat frame;
         for (std::size_t frame_no = 0; frame_no < frames.size(); ++frame_no) {
@@ -198,7 +197,7 @@ private:
      * 
      * @param detected_pts Detected athlete's body parts.
      */
-    void compute_frame_points(const frame_video_points &detected_pts) noexcept {
+    void compute_frame_points(const frame_video_points &detected_pts) {
         points_frame_c.clear();
         for (const auto &pts : detected_pts) {
             model_points b;
@@ -215,7 +214,7 @@ private:
      * 
      * @param offsets Offsets of each frame of video.
      */
-    void compute_frame_offsets(const frame_points &offsets) noexcept {
+    void compute_frame_offsets(const frame_points &offsets) {
         frame_offsets.clear();
         for (const auto &o : offsets) {
             if (o) {
@@ -232,15 +231,19 @@ private:
      * @brief Compute athlete's body parts positions in real-life coordinates.
      * 
      * Use frame offsets and athlete's body parts positions in frame coordinates.
+     * 
+     * @param dir Direction of athlete's runup.
      */
-    void compute_real_points() noexcept {
+    void compute_real_points(direction dir) {
         points_real_c.clear();
+        double mult = 1.0;
+        if (dir == direction::left) mult = -1.0;
         for (std::size_t i = 0; i < points_frame_c.size(); ++i) {
             model_points b;
             for (const auto &p : points_frame_c[i]) {
                 if (p) {
                     b.push_back(cv::Point3d(
-                        frame_offsets[i]->x + p->x,
+                        mult * (frame_offsets[i]->x + p->x),
                         frame_offsets[i]->y + p->y,
                         - (frame_offsets[i]->z + p->z)
                     ));
@@ -260,7 +263,7 @@ private:
      * 
      * @note Point (x,y,z) is stored as "x,y,z".
      */
-    model_point read_point(std::string &&s) const noexcept {
+    model_point read_point(std::string &&s) const {
         if (s != "" && s[0] != ',') {
             std::replace(s.begin(), s.end(), ',', ' ');
             std::stringstream sstr(s);
@@ -283,7 +286,7 @@ private:
      * @param input Input stream holding athlete's body parts positions.
      * @returns athlete's body parts positions in one frame.
      */
-    model_points read_body(std::ifstream &input) const noexcept {
+    model_points read_body(std::ifstream &input) const {
         std::string line;
         model_points b;
         for (std::size_t i = 0; i < NPOINTS; ++i) {

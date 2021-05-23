@@ -24,7 +24,6 @@ public:
     parts_detector() noexcept {
         net = cv::dnn::readNet(PROTOFILE, CAFFEMODEL);
         last_size = cv::Point2d();
-        first_size = cv::Point2d();
         center_shift = cv::Point2d();
         angle = 0.0;
         _update_angle = true;
@@ -38,6 +37,7 @@ public:
      * 
      * @param frame Image in which body parts detections should be made.
      * @param bbox Athlete's bounding box.
+     * @param distance Maximal distance of center shift.
      * @returns detected body parts in `frame`.
      */
     frame_points detect(const cv::Mat &frame, const cv::Rect &bbox, double distance) noexcept {
@@ -49,8 +49,9 @@ public:
             cv::Mat back_rot;
             cv::Point2d center = get_center(bbox) + center_shift;
             cv::Mat window = crop_window(frame, window_rect, center, shift, rotation, back_rot);
-
-            cv::Mat blob = cv::dnn::blobFromImage(window, 1.0 / 255, cv::Size(), cv::Scalar(), false, false, CV_32F);
+            
+            cv::Mat blob = cv::dnn::blobFromImage(resize(window, WINDOW_SIZE), 1.0 / 255, cv::Size(), cv::Scalar(), false, false, CV_32F);
+            // cv::Mat blob = cv::dnn::blobFromImage(window, 1.0 / 255, cv::Size(), cv::Scalar(), false, false, CV_32F);
             net.setInput(blob);
             frame_points detected = extract_points(window, net.forward());
             fit_in_frame(detected, window_rect, back_rot);
@@ -65,20 +66,6 @@ public:
         update_center_shift(bbox, body, distance);
         update_angle(body);
         return body;
-    }
-
-    cv::Point rotate(const cv::Size &s) const noexcept {
-        std::vector<cv::Point2d> src;
-        src.emplace_back(s.width, s.height);
-        cv::Mat rot = cv::getRotationMatrix2D(cv::Point(), angle, 1.0);
-        std::vector<cv::Point2d> res;
-        cv::transform(src, res, rot);
-        return res.front();
-    }
-
-    double get_scale_factor() const noexcept {
-        return 1.0;
-        // return (first_size.x) ? last_size.x / first_size.x : 1.0;
     }
 
 private:
@@ -98,8 +85,6 @@ private:
      */
     cv::Point2d last_size;
 
-    cv::Point2d first_size;
-
     /**
      * @brief Position of center of athlete's body parts detection window against athlete's bounding box.
      */
@@ -110,12 +95,15 @@ private:
      */
     double angle;
 
+    /**
+     * @brief Whether to update angle of rotation.
+     */
     bool _update_angle;
 
     /**
      * @brief Scale rectangle by given factor and fit it inside frame.
      * 
-     * @param rect Given rectangle to be scaled.
+     * @param r Given rectangle to be scaled.
      * @param frame Frame in which scaled rectangle must fit.
      * @param factor Scale factor specifying ratio of new vs old rectangle.
      * @returns scaled rectangle, which fits inside frame.
@@ -123,16 +111,12 @@ private:
      * @note If scaled rectangle does not fit inside frame, smaller rectangle
      * which fits inside frame is returned.
     */
-    cv::Rect scale(const cv::Rect &rect, const cv::Mat &frame, double factor = BASE_SCALE_FACTOR) const noexcept {
-        cv::Point center = get_center(rect);
-        cv::Point diag = center - rect.tl();
+    cv::Rect scale(const cv::Rect &r, const cv::Mat &frame, double factor = BASE_SCALE_FACTOR) const noexcept {
+        cv::Point center = get_center(r);
+        cv::Point diag = center - r.tl();
         cv::Point tl = center - factor * diag;
         cv::Point br = center + factor * diag;
-        int top = std::max(0, tl.y);
-        int right = std::min(frame.cols, br.x);
-        int bottom = std::min(frame.rows, br.y);
-        int left = std::max(0, tl.x);
-        return cv::Rect(left, top, right - left, bottom - top);
+        return rect(frame) & cv::Rect(tl, br);
     }
 
     /**
@@ -148,7 +132,7 @@ private:
         cv::Point2d tl = center - last_size / 2;
         cv::Point2d br = center + last_size / 2;
         cv::Rect rect(tl, br);
-        cv::Rect2d window_rect = scale(rect, frame, 1.3);
+        cv::Rect2d window_rect = scale(rect, frame);
         if (last_size == cv::Point2d()) {
             window_rect = scale(bbox, frame);
         }
@@ -181,13 +165,6 @@ private:
         back_rot = cv::getRotationMatrix2D(center, - current_angle, 1.0);
         cv::warpAffine(frame, res, rot, frame.size());
         return res(window_rect);
-    }
-
-    cv::Mat make_smaller(const cv::Mat &frame) const noexcept {
-        double x = std::min(1.0, 150.0 / (double)frame.rows);
-        cv::Mat res;
-        cv::resize(frame, res, cv::Size(x * frame.cols, x * frame.rows));
-        return res;
     }
 
     /**
@@ -275,19 +252,7 @@ private:
         }
         if (count(body) == NPOINTS && max > last_size.x) {
             last_size = cv::Point2d(max, max);
-            if (!first_size.x) {
-                first_size = last_size;
-            }
         }
-        // if (count(body) == NPOINTS) {
-        //     if (last_size.x != 0) {
-        //         last_size *= 2;
-        //         last_size += cv::Point2d(max, max);
-        //         last_size /= 3;
-        //     } else {
-        //         last_size = cv::Point2d(max, max);
-        //     }
-        // }
     }
 
     /**
@@ -297,6 +262,7 @@ private:
      * 
      * @param bbox Athlete's bounding box.
      * @param body Detected body parts.
+     * @param distance Maximum possible distance of shift.
      */
     void update_center_shift(const cv::Rect &bbox, const frame_points &body, double distance) noexcept {
         if (bbox != cv::Rect()) {
@@ -319,6 +285,7 @@ private:
     /**
      * @brief Compute angle based on athlete's last torso tilt.
      * 
+     * @param body Last detected body parts.
      * @returns vertical angle of last torso tilt, `last_angle` otherwise.
      */
     void update_angle(const frame_points &body) noexcept {
@@ -326,7 +293,8 @@ private:
             (body[body_part::l_hip] + body[body_part::r_hip]) / 2.0,
             body[body_part::head]
         );
-        if (_update_angle && current_angle) angle = *current_angle;
+        if (_update_angle && current_angle && std::abs(angle - *current_angle) < ANGLE_DIFF)
+            angle = *current_angle;
     }
 
 };
