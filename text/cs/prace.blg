@@ -1,0 +1,54 @@
+This is BibTeX, Version 0.99d (TeX Live 2021)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: prace.aux
+A level-1 auxiliary file: titulka.aux
+A level-1 auxiliary file: uvod.aux
+A level-1 auxiliary file: teorie.aux
+A level-1 auxiliary file: navrh.aux
+A level-1 auxiliary file: realizace.aux
+A level-1 auxiliary file: experimenty.aux
+A level-1 auxiliary file: zaver.aux
+A level-1 auxiliary file: literatura.aux
+The style file: czplainnat.bst
+Database file #1: literatura.bib
+You've used 12 entries,
+            2828 wiz_defined-function locations,
+            701 strings with 7466 characters,
+and the built_in function-call counts, 5252 in all, are:
+= -- 454
+> -- 330
+< -- 6
++ -- 114
+- -- 102
+* -- 449
+:= -- 847
+add.period$ -- 48
+call.type$ -- 12
+change.case$ -- 69
+chr.to.int$ -- 12
+cite$ -- 24
+duplicate$ -- 215
+empty$ -- 412
+format.name$ -- 114
+if$ -- 1076
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 8
+newline$ -- 80
+num.names$ -- 48
+pop$ -- 154
+preamble$ -- 1
+purify$ -- 58
+quote$ -- 0
+skip$ -- 152
+stack$ -- 0
+substring$ -- 91
+swap$ -- 28
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 127
+warning$ -- 0
+while$ -- 40
+width$ -- 0
+write$ -- 179
