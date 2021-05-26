@@ -63,6 +63,7 @@ Hodnota třetí složky určuje vertikální vzdálenost bodu od počátku. Tato
 
 
 \section{Vstup programu}
+\label{sec:vstup}
 
 Vstupem programu je video skoku o~tyči pořízené běžnými prostředky, jakými jsou mobilní telefon nebo tablet.
 
@@ -98,11 +99,11 @@ Prvním krokem k~provedení analýzy je zpracování videa. Aby video nebylo ote
 Pro nalezení atleta stačí určit snímek, ve kterém je atlet dobře vidět a~jeho pozici v~něm. Pozici atleta bude reprezentovat jeho ohraničující rámeček, který je vyznačený na obrázku \ref{fig:bbox}.
 
 \begin{figure}[h]\centering
-\includegraphics[width=\textwidth]{bbox}
-\caption{Ohraničující rámeček.}
-\small
-Obrázek obsahuje ohraničující rámeček atletova těla ve snínku videa \texttt{data/1.MOV}
-\label{fig:bbox}
+    \includegraphics[width=\textwidth]{bbox}
+    \caption{Ohraničující rámeček.}
+    \small
+    Obrázek obsahuje ohraničující rámeček atletova těla ve snínku videa \texttt{1.MOV}
+    \label{fig:bbox}
 \end{figure}
 
 Pro nalezení atleta jsem zvolil dva přístupy.
@@ -164,7 +165,7 @@ Trasování atleta při rozběhu nedělá knihovním trackerům problém. Nepře
     }
     \caption{Ztráta atleta při použití různých trackerů.}
     \small
-    Obrázek znázorňuje použití jednoho trackeru (vlevo) a~mřížky trackerů, která je implementovaná v~programu (vlevo). Použité snímky jsou vybrané z~videa \texttt{data/33.MOV}.
+    Obrázek znázorňuje použití jednoho trackeru (vlevo) a~mřížky trackerů, která je implementovaná v~programu (vpravo). Použité snímky jsou vybrané z~videa \texttt{33.MOV}.
     \label{fig:ztrata}
 \end{figure}
 
@@ -306,13 +307,13 @@ Kostru z~3D modelu získá program s~využitím konverzí souřadných systémů
 
 Výstupem programu je model reprezentující pohyb atleta v~průběhu rozběhu i~skoku a~hodnoty definovaných parametrů, které jsou
 \begin{itemize}
-\item doba trvání jednotlivých kroků,
-\item ztráta rychlosti ramen a~boků,
-\item výška boků,
-\item úhel odrazu,
-\item úhel došlapu jednotlivých kroků,
-\item náklon trupu a
-\item důležité momenty skoku.
+    \item doba trvání jednotlivých kroků,
+    \item ztráta rychlosti ramen a~boků,
+    \item výška boků,
+    \item úhel odrazu,
+    \item úhel došlapu jednotlivých kroků,
+    \item náklon trupu a
+    \item důležité momenty skoku.
 \end{itemize}
 
 

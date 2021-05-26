@@ -67,22 +67,100 @@ Pozice těla při odrazu je pro přenos energie do tyče také důležitá. Poku
 
 \subsubsection{Doba trvání skoku}
 
-Doba trvání skoku je vymezena odrazem od země a~opuštěním tyče. Na hodnotu tohoto parametru má vliv mnoho faktorů. Technika je jedním z~nich, standardně se atleti odráží od tyče vzpaženou paží, jsou ovšem atleti, kteří se tyče pustí dříve. Doba skoku za použití klasického odražení se vzpaženou paží se pohybuje okolo 1,3~s, nestandardní technika může tuto hodnotu stlačit až k 0,7~s. Tyto hodnoty se týkají mužského finále z~Mistrovství světa v~atletice 2017. Dále má na délku skoku vliv tvrdost tyče, tvrdší tyč se snáze - a~tedy i~rychleji - narovná a~skok tak trvá kratší dobu.
+Doba trvání skoku je vymezena odrazem od země a~opuštěním tyče. Na hodnotu tohoto parametru má vliv mnoho faktorů. Technika je jedním z~nich, standardně se atleti odráží od tyče vzpaženou paží, jsou ovšem atleti, kteří se tyče pustí dříve. Doba skoku za použití klasického odražení se vzpaženou paží se pohybuje okolo 1,3~s, nestandardní technika může tuto hodnotu stlačit až k 0,7~s. Tyto hodnoty se týkají mužského finále z~Mistrovství světa v~atletice 2017. Dále má na délku skoku vliv tvrdost a~délka tyče, tvrdší tyč se snáze - a~tedy i~rychleji - narovná a~skok tak trvá kratší dobu. S~použitím kratší tyče atletovo tělo překoná kratší vzdálenost a~doba trvání skoku je tedy kratší.
 
 \subsubsection{Převýšení}
 
 S~opuštěním tyče souvisí i~převýšení. Jedná se o~rozdíl zdolané výšky a~výšky úchopu nad zemí. Atleti světové úrovně převýšují okolo 130~cm, ženy okolo 70~cm. Převýšení je jedním z~hlavních parametrů, které určují výkonnost atleta. Na jeho hodnotu má vliv jak fyzická zdatnost, tak technické provedení skoku.
 
+
+
+
 \section{Zpracování obrazu}
+
+
 
 \subsection{Detekce člověka}
 
-\subsection{Tracker}
+Postup detekce konkrétního objektu ve snímku se skládá ze dvou kroků. Prvním je zvolení vhodné reprezentace snímku (extrakce jeho vlastností), druhým krokem je spuštění klasifikátoru, který určí, zda (a~kde) se ve snímku hledaný objekt nachází.
 
-\subsection{Detekce kostry}
+Pro účely detekce se využívají okna, která reprezentují část snímku, na které se spustí samotná detekce. Pozice okna udá případnou pozici objektu ve snímku. Příklad tohoto využití je vidět na obrázku \ref{fig:bbox}, detekce postavy se spouští na různě posunutých oknech, které určují posunuté ohraničující rámečky.
+
+Velikost okna se pro detekci různě velkých objektů mění, spíše než okno se mění velikost celého snímku, aby byla reprezentace různých částí snímku stejně velká. Touto modifikací je možné detekovat různě velké objekty v~tomtéž snímku.
+
+
+\subsubsection{Extrakce vlastností snímku}
+
+Velice úspěšným způsobem extrakce vlastnotí okna pro detekci postav je určení histogramu orientovaných gradientů \citep{HOG}. Tato metoda spočívá v~rozdělení okna na části (buňky), v~nichž se určí histogram, popisující směr gradientů - a~tedy i~směr hran. Jelikož gradient závisí na kontrastu snímku, části snímku je tedy vhodné normalizovat, co se týče kontrastu, aby byly jejich gradienty porovnatelné. Typicky se normalizují skupiny buňek (bloky), ne jednotlivé buňky oken. Získané hodnoty z~takto normalizovných bloků, které pokrývají okno a z~části se překrývají, reprezentují vlastnosti daného okna, které se následně předají klasifikátoru.
+
+Výsledné vlastnosti jsou invariantní k~lokálním geometrickým transformacím, mezi které patří posuny, škálování a~rotace. Tyto transformace mají na výslednou reprezentaci objektu vliv v~případě, že jsou příliš velké. Díky této vlastnosti je detekce člověka úspěšná, pokud se nachází ve~víceméně vzpřímené pozici. O~předpoklad vzpřípené pozice těla se opírá většina detektorů.
+
+Extrakce těchto vlastností dosahuje vysoké úspěšnosti při použití přístupu Scale-Invariant Feature Transform \citep{SIFT}. Tento přístup představuje invarianci vlastností vzhledem ke škálování a~rotaci.
+
+
+\subsubsection{Klasifikace}
+
+Při využití histogramu orientovaných gradientů se nejčastěji využívá lineární Support vector machines (SVM) \citep{SVM}. SVM se používá k~binární klasifikaci.
+
+Základ metody SVM spočívá v~rozdělení prostoru na dva poloprostory s~využitím nadroviny. Při trénování mám daná data rozdělená do dvou tříd. Lineární SVM předpokládá lineárně separabilní data, tedy je lze oddělit nadrovinou. Nelineární SVM využívá k~dosažení stejného cíle prostorové transformace. Při trénování hledám nadrovinu, která data odděluje a~vzdálenost nadoviny od nejbližšího bodu z~trénovacích dat je maximální možná.
+
+Každý bod v~prostoru odpovídá příslušné kombinaci vlastností vstupu. Podle vlastností vstupu určím pozici v~prostoru a~podle poloprostoru, do kterého spadá, vstup klasifikuji.
+
+V~mém případě určím vlastnosti vstupního snímku, na základě těchto vlastností určím poloprostor, do něhož snímek spadá a~následně se rozhodnu, zda je na obrázku postava či nikoliv.
 
 
 
+\subsection{Trasování objektů}
+
+Trasování objektů ve videu je metoda, díky níž lze na základě pozice objektu ve snímku určit jeho pozici v~následujícím snímku. Tímto postupem lze objekt sledovat v~průběhu celého videa. Pro lepší přesnost detekce je vhodné stav objektu postupně aktualizovat, jelikož se v~průběhu videa může menit. Algoritmům, které trasování objektů zajišťují, se říka trackery.
+
+Přístupů k~řešení tohoto problému je několik, lze je rozdělit do následujících kategorií:
+\begin{itemize}
+    \item feature based,
+    \item segmentation based,
+    \item estimation based a
+    \item learning based.
+\end{itemize}
+
+Trasovací metody lze rozdělit také podle jiných kritérií, příkladem je rozdělení pouze do $2$\,\rm kategorií - využívající korelační filtr a~ostatní \citep{}.
+
+\subsubsection{Feature based}
+
+Tento přístup spočívá v~extrakci vlastností objektu. Mezi tyto vlastnosti se řadí například barva nebo textura. Na základě extrahovaných vlastností se v~následujícím snímku najde objekt, který má tyto vlastnosti nejpodobnější a~splňuje další podmínky, mezi které lze zařadit vzdálenost nalezeného objektu od jeho pozice v~předchozím snímku.
+
+\subsubsection{Segmentation based}
+
+Trasování založené na principu segmentace odděluje objekty od pozadí. Typicky je trasován objekt v~popředí videa, tudíž oddělení všech objeků v~popředí od pozadí zjednoduší problém trasování.
+
+\subsubsection{Estimation based}
+
+Metody založené na odhadech se opírají o~reprezentaci objektu stavovým vektorem. Tento vektor popisuje směr pohybu objektu, který se neustále upravuje. Trasování tímto způsobem lze rozdělit do dvou kroků - predikce a~aktualizace.
+
+Predikce využívá stavový vektor k~určení pozice objektu v~následujícím snímku a~aktualizační část predikovanou pozici upraví na základě analýzy této části snímku podobným způsobem, jako při použití feature based trackeru.
+
+\subsubsection{Learning based}
+
+Tento přístup zahrnuje metody využití strojového učení. K~detekci obejktů v~následujícím snímku je potřeba extrahovat ze snímku vlastnosti a~na jejich základě trénovat tracker.
+
+Využití konvolučních sítí dosahuje výborných výsledků, ve výsledcích soutěže The Visual Object Tracking VOT2017 challenge \citep{VOT2017} byly mezi nejpřesnějšími algoritmy využívající porovnávání tvarů za použití konvolučních sítí (CNN matching). Nejpřesnější trackery využívají korelační filtry.
+
+
+
+\subsection{Odhad pozice těla}
+
+Odhad pozice těla spočívá v~detekci kloubů těla, k~této detekci se využívá především hluboké učení. Hluboké učení využívá rozsáhlé neuronové sítě, které se skládají z~několika vrstev. První vrstva bývá označovaná jako vstupní, poslední jako výstupní. Vrstvy, které se nachází mezi nimi jsou označovány jako skryté. Každou vrstvu tvoří neurony, které při zpracování vstupu nabývají číselných hodnot. Přechody mezi vrstvami definují váhy, kterými se hodnoty příslušných neuronů násobí. Většina vrstev využívá aktivační funkci, která hodnoty neuronů upravuje než je předá další vrstvě. Aktivační funkce jsou typicky nelineární, mezi nejpoužívanější se řadí ReLU a~tanh, která vznikla modifikací funkce sigmoid, jež se využívala v~minulosti a~slouží k~binární klasifikaci na výstupní vrstvě. Výstupem sítě jsou hodnoty neuronů výstupní vrstvy, které nejčastěji reprezentují pravděpodobnost, že vstup spadá do třídy, kterou daný neuron reprezentuje. Aby se jednalo o~pravděpodobnostní distribuci, musí se hodnoty neuronů normovat. K~tomu slouží funkce softmax, což je rozšíření funkce sigmoid pro klasifikaci do několika tříd. Aktivační funkce popisuje následující tabulka.
+
+\begin{alignat*}{2}
+\label{eq:aktivace}
+    &\text{ReLU:} \qquad &\text{ReLU}(x) &= max(0,x) \\
+    &\text{sigmoid:} \qquad &\sigma(x) &= \frac{1}{1+e^{-x}} \\
+    &\text{tanh:} \qquad &\text{tanh}(x) &= 2\sigma(2x) - 1 \\
+    &\text{softmax:} \qquad &\text{softmax}(\mathbf{x}) &= \frac{\mathbf{x}}{\sum_i{e^{\mathbf{x}_i}}} \\
+\end{alignat*}
+
+Existují různé typy neuronových sítí podle typu vrstev, které obsahují. První sítě, které se využívaly, obsahovaly vrstvy, které byly kompletně propojené. Hodnoty všech neuronů dané vrstvy v~takové síti závisí na hodnotách všech neuronů předchozí vrstvy. Tyto sítě není příliš vhodné používat pro detekci objektů ve snímcích, jelikož závisí na mnoha vlastnostech množiny dat, na kterých jsou natrénovány. Hlavní nevýhoda spočívá v~tom, že tato síť není invariantní k~posunu objektu. Pokud je síť natrénovaná na obrázcích krajiny, kde se slunce nachází v~levém horním rohu, má poté problém detekovat slunce v~pravém horním rohu. Pixely, které reprezentují slunce se totiž nachází na jiném místě ve vstupní vrstvě a~jejich hodnoty využívají jiné váhy.
+
+Řešení tohoto problému nabízí konvoluční sítě. Ty využívají konvoluční filtry, které jsou specifické pro každou vrstvu. Takovýto filtr má danou velikost, ze které bere vstupní hodnoty a~vypočítá hodnotu výslednou. Jedná se o~jakési okno, které se aplikuje na každou část vstupní vrstvy a určí hodnotu konvoluce v~této části. Hodnota neuronu vrstvy tedy závsí jen na blízkém okolí v~předchozí vrstvě. Jelikož se hodnoty filtru při zpracování dané vrstvy nemění, je výsledná hodnota po aplikaci filtru na části obsahující slunce v~levém horním rohu snímku stejná, jako výsledná hodnota po aplikaci na část obsahující slunce v~pravém horním rohu snímku. Více konvolučních vrstev dokáže popsat větší část snímku, jejíž velikost závisí na velikostech použitých filtrů.
 
 
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.4.21)  24 MAY 2021 01:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2021) (preloaded format=pdflatex 2021.4.21)  26 MAY 2021 13:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -575,8 +575,11 @@ Package caption Info: hyperref package is loaded.
 \sf@top=\skip68
 \sf@bottom=\skip69
 )
-Package hyperref Info: Option `unicode' set `true' on input line 126.
-Package hyperref Info: Option `breaklinks' set `true' on input line 127.
+(/usr/local/texlive/2021/texmf-dist/tex/latex/was/gensymb.sty
+Package: gensymb 2003/07/02 v1.0 (WaS)
+)
+Package hyperref Info: Option `unicode' set `true' on input line 127.
+Package hyperref Info: Option `breaklinks' set `true' on input line 128.
 
 \@input{makra.aux}
 \openout2 = `makra.aux'.
@@ -594,24 +597,24 @@ File: l3backend-pdftex.def 2021-03-18 L3 backend support: PDF output (pdfTeX)
 (./realizace.aux) (./experimenty.aux) (./zaver.aux) (./literatura.aux))
 \openout1 = `prace.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 135.
-LaTeX Font Info:    ... okay on input line 135.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 136.
+LaTeX Font Info:    ... okay on input line 136.
 
 (/usr/local/texlive/2021/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -635,7 +638,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-Package hyperref Info: Link coloring OFF on input line 135.
+Package hyperref Info: Link coloring OFF on input line 136.
 
 (/usr/local/texlive/2021/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2021-04-02 v2.47 Cross-referencing by name of section
@@ -649,21 +652,21 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
 \c@section@level=\count308
 )
-LaTeX Info: Redefining \ref on input line 135.
-LaTeX Info: Redefining \pageref on input line 135.
-LaTeX Info: Redefining \nameref on input line 135.
+LaTeX Info: Redefining \ref on input line 136.
+LaTeX Info: Redefining \pageref on input line 136.
+LaTeX Info: Redefining \nameref on input line 136.
  (./prace.out) (./prace.out)
 \@outlinefile=\write5
 \openout5 = `prace.out'.
 
-LaTeX Info: Redefining \microtypecontext on input line 135.
+LaTeX Info: Redefining \microtypecontext on input line 136.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
 Package microtype Info: Automatic font expansion enabled (level 2),
 (microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
 Package microtype Info: Using default expansion set `alltext-nott'.
-LaTeX Info: Redefining \showhyphens on input line 135.
+LaTeX Info: Redefining \showhyphens on input line 136.
 Package microtype Info: No adjustment of tracking.
 Package microtype Info: No adjustment of interword spacing.
 Package microtype Info: No adjustment of character kerning.
@@ -675,17 +678,32 @@ File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: subfig package v1.3 is loaded.
 Package caption Info: End \AtBeginDocument code.
+\symgns@font=\mathgroup9
+LaTeX Font Info:    Overwriting symbol font `gns@font' in version `bold'
+(Font)                  TS1/lmr/m/n --> TS1/lmr/b/n on input line 136.
+Package gensymb Info: Math companion symbols declared on input line 136.
+LaTeX Info: Redefining \degree on input line 136.
+LaTeX Info: Redefining \celsius on input line 136.
+Package gensymb Info: Using text companion symbols for \degree, \celsius and \p
+erthousand on input line 136.
+LaTeX Info: Redefining \ohm on input line 136.
+Package gensymb Info: Using \textohm for \ohm on input line 136.
+Package gensymb Info: Using \textmu for \micro on input line 136.
 \openout2 = `titulka.aux'.
 
 
 (./titulka.tex
 Package hyperref Info: Option `pageanchor' set `false' on input line 6.
-<../img/logo-cs.pdf, id=272, 506.4591pt x 156.49065pt>
+
+
+pdfTeX warning: pdflatex (file ../img/logo-cs.pdf): PDF inclusion: found PDF ve
+rsion <1.7>, but at most version <1.5> allowed
+<../img/logo-cs.pdf, id=276, 506.4591pt x 156.49065pt>
 File: ../img/logo-cs.pdf Graphic file (type pdf)
 <use ../img/logo-cs.pdf>
 Package pdftex.def Info: ../img/logo-cs.pdf  used on input line 10.
 (pdftex.def)             Requested size: 472.31573pt x 145.9455pt.
- [1
+[1
 
 
 
@@ -745,6 +763,12 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 (/usr/local/texlive/2021/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
+)
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 3
+.
+
+(/usr/local/texlive/2021/texmf-dist/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [1
 
 
@@ -754,11 +778,11 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 \tf@toc=\write6
 \openout6 = `prace.toc'.
 
-
-[2]
+ [2]
 \openout2 = `uvod.aux'.
 
- (./uvod.tex [3
+
+(./uvod.tex [3
 
 
 ]) [4]
@@ -771,27 +795,27 @@ Kapitola 1.
 
 
 
-] [6] [7]) [8]
+] [6] [7] [8] [9] [10]) [11]
 \openout2 = `navrh.aux'.
 
  (./navrh.tex
 Kapitola 2.
-[9
+[12
 
 
 
 
-] [10]
+] [13]
 
 pdfTeX warning: pdflatex (file ../img//bbox.pdf): PDF inclusion: found PDF vers
 ion <1.7>, but at most version <1.5> allowed
-<../img//bbox.pdf, id=437, 848.67522pt x 477.37984pt>
+<../img//bbox.pdf, id=486, 848.67564pt x 477.37949pt>
 File: ../img//bbox.pdf Graphic file (type pdf)
 <use ../img//bbox.pdf>
-Package pdftex.def Info: ../img//bbox.pdf  used on input line 101.
-(pdftex.def)             Requested size: 412.56496pt x 232.06796pt.
+Package pdftex.def Info: ../img//bbox.pdf  used on input line 102.
+(pdftex.def)             Requested size: 412.56496pt x 232.06781pt.
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 1
-04.
+05.
 (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
@@ -799,102 +823,247 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `lmtt' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
- [11 <../img//bbox.pdf>]
-<../img//rozbeh_bbox.png, id=450, 1284.8pt x 722.7pt>
+ [14 <../img//bbox.pdf>]
+<../img//rozbeh_bbox.png, id=500, 1284.8pt x 722.7pt>
 File: ../img//rozbeh_bbox.png Graphic file (type png)
 <use ../img//rozbeh_bbox.png>
-Package pdftex.def Info: ../img//rozbeh_bbox.png  used on input line 143.
+Package pdftex.def Info: ../img//rozbeh_bbox.png  used on input line 144.
 (pdftex.def)             Requested size: 185.65297pt x 104.41939pt.
-<../img//rozbeh_grid.png, id=451, 1284.8pt x 722.7pt>
+<../img//rozbeh_grid.png, id=501, 1284.8pt x 722.7pt>
 File: ../img//rozbeh_grid.png Graphic file (type png)
 <use ../img//rozbeh_grid.png>
-Package pdftex.def Info: ../img//rozbeh_grid.png  used on input line 146.
+Package pdftex.def Info: ../img//rozbeh_grid.png  used on input line 147.
 (pdftex.def)             Requested size: 185.65297pt x 104.41939pt.
-<../img//odraz_bbox.png, id=452, 1284.8pt x 722.7pt>
+<../img//odraz_bbox.png, id=502, 1284.8pt x 722.7pt>
 File: ../img//odraz_bbox.png Graphic file (type png)
 <use ../img//odraz_bbox.png>
-Package pdftex.def Info: ../img//odraz_bbox.png  used on input line 149.
+Package pdftex.def Info: ../img//odraz_bbox.png  used on input line 150.
 (pdftex.def)             Requested size: 185.65297pt x 104.41939pt.
-<../img//odraz_grid.png, id=453, 1284.8pt x 722.7pt>
+<../img//odraz_grid.png, id=503, 1284.8pt x 722.7pt>
 File: ../img//odraz_grid.png Graphic file (type png)
 <use ../img//odraz_grid.png>
-Package pdftex.def Info: ../img//odraz_grid.png  used on input line 152.
+Package pdftex.def Info: ../img//odraz_grid.png  used on input line 153.
 (pdftex.def)             Requested size: 185.65297pt x 104.41939pt.
-<../img//zvrat_bbox.png, id=454, 1284.8pt x 722.7pt>
+<../img//zvrat_bbox.png, id=504, 1284.8pt x 722.7pt>
 File: ../img//zvrat_bbox.png Graphic file (type png)
 <use ../img//zvrat_bbox.png>
-Package pdftex.def Info: ../img//zvrat_bbox.png  used on input line 155.
+Package pdftex.def Info: ../img//zvrat_bbox.png  used on input line 156.
 (pdftex.def)             Requested size: 185.65297pt x 104.41939pt.
-<../img//zvrat_grid.png, id=455, 1284.8pt x 722.7pt>
+<../img//zvrat_grid.png, id=505, 1284.8pt x 722.7pt>
 File: ../img//zvrat_grid.png Graphic file (type png)
 <use ../img//zvrat_grid.png>
-Package pdftex.def Info: ../img//zvrat_grid.png  used on input line 158.
+Package pdftex.def Info: ../img//zvrat_grid.png  used on input line 159.
 (pdftex.def)             Requested size: 185.65297pt x 104.41939pt.
-<../img//skok_bbox.png, id=456, 1284.8pt x 722.7pt>
+<../img//skok_bbox.png, id=506, 1284.8pt x 722.7pt>
 File: ../img//skok_bbox.png Graphic file (type png)
 <use ../img//skok_bbox.png>
-Package pdftex.def Info: ../img//skok_bbox.png  used on input line 161.
+Package pdftex.def Info: ../img//skok_bbox.png  used on input line 162.
 (pdftex.def)             Requested size: 185.65297pt x 104.41939pt.
-<../img//skok_grid.png, id=457, 1284.8pt x 722.7pt>
+<../img//skok_grid.png, id=507, 1284.8pt x 722.7pt>
 File: ../img//skok_grid.png Graphic file (type png)
 <use ../img//skok_grid.png>
-Package pdftex.def Info: ../img//skok_grid.png  used on input line 164.
+Package pdftex.def Info: ../img//skok_grid.png  used on input line 165.
 (pdftex.def)             Requested size: 185.65297pt x 104.41939pt.
- [12] [13 <../img//rozbeh_bbox.png (PNG copy)> <../img//rozbeh_grid.png (PNG co
+ [15] [16 <../img//rozbeh_bbox.png (PNG copy)> <../img//rozbeh_grid.png (PNG co
 py)> <../img//odraz_bbox.png (PNG copy)> <../img//odraz_grid.png (PNG copy)> <.
 ./img//zvrat_bbox.png (PNG copy)> <../img//zvrat_grid.png (PNG copy)> <../img//
-skok_bbox.png (PNG copy)> <../img//skok_grid.png (PNG copy)>] [14] [15]
-[16]
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 3
-09.
- (/usr/local/texlive/2021/texmf-dist/tex/latex/lm/ts1lmr.fd
-File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [17] [18])
-[19]
+skok_bbox.png (PNG copy)> <../img//skok_grid.png (PNG copy)>] [17] [18]
+[19] [20] [21]) [22]
 \openout2 = `realizace.aux'.
 
  (./realizace.tex
 Kapitola 3.
-[20
+[23
 
 
 
 
 ]
 
-LaTeX Warning: Reference `fig:parametry' on page 21 undefined on input line 52.
+LaTeX Warning: Reference `fig:parametry' on page 24 undefined on input line 52.
 
 
-<../img//uml_schema.pdf, id=561, 1076.02pt x 740.7675pt>
-File: ../img//uml_schema.pdf Graphic file (type pdf)
-<use ../img//uml_schema.pdf>
-Package pdftex.def Info: ../img//uml_schema.pdf  used on input line 59.
-(pdftex.def)             Requested size: 412.56496pt x 284.02649pt.
-[21 <../img//uml_schema.pdf>] [22]
-Overfull \hbox (0.89256pt too wide) in paragraph at lines 119--120
-[]\T1/lmr/m/n/12 (-20) Postavy, je-jichº tra-so-vání ne-se-lhalo, jsou celé uvn
-it° snímku [MOšNÁ ÚPRAVA]
- []
 
-[23] [24] [25] [26] [27] [28] [29] [30] [31] [32]) [33]
+
+pdfTeX warning: pdflatex (file ../img//uml.pdf): PDF inclusion: found PDF versi
+on <1.7>, but at most version <1.5> allowed
+<../img//uml.pdf, id=609, 807.015pt x 555.57562pt>
+File: ../img//uml.pdf Graphic file (type pdf)
+<use ../img//uml.pdf>
+Package pdftex.def Info: ../img//uml.pdf  used on input line 59.
+(pdftex.def)             Requested size: 412.56496pt x 284.02647pt.
+[24 <../img//uml.pdf>] [25] [26] [27] [28] [29] [30] [31] [32] [33] [34]
+[35]) [36]
 \openout2 = `experimenty.aux'.
 
  (./experimenty.tex
 Kapitola 4.
-[34
+
+Package natbib Warning: Citation `WhatsApp' on page 37 undefined on input line 
+7.
+
+
+LaTeX Warning: Reference `sec:frekvence' on page 37 undefined on input line 7.
+
+
+
+pdfTeX warning: pdflatex (file ../img//videa.pdf): PDF inclusion: found PDF ver
+sion <1.7>, but at most version <1.5> allowed
+<../img//videa.pdf, id=728, 521.72719pt x 956.98833pt>
+File: ../img//videa.pdf Graphic file (type pdf)
+<use ../img//videa.pdf>
+Package pdftex.def Info: ../img//videa.pdf  used on input line 12.
+(pdftex.def)             Requested size: 306.5267pt x 562.22859pt.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10.95> on input line 16.
+
+LaTeX Warning: Float too large for page by 6.09714pt on input line 48.
+
+
+LaTeX Warning: Reference `fig:uvodniramecky' on page 37 undefined on input line
+ 57.
+
+[37
 
 
 
 
-]) [35]
+] [38 <../img//videa.pdf>]
+
+pdfTeX warning: pdflatex (file ../img//vpohybl.pdf): PDF inclusion: found PDF v
+ersion <1.7>, but at most version <1.5> allowed
+<../img//vpohybl.pdf, id=761, 462.52798pt x 346.89601pt>
+File: ../img//vpohybl.pdf Graphic file (type pdf)
+<use ../img//vpohybl.pdf>
+Package pdftex.def Info: ../img//vpohybl.pdf  used on input line 99.
+(pdftex.def)             Requested size: 185.65297pt x 139.2429pt.
+
+
+pdfTeX warning: pdflatex (file ../img//vpohybp.pdf): PDF inclusion: found PDF v
+ersion <1.7>, but at most version <1.5> allowed
+<../img//vpohybp.pdf, id=762, 462.52798pt x 346.89601pt>
+File: ../img//vpohybp.pdf Graphic file (type pdf)
+<use ../img//vpohybp.pdf>
+Package pdftex.def Info: ../img//vpohybp.pdf  used on input line 102.
+(pdftex.def)             Requested size: 185.65297pt x 139.2429pt.
+[39 <../img//vpohybl.pdf> <../img//vpohybp.pdf
+
+pdfTeX warning: pdflatex (file ../img//vpohybp.pdf): PDF inclusion: multiple pd
+fs with page group included in a single page
+>]
+
+pdfTeX warning: pdflatex (file ../img//rotace.pdf): PDF inclusion: found PDF ve
+rsion <1.7>, but at most version <1.5> allowed
+<../img//rotace.pdf, id=849, 462.52798pt x 346.89601pt>
+File: ../img//rotace.pdf Graphic file (type pdf)
+<use ../img//rotace.pdf>
+Package pdftex.def Info: ../img//rotace.pdf  used on input line 122.
+(pdftex.def)             Requested size: 412.56496pt x 309.44046pt.
+[40 <../img//rotace.pdf>]
+
+LaTeX Warning: Reference `sec:vylepseni' on page 41 undefined on input line 142
+.
+
+
+
+pdfTeX warning: pdflatex (file ../img//27_lkycel.pdf): PDF inclusion: found PDF
+ version <1.7>, but at most version <1.5> allowed
+<../img//27_lkycel.pdf, id=893, 462.52798pt x 346.89601pt>
+File: ../img//27_lkycel.pdf Graphic file (type pdf)
+<use ../img//27_lkycel.pdf>
+Package pdftex.def Info: ../img//27_lkycel.pdf  used on input line 147.
+(pdftex.def)             Requested size: 185.65297pt x 139.2429pt.
+
+
+pdfTeX warning: pdflatex (file ../img//27_pkycel.pdf): PDF inclusion: found PDF
+ version <1.7>, but at most version <1.5> allowed
+<../img//27_pkycel.pdf, id=894, 462.52798pt x 346.89601pt>
+File: ../img//27_pkycel.pdf Graphic file (type pdf)
+<use ../img//27_pkycel.pdf>
+Package pdftex.def Info: ../img//27_pkycel.pdf  used on input line 150.
+(pdftex.def)             Requested size: 185.65297pt x 139.2429pt.
+
+LaTeX Warning: Reference `sec:kontrast' on page 41 undefined on input line 163.
+
+
+[41 <../img//27_lkycel.pdf> <../img//27_pkycel.pdf
+
+pdfTeX warning: pdflatex (file ../img//27_pkycel.pdf): PDF inclusion: multiple 
+pdfs with page group included in a single page
+>]
+
+pdfTeX warning: pdflatex (file ../img//30_naklon.pdf): PDF inclusion: found PDF
+ version <1.7>, but at most version <1.5> allowed
+<../img//30_naklon.pdf, id=989, 462.52798pt x 346.89601pt>
+File: ../img//30_naklon.pdf Graphic file (type pdf)
+<use ../img//30_naklon.pdf>
+Package pdftex.def Info: ../img//30_naklon.pdf  used on input line 212.
+(pdftex.def)             Requested size: 412.56496pt x 309.44046pt.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+
+pdfTeX warning: pdflatex (file ../img//23_fps_hlava.pdf): PDF inclusion: found 
+PDF version <1.7>, but at most version <1.5> allowed
+<../img//23_fps_hlava.pdf, id=991, 462.52798pt x 346.89601pt>
+File: ../img//23_fps_hlava.pdf Graphic file (type pdf)
+<use ../img//23_fps_hlava.pdf>
+Package pdftex.def Info: ../img//23_fps_hlava.pdf  used on input line 224.
+(pdftex.def)             Requested size: 185.65297pt x 139.2429pt.
+
+
+pdfTeX warning: pdflatex (file ../img//23_fps_pzapesti.pdf): PDF inclusion: fou
+nd PDF version <1.7>, but at most version <1.5> allowed
+<../img//23_fps_pzapesti.pdf, id=992, 462.52798pt x 346.89601pt>
+File: ../img//23_fps_pzapesti.pdf Graphic file (type pdf)
+<use ../img//23_fps_pzapesti.pdf>
+Package pdftex.def Info: ../img//23_fps_pzapesti.pdf  used on input line 227.
+(pdftex.def)             Requested size: 185.65297pt x 139.2429pt.
+
+
+pdfTeX warning: pdflatex (file ../img//23_fps_lkycel.pdf): PDF inclusion: found
+ PDF version <1.7>, but at most version <1.5> allowed
+<../img//23_fps_lkycel.pdf, id=993, 462.52798pt x 346.89601pt>
+File: ../img//23_fps_lkycel.pdf Graphic file (type pdf)
+<use ../img//23_fps_lkycel.pdf>
+Package pdftex.def Info: ../img//23_fps_lkycel.pdf  used on input line 230.
+(pdftex.def)             Requested size: 185.65297pt x 139.2429pt.
+
+
+pdfTeX warning: pdflatex (file ../img//23_fps_pkycel.pdf): PDF inclusion: found
+ PDF version <1.7>, but at most version <1.5> allowed
+<../img//23_fps_pkycel.pdf, id=994, 462.52798pt x 346.89601pt>
+File: ../img//23_fps_pkycel.pdf Graphic file (type pdf)
+<use ../img//23_fps_pkycel.pdf>
+Package pdftex.def Info: ../img//23_fps_pkycel.pdf  used on input line 233.
+(pdftex.def)             Requested size: 185.65297pt x 139.2429pt.
+[42]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+) [43 <../img//30_naklon.pdf>] [44 <../img//23_fps_hlava.pdf> <../img//23_fps_p
+zapesti.pdf
+
+pdfTeX warning: pdflatex (file ../img//23_fps_pzapesti.pdf): PDF inclusion: mul
+tiple pdfs with page group included in a single page
+> <../img//23_fps_lkycel.pdf
+
+pdfTeX warning: pdflatex (file ../img//23_fps_lkycel.pdf): PDF inclusion: multi
+ple pdfs with page group included in a single page
+> <../img//23_fps_pkycel.pdf
+
+pdfTeX warning: pdflatex (file ../img//23_fps_pkycel.pdf): PDF inclusion: multi
+ple pdfs with page group included in a single page
+>]
 \openout2 = `zaver.aux'.
 
- (./zaver.tex) [36
+ (./zaver.tex [45
 
 
 
 
-]
+]) [46]
 \openout2 = `literatura.aux'.
 
  (./literatura.tex (./prace.bbl
@@ -902,110 +1071,108 @@ Package microtype Info: Character `029' is missing
 (microtype)             in font `T1/lmr/m/sc/12'.
 (microtype)             Ignoring protrusion settings for this character.
 
-Underfull \hbox (badness 1412) in paragraph at lines 45--50
+Underfull \hbox (badness 1412) in paragraph at lines 57--62
 \T1/lmr/m/n/12 (+20) re-port for the IAAF World Cham-pi-on-ships Lon-don 2017: 
 Pole Vault
  []
 
 
-Underfull \hbox (badness 5741) in paragraph at lines 45--50
+Underfull \hbox (badness 5741) in paragraph at lines 57--62
 \T1/lmr/m/n/12 (+20) Men's.  URL []$\T1/lmtt/m/n/12 https : / / www . worldathl
 etics . org / download / download ?
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 45--50
+Underfull \hbox (badness 10000) in paragraph at lines 57--62
 \T1/lmtt/m/n/12 filename = e2903e25-[]0ee3-[]43d2-[]b031-[]1af5a3b84fb8 . pdf &
  urlslug = Men %
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 45--50
+Underfull \hbox (badness 10000) in paragraph at lines 57--62
 \T1/lmtt/m/n/12 27s % 20pole % 20vault % 20-[] % 202017 % 20IAAF % 20World % 20
 Championships %
  []
 
+[47
 
-Underfull \hbox (badness 2744) in paragraph at lines 83--89
+
+
+
+]
+Underfull \hbox (badness 2744) in paragraph at lines 135--141
 []\T1/lmr/m/sc/12 (+20) Rosebrock, A. \T1/lmr/m/n/12 (+20) (2015).  (Fas-ter) N
 on-Maximum Sup-pres-sion in Py-
  []
 
 
-Underfull \hbox (badness 8170) in paragraph at lines 83--89
+Underfull \hbox (badness 8170) in paragraph at lines 135--141
 \T1/lmr/m/n/12 (+20) thon.  [on-line].  URL []$\T1/lmtt/m/n/12 https : / / www 
 . pyimagesearch . com / 2015 / 02 /
  []
 
 
-Underfull \hbox (badness 2856) in paragraph at lines 83--89
+Underfull \hbox (badness 2856) in paragraph at lines 135--141
 \T1/lmtt/m/n/12 16 / faster-[]non-[]maximum-[]suppression-[]python/$[]\T1/lmr/m
 /n/12 (+20) .  Na-po-sledy na-v²tí-veno
  []
 
-)) [37
-
-
-
-
-] (./prace.lof)
+)) [48] (./prace.lof)
 \tf@lof=\write7
 \openout7 = `prace.lof'.
 
- [38
+ [49
 
 
-
-] (./prace.lot)
-\tf@lot=\write8
-\openout8 = `prace.lot'.
-
- [39
-
-] [40
 
 ]
 P\v {r}\'{\i }loha A.
-[41
+[50
 
-] (./prace.aux (./titulka.aux) (./uvod.aux) (./teorie.aux) (./navrh.aux)
+]
+
+Package natbib Warning: There were undefined citations.
+
+(./prace.aux (./titulka.aux) (./uvod.aux) (./teorie.aux) (./navrh.aux)
 (./realizace.aux) (./experimenty.aux) (./zaver.aux) (./literatura.aux))
 
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `prace.out' has not changed.
-(rerunfilecheck)             Checksum: C02333EF7718AE6EB7B20DB950611F31;9773.
+(rerunfilecheck)             Checksum: 9AA3E49240FC0AF2596FC5A9EF638945;10020.
  ) 
 Here is how much of TeX's memory you used:
- 18790 strings out of 478994
- 279990 string characters out of 5858184
- 623811 words of memory out of 5000000
- 35426 multiletter control sequences out of 15000+600000
- 487481 words of font info for 183 fonts, out of 8000000 for 9000
+ 19056 strings out of 478994
+ 284411 string characters out of 5858184
+ 626675 words of memory out of 5000000
+ 35591 multiletter control sequences out of 15000+600000
+ 498769 words of font info for 223 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 88i,10n,90p,1194b,2364s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 88i,11n,90p,1356b,2364s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/
-texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/20
-21/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2021/texmf-dist/
-fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/local/texlive/2021/texmf-dist/fonts/enc/
-dvips/lm/lm-ts1.enc}</usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/l
-mbx12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb
-></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmmi12.pfb></usr/loc
-al/texlive/2021/texmf-dist/fonts/type1/public/lm/lmmi8.pfb></usr/local/texlive/
-2021/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2021/texmf-
-dist/fonts/type1/public/lm/lmr12.pfb></usr/local/texlive/2021/texmf-dist/fonts/
-type1/public/lm/lmr17.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/publi
-c/lm/lmr8.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmri12.
-pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/
-local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></usr/local/texli
-ve/2021/texmf-dist/fonts/type1/public/lm/lmtt10.pfb></usr/local/texlive/2021/te
-xmf-dist/fonts/type1/public/lm/lmtt12.pfb></usr/local/texlive/2021/texmf-dist/f
-onts/type1/public/tex-gyre/qhvb.pfb></usr/local/texlive/2021/texmf-dist/fonts/t
-ype1/public/tex-gyre/qhvr.pfb>
-Output written on prace.pdf (45 pages, 10315678 bytes).
+texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/local/texlive/2021/
+texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2021/texmf-dist/fon
+ts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2021/texmf-dist/fonts/enc/dvi
+ps/lm/lm-mathex.enc}{/usr/local/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-m
+athsy.enc}</usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmbx12.pfb>
+</usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmbx8.pfb></usr/local
+/texlive/2021/texmf-dist/fonts/type1/public/lm/lmcsc10.pfb></usr/local/texlive/
+2021/texmf-dist/fonts/type1/public/lm/lmex10.pfb></usr/local/texlive/2021/texmf
+-dist/fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2021/texmf-dist/font
+s/type1/public/lm/lmmi12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/pu
+blic/lm/lmmi6.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmm
+i8.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr10.pfb></us
+r/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr12.pfb></usr/local/tex
+live/2021/texmf-dist/fonts/type1/public/lm/lmr17.pfb></usr/local/texlive/2021/t
+exmf-dist/fonts/type1/public/lm/lmr8.pfb></usr/local/texlive/2021/texmf-dist/fo
+nts/type1/public/lm/lmri12.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/
+public/lm/lmsy10.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/
+lmsy8.pfb></usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmtt10.pfb>
+</usr/local/texlive/2021/texmf-dist/fonts/type1/public/lm/lmtt12.pfb>
+Output written on prace.pdf (54 pages, 10433431 bytes).
 PDF statistics:
- 871 PDF objects out of 1000 (max. 8388607)
- 760 compressed objects within 8 object streams
- 207 named destinations out of 1000 (max. 500000)
- 49236 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 1413 PDF objects out of 1440 (max. 8388607)
+ 947 compressed objects within 10 object streams
+ 244 named destinations out of 1000 (max. 500000)
+ 59539 words of extra memory for PDF output out of 61914 (max. 10000000)
 

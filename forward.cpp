@@ -396,11 +396,11 @@ cv::Rect rect(const std::vector<cv::Rect> &rs) {
 std::vector<cv::Rect> split(const cv::Rect &bbox) {
     std::vector<cv::Rect> bboxes;
     cv::Point offset;
-    cv::Rect smaller = bbox - cv::Size(2 * bbox.width / 3, 2 * bbox.height / 3);
-    for (std::size_t i = 0; i < 3; ++i) {
-        offset = cv::Point(0, i * bbox.height / 3);
-        for (std::size_t j = 0; j < 3; ++j) {
-            offset = cv::Point(j * bbox.width / 3, offset.y);
+    cv::Rect smaller(bbox.tl(), bbox.size() / GRID_SIZE);
+    for (std::size_t i = 0; i < GRID_SIZE; ++i) {
+        offset = cv::Point(0, i * bbox.height / GRID_SIZE);
+        for (std::size_t j = 0; j < GRID_SIZE; ++j) {
+            offset = cv::Point(j * bbox.width / GRID_SIZE, offset.y);
             bboxes.push_back(smaller + offset);
         }
     }

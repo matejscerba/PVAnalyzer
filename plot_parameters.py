@@ -36,7 +36,6 @@ def read_file(path):
 def plot_params(vid_name, names, units, vals):
     shown = 0
     for p_name, p_unit, p_vals in zip(names[1:], units[1:], vals[1:]):
-        plt.title("{} : {}".format(vid_name, p_name))
         if p_name == "Hips velocity loss" or p_name == "Shoulders velocity loss" or p_name == "Takeoff angle":
             # Don't plot this parameter.
             continue
@@ -59,6 +58,7 @@ def plot_params(vid_name, names, units, vals):
         # Plot graph.
         if shown > 0:
             plt.figure()
+        plt.title("{} : {}".format(vid_name, p_name))
         plot_func(x, y)
         plt.xlabel(x_label)
         plt.ylabel(y_label)

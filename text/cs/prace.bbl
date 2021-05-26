@@ -1,4 +1,4 @@
-\begin{thebibliography}{12}
+\begin{thebibliography}{16}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -34,6 +34,18 @@
   Intelligence}, {\bf 43}\penalty0 (1), \penalty0 172--186.
 \newblock \doi{10.1109/TPAMI.2019.2929257}.
 
+\bibitem[Cortes a Vapnik(1995)]{SVM}
+{\sc Cortes, C. {\rm a} Vapnik, V.} (1995).
+\newblock Support-vector networks.
+\newblock \emph{Machine learning}, {\bf 20}\penalty0 (3), \penalty0 273--297.
+
+\bibitem[Dalal a Triggs(2005)]{HOG}
+{\sc Dalal, N. {\rm a} Triggs, B.} (2005).
+\newblock Histograms of oriented gradients for human detection.
+\newblock In \emph{{2005 IEEE Computer Society Conference on Computer Vision
+  and Pattern Recognition (CVPR'05)}}, volume~1, pages 886--893 vol. 1.
+\newblock \doi{10.1109/CVPR.2005.177}.
+
 \bibitem[Foundation(2021)]{PythonC}
 {\sc Foundation, P.~S.} (2021).
 \newblock {1. Embedding Python in Another Application}.
@@ -61,6 +73,46 @@
   Guadarrama, S. {\rm a} Darrell, T.} (2014).
 \newblock {Caffe: Convolutional Architecture for Fast Feature Embedding}.
 \newblock \emph{arXiv preprint arXiv:1408.5093}.
+
+\bibitem[Kristan a~kol.(2017)Kristan, Leonardis, Matas, Felsberg, Pflugfelder,
+  Zajc, Vojír, Häger, Lukežic, Eldesokey, Fernández, Garcia-Martin, Muhic,
+  Petrosino, Memarmoghadam, Vedaldi, Manzanera, Tran, Alatan, Mocanu, Chen,
+  Huang, Xu, Sun, Du, Zhang, Du, Mishra, Gundogdu, Velasco-Salido, Khan,
+  Battistone, Subrahmanyam, Bhat, Huang, Bastos, Seetharaman, Zhang, Li, Lu,
+  Drummond, Valmadre, Jeong, Cho, Lee, Noskova, Zhu, Gao, Liu, Kim, Henriques,
+  Martínez, Zhuang, Xing, Gao, Chen, Palaniappan, Lebeda, Gao, Kitani, Zhang,
+  Wang, Yang, Wen, Bertinetto, Poostchi, Danelljan, Mueller, Zhang, Yang, Xie,
+  Wang, Miksik, Moallem, Venugopal, Senna, Torr, Wang, Yu, Huang,
+  Martín-Nieto, Bowden, Liu, Tapu, Hadfield, Lyu, Golodetz, Choi, Zhang,
+  Zaharia, Santopietro, Zou, Hu, Tao, Li, Zhou, Yu, Bian, Li, Xing, Fan, Zhu,
+  Zhang a He]{VOT2017}
+{\sc Kristan, M., Leonardis, A., Matas, J., Felsberg, M., Pflugfelder, R.,
+  Zajc, L.~C., Vojír, T., Häger, G., Lukežic, A., Eldesokey, A., Fernández,
+  G., Garcia-Martin, A., Muhic, A., Petrosino, A., Memarmoghadam, A., Vedaldi,
+  A., Manzanera, A., Tran, A., Alatan, A., Mocanu, B., Chen, B., Huang, C., Xu,
+  C., Sun, C., Du, D., Zhang, D., Du, D., Mishra, D., Gundogdu, E.,
+  Velasco-Salido, E., Khan, F.~S., Battistone, F., Subrahmanyam, G. R. K.~S.,
+  Bhat, G., Huang, G., Bastos, G., Seetharaman, G., Zhang, H., Li, H., Lu, H.,
+  Drummond, I., Valmadre, J., Jeong, J.-c., Cho, J.-i., Lee, J.-Y., Noskova,
+  J., Zhu, J., Gao, J., Liu, J., Kim, J.-W., Henriques, J.~F., Martínez,
+  J.~M., Zhuang, J., Xing, J., Gao, J., Chen, K., Palaniappan, K., Lebeda, K.,
+  Gao, K., Kitani, K.~M., Zhang, L., Wang, L., Yang, L., Wen, L., Bertinetto,
+  L., Poostchi, M., Danelljan, M., Mueller, M., Zhang, M., Yang, M.-H., Xie,
+  N., Wang, N., Miksik, O., Moallem, P., Venugopal, P.~M., Senna, P., Torr, P.
+  H.~S., Wang, Q., Yu, Q., Huang, Q., Martín-Nieto, R., Bowden, R., Liu, R.,
+  Tapu, R., Hadfield, S., Lyu, S., Golodetz, S., Choi, S., Zhang, T., Zaharia,
+  T., Santopietro, V., Zou, W., Hu, W., Tao, W., Li, W., Zhou, W., Yu, X.,
+  Bian, X., Li, Y., Xing, Y., Fan, Y., Zhu, Z., Zhang, Z. {\rm a} He, Z.}
+  (2017).
+\newblock {The Visual Object Tracking VOT2017 Challenge Results}.
+\newblock In \emph{2017 IEEE International Conference on Computer Vision
+  Workshops (ICCVW)}, pages 1949--1972.
+\newblock \doi{10.1109/ICCVW.2017.230}.
+
+\bibitem[Lindeberg(2012)]{SIFT}
+{\sc Lindeberg, T.} (2012).
+\newblock \emph{{Scale Invariant Feature Transform}}, volume~7.
+\newblock \doi{10.4249/scholarpedia.10491}.
 
 \bibitem[Lukežič a~kol.(2018)Lukežič, Vojíř, Čehovin Zajc, Matas a
   Kristan]{DCFwCaSR}

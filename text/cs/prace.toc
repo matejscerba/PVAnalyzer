@@ -1,124 +1,131 @@
 \babel@toc {czech}{}
 \contentsline {chapter}{Úvod}{3}{chapter*.2}%
-\contentsline {section}{\numberline {0.1}Související práce}{4}{section.0.1}%
+\contentsline {section}{Související práce}{4}{section*.3}%
 \contentsline {chapter}{\numberline {1}Teorie}{5}{chapter.1}%
 \contentsline {section}{\numberline {1.1}Skok o~tyči}{5}{section.1.1}%
 \contentsline {subsection}{\numberline {1.1.1}Analýza technického provedení skoku}{5}{subsection.1.1.1}%
 \contentsline {subsection}{\numberline {1.1.2}Analýza biomechanických parametrů skoku}{6}{subsection.1.1.2}%
-\contentsline {subsubsection}{Délka jednotlivých kroků rozběhu}{6}{section*.3}%
-\contentsline {subsubsection}{Doba oporové fáze kroku}{7}{section*.4}%
-\contentsline {subsubsection}{Náběhová rychlost}{7}{section*.5}%
-\contentsline {subsubsection}{Výška boků v~průběhu rozběhu}{7}{section*.6}%
-\contentsline {subsubsection}{Místo odrazu}{7}{section*.7}%
-\contentsline {subsubsection}{Výška úchopu}{7}{section*.8}%
-\contentsline {subsubsection}{Úhel odrazu}{8}{section*.9}%
-\contentsline {subsubsection}{Úhly v~kloubech při odrazu}{8}{section*.10}%
-\contentsline {subsubsection}{Doba trvání skoku}{8}{section*.11}%
-\contentsline {subsubsection}{Převýšení}{8}{section*.12}%
+\contentsline {subsubsection}{Délka jednotlivých kroků rozběhu}{6}{section*.4}%
+\contentsline {subsubsection}{Doba oporové fáze kroku}{7}{section*.5}%
+\contentsline {subsubsection}{Náběhová rychlost}{7}{section*.6}%
+\contentsline {subsubsection}{Výška boků v~průběhu rozběhu}{7}{section*.7}%
+\contentsline {subsubsection}{Místo odrazu}{7}{section*.8}%
+\contentsline {subsubsection}{Výška úchopu}{7}{section*.9}%
+\contentsline {subsubsection}{Úhel odrazu}{8}{section*.10}%
+\contentsline {subsubsection}{Úhly v~kloubech při odrazu}{8}{section*.11}%
+\contentsline {subsubsection}{Doba trvání skoku}{8}{section*.12}%
+\contentsline {subsubsection}{Převýšení}{8}{section*.13}%
 \contentsline {section}{\numberline {1.2}Zpracování obrazu}{8}{section.1.2}%
 \contentsline {subsection}{\numberline {1.2.1}Detekce člověka}{8}{subsection.1.2.1}%
-\contentsline {subsection}{\numberline {1.2.2}Tracker}{8}{subsection.1.2.2}%
-\contentsline {subsection}{\numberline {1.2.3}Detekce kostry}{8}{subsection.1.2.3}%
-\contentsline {chapter}{\numberline {2}Návrh řešení}{9}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Souřadné systémy}{9}{section.2.1}%
-\contentsline {subsection}{\numberline {2.1.1}Snímek}{9}{subsection.2.1.1}%
-\contentsline {subsection}{\numberline {2.1.2}Video}{9}{subsection.2.1.2}%
-\contentsline {subsection}{\numberline {2.1.3}Prostor}{9}{subsection.2.1.3}%
-\contentsline {section}{\numberline {2.2}Vstup programu}{10}{section.2.2}%
-\contentsline {section}{\numberline {2.3}Analýza videa}{10}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}Zpracování videa}{10}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Nalezení atleta}{11}{subsection.2.3.2}%
-\contentsline {subsubsection}{Trasování postav}{12}{section*.14}%
-\contentsline {subsection}{\numberline {2.3.3}Detekce kostry}{12}{subsection.2.3.3}%
-\contentsline {subsubsection}{Trasování atleta}{12}{section*.15}%
-\contentsline {subsubsection}{Detekce kloubů těla}{12}{section*.17}%
-\contentsline {subsection}{\numberline {2.3.4}Konverze kostry do 3D modelu}{14}{subsection.2.3.4}%
-\contentsline {subsection}{\numberline {2.3.5}Analýza parametrů}{14}{subsection.2.3.5}%
-\contentsline {subsubsection}{Délka jednotlivých kroků rozběhu}{14}{section*.18}%
-\contentsline {subsubsection}{Doba oporové fáze kroků}{15}{section*.19}%
-\contentsline {subsubsection}{Náběhová rychlost}{15}{section*.20}%
-\contentsline {subsubsection}{Výška boků v~průběhu rozběhu}{15}{section*.21}%
-\contentsline {subsubsection}{Místo odrazu}{15}{section*.22}%
-\contentsline {subsubsection}{Výška úchopu}{15}{section*.23}%
-\contentsline {subsubsection}{Úhel odrazu}{16}{section*.24}%
-\contentsline {subsubsection}{Úhly v~kloubech při odrazu}{16}{section*.25}%
-\contentsline {subsubsection}{Doba trvání skoku}{16}{section*.26}%
-\contentsline {subsubsection}{Převýšení}{16}{section*.27}%
-\contentsline {subsubsection}{Další implementované parametry}{16}{section*.28}%
-\contentsline {paragraph}{Úhel došlapu jednotlivých kroků}{16}{section*.29}%
-\contentsline {paragraph}{Náklon trupu}{16}{section*.30}%
-\contentsline {subsubsection}{Důležité momenty skoku}{16}{section*.31}%
-\contentsline {section}{\numberline {2.4}Analýza modelu}{17}{section.2.4}%
-\contentsline {section}{\numberline {2.5}Výstup programu}{17}{section.2.5}%
-\contentsline {subsection}{\numberline {2.5.1}Uložení výstupu}{17}{subsection.2.5.1}%
-\contentsline {paragraph}{Parametry}{17}{section*.32}%
-\contentsline {paragraph}{Model}{18}{section*.33}%
-\contentsline {subsection}{\numberline {2.5.2}Zobrazení výstupu uživateli}{18}{subsection.2.5.2}%
-\contentsline {section}{\numberline {2.6}Programové vybavení}{18}{section.2.6}%
-\contentsline {subsection}{\numberline {2.6.1}Počítačové vidění a~zpracování obrazu}{18}{subsection.2.6.1}%
-\contentsline {paragraph}{OpenCV}{18}{section*.34}%
-\contentsline {paragraph}{OpenVINO}{18}{section*.35}%
-\contentsline {paragraph}{VisionWorks}{19}{section*.36}%
-\contentsline {paragraph}{Vision Workbench}{19}{section*.37}%
-\contentsline {subsection}{\numberline {2.6.2}Grafická reprezentace výstupu}{19}{subsection.2.6.2}%
-\contentsline {paragraph}{gnuplot}{19}{section*.38}%
-\contentsline {paragraph}{MATLAB}{19}{section*.39}%
-\contentsline {paragraph}{Matplotlib}{19}{section*.40}%
-\contentsline {chapter}{\numberline {3}Realizace}{20}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Zvolené prostředky}{20}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Konverze souřadných systémů}{20}{section.3.2}%
-\contentsline {section}{\numberline {3.3}Struktura programu}{21}{section.3.3}%
-\contentsline {section}{\numberline {3.4}Vstup programu}{22}{section.3.4}%
-\contentsline {section}{\numberline {3.5}Analýza videa}{22}{section.3.5}%
-\contentsline {subsection}{\numberline {3.5.1}Zpracování videa}{22}{subsection.3.5.1}%
-\contentsline {subsection}{\numberline {3.5.2}Nalezení atleta}{22}{subsection.3.5.2}%
-\contentsline {subsubsection}{Manuální způsob}{22}{section*.42}%
-\contentsline {subsubsection}{Automatický způsob}{22}{section*.43}%
-\contentsline {paragraph}{Detekce postav ve snímku}{23}{section*.44}%
-\contentsline {paragraph}{Analýza pohybu postav}{24}{section*.45}%
-\contentsline {subsection}{\numberline {3.5.3}Detekce kostry}{24}{subsection.3.5.3}%
-\contentsline {subsubsection}{Trasování atleta}{24}{section*.46}%
-\contentsline {subsubsection}{Analýza pohybu atleta}{25}{section*.47}%
-\contentsline {subsubsection}{Detekce kloubů těla}{26}{section*.48}%
-\contentsline {paragraph}{Síť}{28}{section*.49}%
-\contentsline {paragraph}{Extrakce kloubů z~výstupu}{28}{section*.50}%
-\contentsline {subsection}{\numberline {3.5.4}Konverze kostry do 3D modelu}{28}{subsection.3.5.4}%
-\contentsline {subsection}{\numberline {3.5.5}Analýza parametrů}{29}{subsection.3.5.5}%
-\contentsline {subsubsection}{Důležité momenty skoku}{29}{section*.51}%
-\contentsline {paragraph}{Start}{29}{section*.52}%
-\contentsline {paragraph}{Odraz}{30}{section*.53}%
-\contentsline {paragraph}{Kulminace}{30}{section*.54}%
-\contentsline {subsubsection}{Doba trvání jednotlivých kroků}{30}{section*.55}%
-\contentsline {subsubsection}{Ztráta rychlosti ramen a~boků}{31}{section*.56}%
-\contentsline {subsubsection}{Výška boků}{31}{section*.57}%
-\contentsline {subsubsection}{Úhel odrazu}{31}{section*.58}%
-\contentsline {subsubsection}{Úhel došlapu jednotlivých kroků}{31}{section*.59}%
-\contentsline {subsubsection}{Náklon trupu}{31}{section*.60}%
-\contentsline {section}{\numberline {3.6}Analýza modelu}{32}{section.3.6}%
-\contentsline {section}{\numberline {3.7}Výstup programu}{32}{section.3.7}%
-\contentsline {subsection}{\numberline {3.7.1}Uložení výstupu}{32}{subsection.3.7.1}%
-\contentsline {subsection}{\numberline {3.7.2}Zobrazení výstupu uživateli}{32}{subsection.3.7.2}%
-\contentsline {subsubsection}{Prohlížeč snímků}{32}{section*.61}%
-\contentsline {subsubsection}{Grafická reprezentace parametrů}{33}{section*.62}%
-\contentsline {chapter}{\numberline {4}Experimenty}{34}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Volba úvodní pozice atleta}{34}{section.4.1}%
-\contentsline {subsection}{\numberline {4.1.1}Pozice ohraničujícího rámečku}{34}{subsection.4.1.1}%
-\contentsline {subsection}{\numberline {4.1.2}Velikost ohraničujícího rámečku}{34}{subsection.4.1.2}%
-\contentsline {section}{\numberline {4.2}Pohyb kamery}{34}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Vertikální pohyb kamery}{34}{subsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.2.2}Rotace kamery}{34}{subsection.4.2.2}%
-\contentsline {section}{\numberline {4.3}Pozice kamery}{34}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Směr rozběhu}{34}{subsection.4.3.1}%
-\contentsline {subsection}{\numberline {4.3.2}Úhel záběru}{34}{subsection.4.3.2}%
-\contentsline {subsection}{\numberline {4.3.3}Vzdálenost kamery}{34}{subsection.4.3.3}%
-\contentsline {section}{\numberline {4.4}Další postavy ve videu}{34}{section.4.4}%
-\contentsline {section}{\numberline {4.5}Frekvence snímků}{34}{section.4.5}%
-\contentsline {section}{\numberline {4.6}Závody}{35}{section.4.6}%
-\contentsline {section}{\numberline {4.7}Shrnutí}{35}{section.4.7}%
-\contentsline {chapter}{Závěr}{36}{chapter*.63}%
-\contentsline {chapter}{Seznam použité literatury}{37}{chapter*.64}%
-\contentsline {chapter}{Seznam obr\'azk\r {u}}{38}{chapter*.65}%
-\contentsline {chapter}{Seznam tabulek}{39}{chapter*.66}%
-\contentsline {chapter}{Seznam použitých zkratek}{40}{chapter*.67}%
-\contentsline {chapter}{\numberline {A}Přílohy}{41}{appendix.A}%
-\contentsline {section}{\numberline {A.1}První příloha}{41}{section.A.1}%
+\contentsline {subsubsection}{Extrakce vlastností snímku}{9}{section*.14}%
+\contentsline {subsubsection}{Klasifikace}{9}{section*.15}%
+\contentsline {subsection}{\numberline {1.2.2}Trasování objektů}{9}{subsection.1.2.2}%
+\contentsline {subsubsection}{Feature based}{10}{section*.16}%
+\contentsline {subsubsection}{Segmentation based}{10}{section*.17}%
+\contentsline {subsubsection}{Estimation based}{10}{section*.18}%
+\contentsline {subsubsection}{Learning based}{10}{section*.19}%
+\contentsline {subsection}{\numberline {1.2.3}Odhad pozice těla}{11}{subsection.1.2.3}%
+\contentsline {chapter}{\numberline {2}Návrh řešení}{12}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Souřadné systémy}{12}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Snímek}{12}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Video}{12}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}Prostor}{12}{subsection.2.1.3}%
+\contentsline {section}{\numberline {2.2}Vstup programu}{13}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Analýza videa}{13}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Zpracování videa}{13}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Nalezení atleta}{14}{subsection.2.3.2}%
+\contentsline {subsubsection}{Trasování postav}{15}{section*.21}%
+\contentsline {subsection}{\numberline {2.3.3}Detekce kostry}{15}{subsection.2.3.3}%
+\contentsline {subsubsection}{Trasování atleta}{15}{section*.22}%
+\contentsline {subsubsection}{Detekce kloubů těla}{15}{section*.24}%
+\contentsline {subsection}{\numberline {2.3.4}Konverze kostry do 3D modelu}{17}{subsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.3.5}Analýza parametrů}{17}{subsection.2.3.5}%
+\contentsline {subsubsection}{Délka jednotlivých kroků rozběhu}{17}{section*.25}%
+\contentsline {subsubsection}{Doba oporové fáze kroků}{18}{section*.26}%
+\contentsline {subsubsection}{Náběhová rychlost}{18}{section*.27}%
+\contentsline {subsubsection}{Výška boků v~průběhu rozběhu}{18}{section*.28}%
+\contentsline {subsubsection}{Místo odrazu}{18}{section*.29}%
+\contentsline {subsubsection}{Výška úchopu}{18}{section*.30}%
+\contentsline {subsubsection}{Úhel odrazu}{19}{section*.31}%
+\contentsline {subsubsection}{Úhly v~kloubech při odrazu}{19}{section*.32}%
+\contentsline {subsubsection}{Doba trvání skoku}{19}{section*.33}%
+\contentsline {subsubsection}{Převýšení}{19}{section*.34}%
+\contentsline {subsubsection}{Další implementované parametry}{19}{section*.35}%
+\contentsline {paragraph}{Úhel došlapu jednotlivých kroků}{19}{section*.36}%
+\contentsline {paragraph}{Náklon trupu}{19}{section*.37}%
+\contentsline {subsubsection}{Důležité momenty skoku}{19}{section*.38}%
+\contentsline {section}{\numberline {2.4}Analýza modelu}{20}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Výstup programu}{20}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Uložení výstupu}{20}{subsection.2.5.1}%
+\contentsline {paragraph}{Parametry}{20}{section*.39}%
+\contentsline {paragraph}{Model}{21}{section*.40}%
+\contentsline {subsection}{\numberline {2.5.2}Zobrazení výstupu uživateli}{21}{subsection.2.5.2}%
+\contentsline {section}{\numberline {2.6}Programové vybavení}{21}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Počítačové vidění a~zpracování obrazu}{21}{subsection.2.6.1}%
+\contentsline {paragraph}{OpenCV}{21}{section*.41}%
+\contentsline {paragraph}{OpenVINO}{21}{section*.42}%
+\contentsline {paragraph}{VisionWorks}{22}{section*.43}%
+\contentsline {paragraph}{Vision Workbench}{22}{section*.44}%
+\contentsline {subsection}{\numberline {2.6.2}Grafická reprezentace výstupu}{22}{subsection.2.6.2}%
+\contentsline {paragraph}{gnuplot}{22}{section*.45}%
+\contentsline {paragraph}{MATLAB}{22}{section*.46}%
+\contentsline {paragraph}{Matplotlib}{22}{section*.47}%
+\contentsline {chapter}{\numberline {3}Realizace}{23}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Zvolené prostředky}{23}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Konverze souřadných systémů}{23}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Struktura programu}{24}{section.3.3}%
+\contentsline {section}{\numberline {3.4}Vstup programu}{25}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Analýza videa}{25}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Zpracování videa}{25}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Nalezení atleta}{25}{subsection.3.5.2}%
+\contentsline {subsubsection}{Manuální způsob}{25}{section*.49}%
+\contentsline {subsubsection}{Automatický způsob}{25}{section*.50}%
+\contentsline {paragraph}{Detekce postav ve snímku}{26}{section*.51}%
+\contentsline {paragraph}{Analýza pohybu postav}{27}{section*.52}%
+\contentsline {subsection}{\numberline {3.5.3}Detekce kostry}{27}{subsection.3.5.3}%
+\contentsline {subsubsection}{Trasování atleta}{27}{section*.53}%
+\contentsline {subsubsection}{Analýza pohybu atleta}{28}{section*.54}%
+\contentsline {subsubsection}{Detekce kloubů těla}{29}{section*.55}%
+\contentsline {paragraph}{Síť}{31}{section*.56}%
+\contentsline {paragraph}{Extrakce kloubů z~výstupu}{31}{section*.57}%
+\contentsline {subsection}{\numberline {3.5.4}Konverze kostry do 3D modelu}{31}{subsection.3.5.4}%
+\contentsline {subsection}{\numberline {3.5.5}Analýza parametrů}{32}{subsection.3.5.5}%
+\contentsline {subsubsection}{Důležité momenty skoku}{32}{section*.58}%
+\contentsline {paragraph}{Start}{32}{section*.59}%
+\contentsline {paragraph}{Odraz}{33}{section*.60}%
+\contentsline {paragraph}{Kulminace}{33}{section*.61}%
+\contentsline {subsubsection}{Doba trvání jednotlivých kroků}{33}{section*.62}%
+\contentsline {subsubsection}{Ztráta rychlosti ramen a~boků}{34}{section*.63}%
+\contentsline {subsubsection}{Výška boků}{34}{section*.64}%
+\contentsline {subsubsection}{Úhel odrazu}{34}{section*.65}%
+\contentsline {subsubsection}{Úhel došlapu jednotlivých kroků}{34}{section*.66}%
+\contentsline {subsubsection}{Náklon trupu}{34}{section*.67}%
+\contentsline {section}{\numberline {3.6}Analýza modelu}{35}{section.3.6}%
+\contentsline {section}{\numberline {3.7}Výstup programu}{35}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}Uložení výstupu}{35}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Zobrazení výstupu uživateli}{35}{subsection.3.7.2}%
+\contentsline {subsubsection}{Prohlížeč snímků}{35}{section*.68}%
+\contentsline {subsubsection}{Grafická reprezentace parametrů}{36}{section*.69}%
+\contentsline {chapter}{\numberline {4}Experimenty}{37}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Sběr dat}{37}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Hledání atleta ve videu}{37}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Volba úvodní pozice atleta}{37}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Pozice ohraničujícího rámečku}{37}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Velikost ohraničujícího rámečku}{39}{subsection.4.3.2}%
+\contentsline {section}{\numberline {4.4}Pohyb kamery}{39}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Vertikální pohyb kamery}{39}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Rotace kamery}{40}{subsection.4.4.2}%
+\contentsline {section}{\numberline {4.5}Pozice kamery}{41}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Směr rozběhu}{41}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Úhel záběru}{42}{subsection.4.5.2}%
+\contentsline {subsection}{\numberline {4.5.3}Vzdálenost kamery}{42}{subsection.4.5.3}%
+\contentsline {section}{\numberline {4.6}Další postavy ve videu}{42}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Kontrast}{42}{section.4.7}%
+\contentsline {section}{\numberline {4.8}Frekvence snímků}{42}{section.4.8}%
+\contentsline {section}{\numberline {4.9}Shrnutí}{43}{section.4.9}%
+\contentsline {chapter}{Závěr}{45}{chapter*.76}%
+\contentsline {section}{Navrhovaná vylepšení}{45}{section*.77}%
+\contentsline {chapter}{Seznam použité literatury}{47}{chapter*.81}%
+\contentsline {chapter}{Seznam obr\'azk\r {u}}{49}{chapter*.82}%
+\contentsline {chapter}{\numberline {A}Přílohy}{50}{appendix.A}%
+\contentsline {section}{\numberline {A.1}První příloha}{50}{section.A.1}%

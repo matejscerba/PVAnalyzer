@@ -61,9 +61,9 @@ public:
             frame = raw_frames[frame_no].clone();
 
             // Detect athlete's body in current frame.
-            // if (!end && track(frame, frame_no)) {
-            //     draw(frame, frame_no);
-            // }
+            if (!end && track(frame, frame_no)) {
+                draw(frame, frame_no);
+            }
             // if (frame_no >= first_frame) {
             //     if (frame_no == first_frame)
             //         my_tracker->init(frame, first_bbox);
@@ -72,9 +72,10 @@ public:
             //         cv::rectangle(frame, bbox.tl(), bbox.br(), cv::Scalar(255, 0, 0), 2);
             //     }
             // }
-            cv::imshow("frame", frame);
-            if (cv::waitKey() == 27)
-                cv::imwrite("img.png", frame);
+            // cv::imshow("frame", frame);
+            // cv::waitKey(1);
+            // if (cv::waitKey() == 27)
+            //     cv::imwrite("img.png", frame);
 
             // Save current modified frame.
             frames.push_back(frame);
@@ -205,8 +206,8 @@ private:
             return false;
         }
         bbox = rect(frame) & rect(bboxes.back());
-        // frame_points body = parts_dtor.detect(frame, bbox, average_dist(bboxes.back()));
-        // points[frame_no] = std::move(body);
+        frame_points body = parts_dtor.detect(frame, bbox, average_dist(bboxes.back()));
+        points[frame_no] = std::move(body);
         return true;
     }
 
@@ -349,13 +350,13 @@ private:
             }
         }
 
-        // if (points.size() > frame_no) {
-        //     draw_body(frame, points[frame_no]);
-        // }
+        if (points.size() > frame_no) {
+            draw_body(frame, points[frame_no]);
+        }
 
-        // if (move_analyzer) {
-        //     move_analyzer->draw(frame, frame_no);
-        // }
+        if (move_analyzer) {
+            move_analyzer->draw(frame, frame_no);
+        }
     }
 
 };

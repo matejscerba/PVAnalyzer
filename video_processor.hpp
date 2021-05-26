@@ -59,16 +59,15 @@ public:
         std::vector<cv::Mat> frames = athlete->detect(raw_frames);
 
         // Create model from detections.
-        // model m(*athlete, filename);
+        model m(*athlete, filename);
 
         // Save output.
-        // m.save();
         write(raw_frames, "raw", filename, fps);
         write(found_frames, "found", filename, fps);
         write(frames, "detections", filename, fps);
 
         // Analyze movement.
-        // analyze(m, filename, fps, raw_frames, frames);
+        analyze(m, filename, fps, raw_frames, frames, true);
     }
 
     /**
@@ -86,7 +85,7 @@ public:
             double fps;
             std::vector<cv::Mat> raw_frames = extract_frames(video_filename, fps);
             std::vector<cv::Mat> frames = m.draw(raw_frames);
-            analyze(m, video_filename, fps, raw_frames, frames);
+            analyze(m, video_filename, fps, raw_frames, frames, false);
         }
     }
 
@@ -101,18 +100,21 @@ private:
      * @param raw_frames Unmodified frames of video.
      * @param frames Frames of video with detections drawings.
      */
-    void analyze(   const model &m,
+    void analyze(   model &m,
                     const std::string filename,
                     double fps,
                     const std::vector<cv::Mat> &raw_frames,
-                    const std::vector<cv::Mat> &frames) const {
+                    const std::vector<cv::Mat> &frames,
+                    bool save) const {
 
         // Analyze detected athlete.
         vault_analyzer analyzer;
         analyzer.analyze(m, filename, fps);
+        if (save)
+            m.save();
 
         // Show result.
-        viewer v;
+        // viewer v;
         // v.show(frames, raw_frames, analyzer);
     }
 

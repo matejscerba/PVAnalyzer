@@ -36,7 +36,7 @@ public:
      * @param filename Path to analyzed video.
      * @param fps Frame rate of processed video.
      */
-    void analyze(const model &athlete, const std::string &filename, double fps) {
+    void analyze(model &athlete, const std::string &filename, double fps) {
         points_frame = athlete.get_frame_points();
         points_real = athlete.get_real_points();
 
@@ -44,7 +44,7 @@ public:
         this->filename = filename;
         this->fps = fps;
 
-        if (compute_parameters(points_real)) {
+        if (compute_parameters(points_real, athlete)) {
             write_parameters();
         }
     }
@@ -139,37 +139,25 @@ private:
      * @param points Input points.
      * @returns shifted points.
      */
-    model_video_points update_coords(const model_video_points &points) const {
+    model_point get_shift(const model_video_points &points) const {
         model_point left = points[takeoff][body_part::l_ankle];
         model_point right = points[takeoff][body_part::r_ankle];
-        model_point foot = get_part(left, right, std::less<double>()); // Lower foot.
-        model_video_points res;
-        if (foot) {
-            for (const model_points &pts : points) {
-                model_points res_pts;
-                for (const model_point &p : pts) {
-                    res_pts.push_back(p - foot);
-                }
-                res.push_back(res_pts);
-            }
-        } else {
-            res = points;
-        }
-        return res;
+        return get_part(left, right, std::less<double>()); // Lower foot.
     }
 
     /**
      * @brief Compute values of parameters to be analyzed.
      * 
      * @param points Athlete's body parts detected in the whole video.
+     * @param athlet Model representing athlete's movement.
      * @returns true if computation was successful (if beginning of attampt,
      * takeoff and culmination moments were found).
      */
-    bool compute_parameters(const model_video_points &points) {
+    bool compute_parameters(const model_video_points &points, model &athlete) {
         if (!find_moments_of_interest(points))
             return false;
 
-        model_video_points new_points = update_coords(points);
+        athlete.update_coords(get_shift(points));
 
         parameters.push_back(std::make_shared<hips_height>());
         parameters.push_back(std::make_shared<body_part_height>(body_part::l_ankle));
@@ -184,7 +172,7 @@ private:
 
         // Compute corresponding values.
         for (auto &param : parameters) {
-            param->compute(new_points);
+            param->compute(athlete.get_real_points());
         }
 
         // Sort parameters alphabetically.

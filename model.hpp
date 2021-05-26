@@ -149,6 +149,25 @@ public:
     }
 
     /**
+     * @brief Update real coordinates by moving points by `- shift`.
+     * 
+     * @param shift Value to shift coordinates in the opposite direction.
+     */
+    void update_coords(const model_point &shift) {
+        if (shift) {
+            model_video_points res;
+            for (const model_points &pts : points_real_c) {
+                model_points res_pts;
+                for (const model_point &p : pts) {
+                    res_pts.push_back(p - shift);
+                }
+                res.push_back(res_pts);
+            }
+            points_real_c = res;
+        }
+    }
+
+    /**
      * @brief Draw model's points to given frames.
      * 
      * @param frames Frames in which model should be drawn.

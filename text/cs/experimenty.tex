@@ -1,51 +1,250 @@
 \chapter{Experimenty}
 
+\section{Sběr dat}
+
+Funkčnost programu jsem průběžně ladil na několika videích z~mého archivu. Pro potřeby korektního otestování funkčnosti a~specifických vlastností programu jsem natočil další videa.
+
+Testovací videa obsahují $46$\,\rm videí, které zachycují závodní a~tréninkové skoky a~tréninkové nácviky skoků, videa jsou natočena zrůzných úhlů, stran a~vzdáleností. Na videích je zachyceno $5$\,\rm atletů ($3$\,\rm muži a $2$\,\rm ženy). K~natočení videí byly využity mobilní telefony Apple iPhone SE ($2020$) a~Samsung Galaxy S10+. Většina videí je natočena v~rozlišení Full HD ($1920\times 1080\,\rm px$), jedno z~videí je po komprimaci, která nastane při poslání videa přes aplikaci WhatsApp \citep{WhatsApp}. Videa natočená telefonem Apple iPhone SE ($2020$) mají frekvenci snímků $60$\,\rm fps, frekvence snímků videí natočených Samsungem Galaxy S10+ je $30$\,\rm fps. Vliv frekvence snímků videa při analýze je popsán v~sekci \ref{sec:frekvence}.
+
+Seznam videí s~příslušnými vlastnostmi je popsán v~tabulce \ref{fig:videa}.
+
+\begin{figure}[p]\centering
+\includegraphics[height=.8\textheight]{videa}
+\caption{Testovací videa.}
+\small
+    A~-~atlet 
+        (M$i$~:~muž $i$,
+        Ž$i$~:~žena $i$), 
+    T~-~typ skoku 
+        (0~:~rozběh, 
+        1~:~průchod, 
+        2~:~průchod na rovné tyči, 
+        3~:~zvrat, 
+        4~:~zvrat na rovné tyči, 
+        5~:~skok, 
+        6~:~náskok do ohybu, 
+        7~:~proběhnutí, 
+        8~:~závodní skok, 
+        9~:~závodní skok rozcvičení), 
+    V~-~výška laťky~[cm], 
+    DT~-~délka tyče~[cm], 
+    VÚ~-~výška úchopu~[cm], 
+    O~-~vzdálenost místa odrazu od zadní hrany kastlíku~[cm], 
+    DR~-~délka rozběhu~[m], 
+    KR~-~počet kroků, 
+    KV~-~počet kroků na videu, 
+    D1~-~vzdálenost kamery od osy rozběžiště~[m], 
+    D2~-~vzdálenost kamery od zadní hrany kastlíku~[cm], 
+    VK~-~výška kamery nad zemí~[cm], 
+    S~-~strana, ze které je video natočeno 
+        (P~:~pravá, 
+        L~:~levá), 
+    R~-~rozlišení videa~[px$\times$px], 
+    FPS~-~frekvence snímků videa, 
+    K~-~kamera 
+        (1~:~Apple iPhone SE (2020),
+        2~:~Samsung Galaxy S10+)
+\label{fig:videa}
+\end{figure}
+
+
+Hlavní část testovacích dat jsem pořídil na soustředění na ostrově Tenerife. Jedná se o~$32$\,\rm videí, která zachycují skoky tří atletů a~dvou atletek. Kromě samotných skoků jsou na videích zachyceny i~jiné tréninkové prostředky, mezi které patří rozběh s~naznačením odrazu (např. video \texttt{2.MOV}), průchod (pouhý odraz na tyč, tělo zůstává ve víceméně vzpřímené pozici) (např. video \texttt{1.MOV}) nebo náskok do ohybu (průchod, kdy se atlet vrací zpět na rozběh s~pomocí trenéra) (např. video \texttt{3.MOV}). Skoky jsem natáčel z~různých stran, úhlů a~vzdáleností.
+
+Jak jsem popisoval v~sekci \ref{sec:vstup}, závodní skoky jsou typicky natáčeny z~mnohem větší vzdálenosti. Mobilní telefony nedisponují kvalitním přiblížením při natáčení videa, tudíž je atlet na videu mnohem menší. Navíc se na závodech pohybuje více atletů, než na tréninku, i z~tohoto důvodu jsem mezi testovací videa zahrnul mé závodní skoky - $1$\,\rm soutěžní skok z~Mistrovství České republiky mužů a~žen v~hale 2021 a $4$\,\rm rozcvičovací a $5$\,\rm soutěžních skoků ze Zlaté tretry 2021.
+
+Mezi testovací videa jsem dále zahrnul $4$\,\rm tréninkové skoky z~atletické haly na pražském Strahově, mezi kterými jsou $2$\,\rm skoky, které zachycují zvrat na rovné tyči (otočení atleta vzhůru nohama bez ohnutí tyče) (např. video \texttt{33.MOV}).
+
+Úvodní pozice atleta v~testovacích videích, které jsem pro experimenty používal, jsem volil manuálně. Jejich popis je uveden v~tabulce \ref{fig:uvodniramecky}.
+
+
+
+\section{Hledání atleta ve videu}
+
+...
+
+
+
 \section{Volba úvodní pozice atleta}
 
 \subsection{Pozice ohraničujícího rámečku}
 
-Posunutí úvodního ohraničujícího rámečku.
+...
+
+
 
 \subsection{Velikost ohraničujícího rámečku}
 
-Různé velikosti úvodního ohraničujícího rámečku.
+Velikost úvodního ohraničujícího rámečku má na detekci značný vliv. Pokud uživatel zvolí příliš malý rámeček, nevejde se do okna určeného pro detekci celé tělo atleta.
+
+Atlet se v~průběhu videa typicky pčibližuje, tím pádem se jeho pozice ve videu zvětšuje, ale velikost mřížky zůstává stejná jako na začátku. To může zepříčinit jen částečné detekce atletova těla a~tedy se okno pro detekci nikdy nezvětší. Pokud se všechny klouby kostry ve snímku nadetekují, je to nejspíš chybná detekce, protože se celé tělo do okna pro detekci pravděpodobně nevejde. [OBRÁZEK]
+
+Pokud uživatel zvolí naopak větší rámeček, může se stát, že se trackery mřížky chytí ostatních objektů. Pokud je video pořízené dostatečný čas před začátkem atletova rozběhu, mohou se trackery pohybovat s~postavami v~pozadí a~ztratit tak atleta hned na začátku.
+
+Příliš velký úvodní rámeček může způsobit, že detektor kostry detekuje kostru jiné postavy nebo smíchá klouby různých postav v~jednu kostru. [OBRÁZEK] Tyto detekce neovlivní chování trackeru, ale značně znepřesňují analýzu skoků. Toto chování blíže popisuji v~sekci \ref{sec:postavy}.
+
+
+
 
 \section{Pohyb kamery}
 
 \subsection{Vertikální pohyb kamery}
 
-Vliv pohybu kamery na hodnoty parametrů.
+Vertikální pohyb kamery nemá na výsledné hodnoty parametrů téměř žádný vliv.
+
+Pohyb atleta ve videu určuji podle pozice detekované části pozadí ve videu, tudíž při se při pohybu kamerou ve snímku pohybuje pozadí opačným směrem. Tato vlastnost stabilizuje souřadný systém videa při pohybech kamery. Stabilizace je vidět v~grafech na obrázku \ref{fig:vpohyb}. V~grafech je znázorněna pozice levého a~pravého kotníku ve videích \texttt{17.MOV} a~\texttt{18.MOV}. Kamera se při pořizování videa \texttt{17.MOV} pohybovala v~průběhu první poloviny rozběhu směrem vzhůru, v~průběhu druhé poloviny rozběhu směrem dolů. Záběr tedy tvořil oblouk, jelikož zároveň trasoval atleta. Při pořizování druhého videa k~vertikálním pohybům kamery nedocházelo.
+
+\begin{figure}[h]\centering
+    \subfloat{
+        \includegraphics[width=.45\textwidth]{vpohybl}
+    }
+    \subfloat{
+        \includegraphics[width=.45\textwidth]{vpohybp}
+    }
+    \caption{Vliv horizontálního pohybu kamery na souřadný systém.}
+    \small
+    Grafy znázorňují pozici levého a~pravého kotníku ve videích \texttt{17.MOV} a~\texttt{18.MOV}.
+    \label{fig:vpohyb}
+\end{figure}
+
+Pokud bych souřadný systém nestabilizoval trasováním pozadí, vytvořil by graf pozic částí atletova těla při analýze videa \texttt{17.MOV} oblouk opačným směrem, než kterým se pohybovala kamera. Takovýto oblouk se v~grafu nenachází a~výsledné parametry nejsou nijak ovlivněny.
+
+
 
 \subsection{Rotace kamery}
 
-Rotace kamery po a~proti směru hodinových ručiček.
+Zajímavým experimentem je analýza videí, při jejichž natáčení jsem rotoval s~kamerou o~$90\,\rm \degree$ po (\texttt{21.MOV}) a~proti (\texttt{22.MOV}) směru hodinových ručiček. Videa jsou pořízena z~levé strany rozběžiště.
+
+Na trasování atleta ani detekci kostry rotace vliv nemá. Je to dáno také charakteristickou vlastností skoku o~tyči a~to rotací atletova těla. S~tou je nutné při analýze videozáznamu skoku o~tyči počítat.
+
+Rotace kamery znamená také rotaci souřadného systému videa, na kterou není připraven. Z~pohybu horizontálního se tedy postupně stává pohyb vertikální. Tuto rotaci souřadného systému zobrazuje graf na obrázku \ref{fig:rotace}. Detekce částí těla proběhla správně na téměř všech snímcích videa. Problematická byla jen při dopadu do doskočiště, kdy byl atlet schovaný za stojany.
+
+\begin{figure}[h]\centering
+    \includegraphics[width=\textwidth]{rotace}
+    \caption{Vliv rotace na pozici modelu v~prostoru.}
+    \small
+    Graf znázorňuje pozici hrudníku při analýze videí \texttt{21.MOV} a~\texttt{22.MOV}.
+    \label{fig:rotace}
+\end{figure}
+
+Jelikož se v~obou videích trasovala část pozadí, která byla před atletem (na snímcích videa se tedy nacházela vlevo), měnila se s~rotací také pozice atleta ve vertikálním směru. Při rotaci po směru hodinových ručiček (video \texttt{21.MOV}) posouvala rotace atleta pod trasovanou část pozadí, což mělo za důsledek klesání atleta v~souřadném systému. Odraz se projevil horizontálním pohybem v~původním směru rozběhu. Při opačné rotaci (video \texttt{22.MOV}) se atlet začal postupně pohybovat nad trasované pozadí, tedy začal stoupat a~odraz se projevil horizontálním pohybem proti původnímu směru rozběhu. Míra vertikálního posunu atleta při rotaci je dána vzájemnou vzdáleností atletova těla a~trasované části pozadí.
+
+Parametry získané analýzou těchto videí tedy nemají vysokou vypovídající hodnotu.
+
+
+
 
 \section{Pozice kamery}
 
 \subsection{Směr rozběhu}
 
-Porovnání analýzy skoku z~různých stran.
+Právě kvůli porovnání skoku z~různých stran jsem pořídil videa \texttt{27\_L.mp4} a~\texttt{27\_P.MOV}. Jedná se o~tentýž skok, který je natočený ze stejné vzdálenosti od rozběžiště a~velice podobné vzdálenosti od zadní hrany kastlíku. Videa mají rozdílnou frekvenci snímků, ale stejné rozlišení, tudíž je atlet na obou videích v~odpovídajících fázích skoku stejně veliký.
+
+Do grafů na obrázku \ref{fig:strany} jsem zakreslil pozice levé a~pravé kyčle. Pro lepší porovnání jsem posunul souřadné systémy podle přesného momentu odrazu. Ten nastává pro video \texttt{27\_L.mp4} na snímku číslo $101$ a~ve videu \texttt{27\_P.MOV} na snímku číslo $284$. Program určil odraz ve snímcích číslo $109$ a~$1$ (počítáno od $0$). Chybná detekce místa odrazu byla způsobena nepřesnou implementací filtrování kroků, vylepšení chybovosti navrhuji v~sekci \ref{sec:vylepseni}.
+
+\begin{figure}[h]\centering
+    \subfloat{
+        \includegraphics[width=.45\textwidth]{27_lkycel}
+    }
+    \subfloat{
+        \includegraphics[width=.45\textwidth]{27_pkycel}
+    }
+    \caption{Vliv horizontálního pohybu kamery na souřadný systém.}
+    \small
+    Grafy znázorňují pozici levé a~pravé kyčle ve videích \texttt{27\_L.mp4} a~\texttt{27\_P.MOV}.
+    \label{fig:strany}
+\end{figure}
+
+Z~grafů je vidět, že jsou pozice vyznačených částí těla velice podobné.
+
+Ve fázi rozběhu jednotlivých kroků se kyčle pohybovaly pod jiným úhlem. Vliv na tento úhel má například mírná rotace kamery, jelikož nebyly kamery na stativu, nelze vliv rotace ignorovat.
+
+Z~grafů je patrné, že detekce rozběhu proběhla lépe na videu \texttt{27\_P.MOV}, ale tělo ve fázi skoku se podařilo lépe detekovat na videu \texttt{27\_L.mp4}.
+
+Tělo se při rozběhu na videu natočeném z~pravé strany podařilo detekovat lépe díky lepšímu kontrastu s~pozadím, vliv kontrastu probírám více v~sekci \ref{sec:kontrast}. Při fázi skoku byla pro detekci výhodnější levá strana, jelikož je z~této strany lépe vidět levá paže (která je z~pravé strany schovaná za tělem) a~při obratu, který atlet na tyči provádí, je atlet natočen čelem k~levé kameře.
+
+
 
 \subsection{Úhel záběru}
 
-Porovnání analýzy skoku z~různých úhlů.
+...
+
+
 
 \subsection{Vzdálenost kamery}
 
-Porovnání analýzy skoku z~různé vzdálenosti od rozběžiště.
+...
+
+
+
 
 \section{Další postavy ve videu}
+\label{sec:postavy}
 
-Vliv ostatních postav na detekci.
+...
+
+
+
+
+\section{Kontrast}
+
+...
+
+
+
 
 \section{Frekvence snímků}
 
-Analýza videa po vypuštění snímků.
+Frekvence snímků videa (pokud se pohybuje v~rozumných hodnotách) má na výsledek detekce zanedbatelný vliv. Značný vliv může mít na přesnost výpočtu hodnot biomechanických parametrů skoku, jelikož na ní do jisté míry závisí.
 
-\section{Závody}
+Z~hlediska časové náročnosti analýzy videa je zajímavé sledovat vliv frekvence snímků videa na přesnost detekcí. Vynecháním poloviny snímků videa trvá analýza přibližně polovinu času, což může být výhodné pro analýzu videí, která obsahují spoustu snímků - ať už z~důvodu vysoké frekvence či délky videa.
 
-Analýza videí ze závodu.
+Jelikož jsou mezi testovacími daty i~videa s~frekvencí snímků $30$\,\rm fps, nepředpokládal jsem, že trasování selže.
+
+Problematičtější mohla být detekce kostry. S~některými fázemi skoku má detektor značné problémy, ty popisuji v~sekci \ref{sec:shrnuti}. Některé snímky se detektoru podaří detekovat, ale úspěšnost není vysoká. Může se tedy stát, že by korektní detekce proběhly ve vynechaných snímcích. Detekce kostry spoléhá na natočení okna, které určuje detekce předchozí kostry, což může být z~hlediska vynechání snímků, v~nichž by k~detekci došlo, velice problematické. Okno pro detekci se v~takovém případě neotočí, a~tedy nedetekuje postavu atleta správně.
+
+Video, které jsem zvolil pro porovnání je \texttt{23.MOV}. Toto video je pořízeno frekvencí $60$\,\rm fps, analýzu jsem spustil bez úprav a~poté jsem z~videa vynechal každý druhý snímek. Nižší frekvenci jsem netestoval, jelikož $30$\,\rm snímků za vteřinu je na spodní hranici přípustné frekvence pro analýzu videozáznamu skoku o~tyči, jelikož jsou pohyby při skoku velice rychlé.
+
+Pozici atleta ve videu jsem vybral ručně v~prvním snímku, který byl zahrnutý v~obou videích, tedy inicializace atleta proběhla v~obou videích stejně.
+
+Jak je vidět v~grafu naklonění trupu získaného analýzou videa \texttt{30.mp4} \ref{fig:30_naklon}, tento problém není příliš podstatný a~vliv na detekci má spíše póza, kterou atletovo tělo zaujímá, než jeho samotná rotace.
+
+\begin{figure}[h]\centering
+    \includegraphics[width=\textwidth]{30_naklon}
+    \caption{Náklon trupu.}
+    \small
+    Při analýze videa \texttt{30.mp4} dokázal program správně detekovat atleta, jehož trup byl oproti vzpřímené pozici natočen o~$-150\,\rm \degree$. Program v~té chvíli předpokládal poslední známý náklon trupu, tedy přibližně $-20\,\rm \degree$ (záporná hodnota značí záklon).
+    \label{fig:30_naklon}
+\end{figure}
+
+Výsledky experimentu s~vynecháním snímků jsou zobrazené na obrázku \ref{fig:fps}. Na grafech je vidět, že detekce selhávala ve velice podobných místech a~frekvence videa na výslednou detekci značný vliv neměla. Také nepřesnosti detekcí, které jsou vidět na grafu pohybu pravého zápěstí, jsou velice podobné.
+
+\begin{figure}[h]\centering
+    \subfloat{
+        \includegraphics[width=.45\textwidth]{23_fps_hlava}
+    }
+    \subfloat{
+        \includegraphics[width=.45\textwidth]{23_fps_pzapesti}
+    } \\
+    \subfloat{
+        \includegraphics[width=.45\textwidth]{23_fps_lkycel}
+    }
+    \subfloat{
+        \includegraphics[width=.45\textwidth]{23_fps_pkycel}
+    }
+    \caption{Vliv frekvence snímků na detekci.}
+    \small
+    Na grafech jsou znázorněny pozice hlavy, pravého zápěstí, levé a~pravé kyčle ve videu \texttt{23.MOV} bez úpravy frekvence snímků a s~poloviční frekvencí snímků (každý druhý snímek je vynechaný).
+    \label{fig:fps}
+\end{figure}
+
+Jelikož se jednalo o~stejné video se stejnou úvodní pozicí atleta, rozhodl jsem se počátek souřadného systému pro porovnání pozic jednotlivých částí těla nepřesouvat do pozice odrazového kotníku v~momentu odrazu, ale nechal jsem jej ve středu úvodního ohraničujícího rámečku. Posunby mohl být různý, pokud by se detekce lišily a~výsledné grafy by nemusely být tak přehledné.
+
+[PARAMETRY]
+
+
+
 
 \section{Shrnutí}
+\label{sec:shrnuti}
 
 Shrnutí analýzy testovacích videí.

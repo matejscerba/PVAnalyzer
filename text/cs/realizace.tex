@@ -5,7 +5,7 @@
 
 Pro potřeby analýzy videa jsem použil jazyk C++ a~knihovnu OpenCV. Jelikož je analýza výpočetně náročná, dal jsem z~rychlostních důvodů přednost jazyku C++ před jazykem Python. Také mám s~jazykem C++ více zkušeností.
 
-Tracker, který jsem zvolil pro trasování objektů je \texttt{cv\::TrackerCSRT}, jeho implementace je založena na využití Discriminative Correlation Filter with Channel and Spatial Reliability \citep{DCFwCaSR}.
+Tracker, který jsem zvolil pro trasování objektů je \texttt{cv\::TrackerCSRT}, jeho implementace je založena na využití Discriminative Correlation Filter with Channel and Spatial Reliability \citep{DCFwCaSR}. Trackery nejsou součástí samotné knihovny OpenCV, jejich implementace je obsažena v~modulu OpenCV-contrib.
 
 Pro zobrazení parametrů v~grafické podobě jsem se rozhodl využít Matplotlib. Pro využití této knihovny není potřeba znát speciální syntaxi, základní znalosti Pythonu jsou dostačující. Jelikož je knihovna Matplotlib určena pro Python, je snadné napsat skript, který nejen vygeneruje grafy, ale také zpracuje data, která se mají zobrazit.
 
@@ -31,8 +31,8 @@ Výsledkem tohoto postupu je posunutý prostor, musím ho tedy posunout s~využi
 
 Konverzi bodu kostry $(x',y')$ v~souřadném systému videa do prostoru lze reprezentovat takto:
 \begin{alignat*}{3}
-&\text{Při běhu doprava:} &\qquad (x,y,z)&=(x',&0,-y')-d. \\
-&\text{Při běhu doleva:} &\qquad (x,y,z)&=(-x',&0,-y')-d.
+    &\text{Při běhu doprava:} &\qquad (x,y,z)&=(x',&0,-y')-d. \\
+    &\text{Při běhu doleva:} &\qquad (x,y,z)&=(-x',&0,-y')-d.
 \end{alignat*}
 $d$ značí pozici kotníku odrazové nohy při odrazu v~prostoru.
 
@@ -56,9 +56,9 @@ Zobrazování výstupu má za úkol třída \texttt{viewer}.
 Konstanty, definice vlastních typů a~pomocné funkce jsou uloženy v~souborech \texttt{forward.cpp} a~\texttt{forward.hpp}.
 
 \begin{figure}[h]\centering
-\includegraphics[width=\textwidth]{uml_schema}
-\caption{UML diagram zobrazující strukturu programu.}
-\label{fig:uml_schema}
+    \includegraphics[width=\textwidth]{uml}
+    \caption{UML diagram zobrazující strukturu programu.}
+    \label{fig:uml_schema}
 \end{figure}
 
 %\begin{figure}[h]\centering
@@ -92,8 +92,8 @@ Z~důvodu časové náročnosti videí s~velikým rozlišením zmenším každý
 
 Vzorce pro změnu velikosti snímku videa s~rozlišením $x'\times y'$ na výsledné rozlišení $x\times y$, reprezentující 720p jsou následující:
 \begin{alignat*}{3}
-&\text{Na výšku:}   &\qquad (x, y) &= (720 \cdot x' / y',   &720) \\
-&\text{Na šířku:}   &\qquad (x, y) &= (720,                 &720 \cdot y' / x')
+    &\text{Na výšku:}   &\qquad (x, y) &= (720 \cdot x' / y',   &720) \\
+    &\text{Na šířku:}   &\qquad (x, y) &= (720,                 &720 \cdot y' / x')
 \end{alignat*}
 První složka udává šířku snímku, druhá výšku.
 
@@ -116,7 +116,7 @@ Dokud nenaleznu atleta, opakuji při zpracování každého snímku následujíc
 
 Vyfiltruji seznam postav ve videu, abych v~seznamu nechal jen postavy, které mohou reprezentovat atleta. Mezi těmito postavami se pokusím najít atleta. Pokud ho najdu, vytvořím instanci třídy \texttt{person} na základě snímku, ve kterém jsem ho poprvé detekoval, a~jeho pozice v~něm. Pokud je seznam postav prázdný a~zatím se mi nepodařilo najít atleta, spustím detekci postav v~právě zpracovávaném snímku a~detekované postavy uložím do seznamu postav.
 
-Postavy, jejichž trasování neselhalo, jsou celé uvnitř snímku [MOŽNÁ ÚPRAVA] a~pohybují se, mohou reprezentovat atleta, proto je ze seznamu postav nesmažu. Pokud neuplynulo $0.3$\,\rm s od první detekce postavy, považuji ji za pohybující se. Po uplynutí této doby se musela od momentu první detekce pohnout v~horizontálním směru alespoň o~šířku jejího ohraničujícího rámečku, abych ji považoval za pohybující se a~nechal ji mezi kandidáty na atleta. Pozici postavy určuje střed jejího ohraničujícího rámečku. Pohyb postav zkoumá třída \texttt{movement\_analyzer}.
+Postavy, jejichž trasování neselhalo, jsou celé uvnitř snímku a~pohybují se, mohou reprezentovat atleta, proto je ze seznamu postav nesmažu. Pokud neuplynulo $0.3$\,\rm s od první detekce postavy, považuji ji za pohybující se. Po uplynutí této doby se musela od momentu první detekce pohnout v~horizontálním směru alespoň o~šířku jejího ohraničujícího rámečku, abych ji považoval za pohybující se a~nechal ji mezi kandidáty na atleta. Pozici postavy určuje střed jejího ohraničujícího rámečku. Pohyb postav zkoumá třída \texttt{movement\_analyzer}.
 
 Za atleta zvolím postavu, pro kterou je určen směr pohybu. Směr pohybu určí třída \texttt{movement\_analyzer} jakmile se postava pohne alespoň o~šířku jejího ohraničujícího rámečku v~horizontálním směru.
 
@@ -126,14 +126,14 @@ Oraničující rámečky postav vykreslím do snímku a~tyto snímky vrátím pr
 
 Detekci postav ve snímku provádí instance třídy \texttt{cv\::HOGDescriptor} pomocí knihovního SVM detektoru, který vrátí metoda \texttt{cv\::HOGDescriptor\::getDefaultPeopleDetector}. Ohraničující rámečky postav ve videu získám metodou \texttt{cv\::HOGDescriptor\::detectMultiScale}. Parametry této metody jsou
 \begin{itemize}
-\item právě zpracovávaný snímek,
-\item detekované ohraničující rámečky,
-\item práh detekce,
-\item posun okna,
-\item obal okna,
-\item škálování,
-\item konečný práh a
-\item použití seskupovacího algoritmu.
+    \item právě zpracovávaný snímek,
+    \item detekované ohraničující rámečky,
+    \item práh detekce,
+    \item posun okna,
+    \item obal okna,
+    \item škálování,
+    \item konečný práh a
+    \item použití seskupovacího algoritmu.
 \end{itemize}
 
 \emph{Práh detekce} určuje vzdálenost klasifikační roviny SVM detektoru a~vlastností právě zpracovávaného okna. Hodnotu tohoto parametru jsem nechal výchozí - tedy $0$.
@@ -210,22 +210,22 @@ Podle pohybu atleta ve videu také určím směr jeho rozběhu pro následný p�
 
 Klouby těla jsou určeny databází MPII Human Pose dataset \citep{MPIIHPE}. Jedná se o~$16$ bodů těla, ale posledním je pozadí, které mohu ignorovat. Používám tedy jen prvních $15$ bodů těla. Jedná se o
 \begin{enumerate}
-\setcounter{enumi}{-1}
-\item hlavu,
-\item krk,
-\item pravé rameno,
-\item pravý loket,
-\item pravé zápěstí,
-\item levé rameno,
-\item levý loket,
-\item levé zápěstí,
-\item pravou kyčel,
-\item pravé koleno,
-\item pravý kostník,
-\item levou kyčel,
-\item levé koleno,
-\item levý kotník a
-\item hrudník.
+    \setcounter{enumi}{-1}
+    \item hlavu,
+    \item krk,
+    \item pravé rameno,
+    \item pravý loket,
+    \item pravé zápěstí,
+    \item levé rameno,
+    \item levý loket,
+    \item levé zápěstí,
+    \item pravou kyčel,
+    \item pravé koleno,
+    \item pravý kostník,
+    \item levou kyčel,
+    \item levé koleno,
+    \item levý kotník a
+    \item hrudník.
 \end{enumerate}
 
 O~detekci kloubů těla se stará třída \texttt{parts\_detector}. Ta dostane pro detekci snímek, rámečky atletova těla v~něm a~maximální vzdálenost, o~kterou může posunout střed okna od středu atletova těla, což je střed nejmenšího rámečku, do něhož se vejdou rámečky atletova těla. Maximální vzdálenost je určena průměrnou vzdáleností dvojic středů rámečků atleta.
@@ -266,10 +266,10 @@ Nakonec aktualizuji velikost dosud největší detekované kostry, pokud detekuj
 
 K~detekci kloubů těla používám konvoluční síť, která je implementovaná ve frameworku Caffe \citep{Caffe}. Tuto síť načtu ze souborů metodou \texttt{cv\::dnn\::readNet}. Váhy sítě a~její parametry jsem použil z~projektu OpenPose \citep{OpenPose}. Vstupem této sítě může být libovolně velký obrázek. Výstupem sítě je $4$-dimenzionální matice \texttt{cv\::Mat}, dimenze popisují
 \begin{itemize}
-\item číslo snímku,
-\item číslo výstupní vlastnosti,
-\item výšku výstupu a
-\item šířku výstupu.
+    \item číslo snímku,
+    \item číslo výstupní vlastnosti,
+    \item výšku výstupu a
+    \item šířku výstupu.
 \end{itemize}
 
 \paragraph{Extrakce kloubů z~výstupu}
