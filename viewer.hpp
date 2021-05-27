@@ -29,10 +29,11 @@ public:
     }
 
     /**
-     * @brief Show current frame of video.
+     * @brief Show frames of video.
      * 
      * Handle user inputs: left arrow shows previous frame, right arrow shows the next one,
      * space bar toggles whether to show detections drawings, escape key closes window and ends.
+     * Show important moments of vault, write parameters' values to standard output.
      * 
      * @param frames Frames with detections' drawings.
      * @param raw_frames Unmodified frames of processed video.
@@ -45,6 +46,10 @@ public:
         }
 
         reset(analyzer);
+
+        cv::imshow("start", raw_frames[start]);
+        cv::imshow("takeoff", raw_frames[takeoff]);
+        cv::imshow("culmination", raw_frames[culmination]);
         
         std::cout << std::fixed << std::setprecision(2);
         for (;;) {
@@ -70,6 +75,7 @@ public:
                     return;
                 case 32:
                     // Space key pressed.
+                    cv::imwrite("spatnakostra.png", frames[frame_no]);
                     drawing = !drawing;
                     break;
             }

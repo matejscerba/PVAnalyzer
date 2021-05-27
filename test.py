@@ -69,20 +69,20 @@ def plot(first, second, third, fourth, fifth):
 
         if i > 0:
             plt.figure()
-        plt.title("Posun úvodního rámečku - data/23.MOV: {}".format(title))
-        plt.plot(first[i][0], first[i][1], label="Bez posunu")
+        plt.title("Velikost úvodního rámečku - data/23.MOV: {}".format(title))
+        plt.plot(first[i][0], first[i][1], label="100 %")
         if second != None:
-            plt.plot(second[i][0], second[i][1], label="Posun nahoru o 25 % výšky")
+            plt.plot(second[i][0], second[i][1], label="150 %")
         if third != None:
-            plt.plot(third[i][0], third[i][1], label="Posun doprava o 25 % šířky")
+            plt.plot(third[i][0], third[i][1], label="125 %")
         if fourth != None:
-            plt.plot(fourth[i][0], fourth[i][1], label="Posun dolů o 25 % výšky")
+            plt.plot(fourth[i][0], fourth[i][1], label="75 %")
         if fifth != None:
-            plt.plot(fifth[i][0], fifth[i][1], label="Posun doleva o 25 % šířky")
+            plt.plot(fifth[i][0], fifth[i][1], label="50 %")
         plt.legend(bbox_to_anchor=(0.05, 0.95), loc='upper left', borderaxespad=0.)
         plt.xlabel("x [px]")
         plt.ylabel("z [px]")
-        plt.savefig("shift/{}.pdf".format(title))
+        plt.savefig("sizes/{}.pdf".format(title))
 
 
     # plt.show()
@@ -99,26 +99,26 @@ if args.fir != None:
     if args.sec != None:
         second = read_file(args.sec)
         second = [[
-            [x - second[10][0][193] if x != None else None for x in second[i][0]],
-            [y - second[10][1][193] if y != None else None for y in second[i][1]]
+            [x - second[10][0][191] if x != None else None for x in second[i][0]],
+            [y - second[10][1][191] if y != None else None for y in second[i][1]]
         ] for i in range(len(second))]
         if args.thi != None:
             third = read_file(args.thi)
             third = [[
-                [x - third[10][0][191] if x != None else None for x in third[i][0]],
-                [y - third[10][1][191] if y != None else None for y in third[i][1]]
+                [x - third[13][0][191] if x != None else None for x in third[i][0]],
+                [y - third[13][1][191] if y != None else None for y in third[i][1]]
             ] for i in range(len(third))]
             if args.fou != None:
                 fourth = read_file(args.fou)
                 fourth = [[
-                    [x - fourth[13][0][192] if x != None else None for x in fourth[i][0]],
-                    [y - fourth[13][1][192] if y != None else None for y in fourth[i][1]]
+                    [x - fourth[13][0][190] if x != None else None for x in fourth[i][0]],
+                    [y - fourth[13][1][190] if y != None else None for y in fourth[i][1]]
                 ] for i in range(len(fourth))]
                 if args.fif != None:
                     fifth = read_file(args.fif)
                     fifth = [[
-                        [x - fifth[13][0][190] if x != None else None for x in fifth[i][0]],
-                        [y - fifth[13][1][190] if y != None else None for y in fifth[i][1]]
+                        [x - fifth[13][0][191] if x != None else None for x in fifth[i][0]],
+                        [y - fifth[13][1][191] if y != None else None for y in fifth[i][1]]
                     ] for i in range(len(fifth))]
     plot(first, second, third, fourth, fifth)
 

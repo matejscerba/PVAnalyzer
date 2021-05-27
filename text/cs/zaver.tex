@@ -18,40 +18,6 @@ Věřím, že jsem svou prací ukázal, že je možné vytvořit program schopn�
 
 
 
-\section*{Navrhovaná vylepšení}
-\addcontentsline{toc}{section}{Navrhovaná vylepšení}
-
-Na závěr bych rád popsal, jakými způsoby by bylo možné funkcionalitu programu vylepšit.
-
-
-
-\subsection*{Trasování těla}
-
-Úspěšnosti trasování těla atleta při skoku by mohlo pomoci její natáčení podle fáze, ve které se skokan nachází. Přesnějším způsobem trasování může být kombinace implementovaného přístupu s~využitím mřížky a~metody otáčení snímku, kterou program používal předtím. Mřížku by bylo možné otáčet podle úhlu naklonění trupu.
-
-
-
-\subsection*{Detekce kostry}
-
-Ideálním přístupem k~detekci pozice těla pro takto specifické využití je natrénování detektoru na vhodné množině dat. K~detekci postavy pouze při skoku o~tyči by většinu takové množiny dat měly tvořit právě snímky zachycující skok o~tyči. Databáze MPII Human Pose dataset \citep{MPIIHPE}, na které je natrénovaný model, který aplikace nyní využívá obsahuje naprosté minimum dat týkajících se skoku o~tyči, aby dobře generalizoval. Pro účely mé aplikace není vysoká míra generalizace nutná, při detekci těla atleta, když se ve snímku poblíž nachází jiná postava přesnosti spíše škodí.
-
-Použití vhodné trénovací databáze by mohlo omezit potřebu určení pozice atleta ve videu pomocí trackerů.
-
-Kromě trénování specializovaného modelu by mohlo být užitečné zkoumat celý výstup sítě, která detekci zajišťuje. Tento způsob by mohl omezit případy, kdy se detekuje více postav najednou (viz sekce \ref{sec:postavy}), ale nepomohla by s~neúspěšnými detekcemi ve fázi skoku.
-
-
-
-\subsection*{Časová náročnost}
-
-Rozdělení videa do několika částí a~jejch následné paralelní zpracování by časovou náročnost analýzy značně snížilo. Dalším přístupem by mohlo být rozdělení detekce kostry do více částí a~jejich paralelní zpracování.
-
-Kromě využití paralelismu by mohl pomoci specializovaný model pro detekci částí těla, jelikož nyní při neúspěšné detekci zkouším další natočení snímku, která v~určitých případech nepomohou. Tento model by žádné další natočení nepotřeboval, a~tudíž by se detekce spouštěla na menším množství vstupů.
-
-Časovou náročnost při detekci postav zbytečně zvyšuje množství instancí třídy \texttt{background\_tracker}, díky nimž určuji pohyb postav ve videu. Tyto trackery často trasují stejnou část pozadí, ale aktualizují se pro každou instanci. Původně jsem tracker pozadí implementoval v~závislosti na poloze příslušné postavy a~objektový návrh jsem poté nestihl změnit.
-
-
-
-
 
 
 

@@ -52,7 +52,7 @@ def plot_params(vid_name, names, units, vals):
             plot_func = plt.plot
             x = vals[0]
             y = p_vals
-            x_label = names[0]
+            x_label = "{} [s]".format(names[0])
             y_label = "{} [{}]".format(p_name, p_unit)
 
         # Plot graph.

@@ -114,8 +114,8 @@ private:
             m.save();
 
         // Show result.
-        // viewer v;
-        // v.show(frames, raw_frames, analyzer);
+        viewer v;
+        v.show(frames, raw_frames, analyzer);
     }
 
     /**
@@ -148,6 +148,10 @@ private:
 
             // Resize and save current frame.
             frames.push_back(resize(frame));
+
+            // cv::imshow("frame", frame);
+            // if (cv::waitKey() == 27)
+            //     cv::imwrite("frame.png", frame);
 
             // Skip frames of tested 120-fps video for efficiency reasons.
             // TODO: remove

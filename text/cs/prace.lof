@@ -1,15 +1,33 @@
 \babel@toc {czech}{}
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces \centering \small Jednoduchá a~hluboká neuronová síť. Jednotlivá kolečka reprezentují neurony, úsečky mezi nimi přechody mezi neurony (váhy). Převzato z~\url {https://becominghuman.ai/deep-learning-made-easy-with-deep-cognition-403fbe445351} dne 26.~5.~2021. \relax }}{11}{figure.caption.20}%
+\contentsline {figure}{\numberline {1.2}{\ignorespaces \centering \small Pravděpodobnostní mapy detekce různých kloubů těla. \relax }}{12}{figure.caption.21}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {2.1}{\ignorespaces Ohraničující rámeček.\relax }}{14}{figure.caption.20}%
-\contentsline {figure}{\numberline {2.2}{\ignorespaces Ztráta atleta při použití různých trackerů.\relax }}{16}{figure.caption.23}%
+\contentsline {figure}{\numberline {2.1}{\ignorespaces \centering \small Vizualizace souřadného systému videa. Světlé pole reprezentuje snímek videa, $p$ posun jeho horního rohu vůči původní pozici atleta, $q$ bod, jehož pozici ve videu získám pomocí posunu snímku a~pozice bodu $q$ ve snímku. \relax }}{14}{figure.caption.22}%
+\contentsline {figure}{\numberline {2.2}{\ignorespaces \centering \small Vizualizace souřadného systému 3D prostoru. Červená reprezentuje osu $x$, zelená $y$ a~modrá $z$. Směr šipek odpovídá růstu hodnot bodů v~prostoru. \relax }}{14}{figure.caption.23}%
+\contentsline {figure}{\numberline {2.3}{\ignorespaces \centering \small Ohraničující rámeček atletova těla ve snímku videa \texttt {1.MOV} (viz tabulka \ref {fig:videa}). \relax }}{16}{figure.caption.24}%
+\contentsline {figure}{\numberline {2.4}{\ignorespaces \centering \small Použití jednoho trackeru (vlevo) a~mřížky trackerů, která je implementovaná v~programu (vpravo). Použité snímky jsou vybrané z~videa \texttt {33.MOV} (viz tabulka \ref {fig:videa}). \relax }}{18}{figure.caption.27}%
+\contentsline {figure}{\numberline {2.5}{\ignorespaces \centering \small Pohyb mřížky v~průběhu její první aktualizace. (a)~-~úvodní pozice mřížky, (b)~-~aktualizace stále neproběhla, protože není znám směr rozběhu, (c)~-~poslední snímek před aktualizací mřížky, (d)~-~první snímek po aktualizaci mřížky \relax }}{19}{figure.caption.28}%
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {}}}{19}{subfigure.5.1}%
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {}}}{19}{subfigure.5.2}%
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces {}}}{19}{subfigure.5.3}%
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces {}}}{19}{subfigure.5.4}%
+\contentsline {figure}{\numberline {2.6}{\ignorespaces \centering \small Detekce špatné kostry a~následné napravení. (a)~-~správná detekce, (b)~-~špatná detekce, (c)~-~průběh nápravy, (d)~-~správná detekce \relax }}{19}{figure.caption.30}%
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {}}}{19}{subfigure.6.1}%
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {}}}{19}{subfigure.6.2}%
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces {}}}{19}{subfigure.6.3}%
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces {}}}{19}{subfigure.6.4}%
+\contentsline {figure}{\numberline {2.7}{\ignorespaces \centering \small Způsob zobrazení výstupu uživateli. (a)~-~snímky zachycující začátek rozběhu, odraz a~kulminaci boků, prohlížeč videa a~výpis příslušných hodnot analyzovaných parametrů, (b)~-~grafy znázorňující hodnoty parametrů v~průběhu skoku. Pro zobrazení tohoto výstupu byl použit model získaný z~videa \texttt {1.MOV} (viz tabulka \ref {fig:videa}). \relax }}{25}{figure.caption.47}%
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {}}}{25}{subfigure.7.1}%
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {}}}{25}{subfigure.7.2}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {3.1}{\ignorespaces UML diagram zobrazující strukturu programu.\relax }}{24}{figure.caption.48}%
+\contentsline {figure}{\numberline {3.1}{\ignorespaces UML diagram zobrazující strukturu programu.\relax }}{30}{figure.caption.55}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces \centering \small Výsledek aplikace algoritmu non-maximum suppression při detekování tváře. Implementace podle \citet {NMS} zvolila rámeček, který se na snímku nachází nejníž. Má implementace by dala přednost největšímu snímku. Převzato z~\url {https://www.pyimagesearch.com/2014/11/17/non-maximum-suppression-object-detection-python/} dne 26.~5.~2021. \relax }}{32}{figure.caption.59}%
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {4.1}{\ignorespaces Testovací videa.\relax }}{38}{figure.caption.70}%
-\contentsline {figure}{\numberline {4.2}{\ignorespaces Vliv horizontálního pohybu kamery na souřadný systém.\relax }}{39}{figure.caption.71}%
-\contentsline {figure}{\numberline {4.3}{\ignorespaces Vliv rotace na pozici modelu v~prostoru.\relax }}{40}{figure.caption.72}%
-\contentsline {figure}{\numberline {4.4}{\ignorespaces Vliv horizontálního pohybu kamery na souřadný systém.\relax }}{41}{figure.caption.73}%
-\contentsline {figure}{\numberline {4.5}{\ignorespaces Náklon trupu.\relax }}{43}{figure.caption.74}%
-\contentsline {figure}{\numberline {4.6}{\ignorespaces Vliv frekvence snímků na detekci.\relax }}{44}{figure.caption.75}%
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Testovací videa.\relax }}{44}{figure.caption.78}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Vliv horizontálního pohybu kamery na souřadný systém.\relax }}{46}{figure.caption.79}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Vliv rotace na pozici modelu v~prostoru.\relax }}{47}{figure.caption.80}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Vliv horizontálního pohybu kamery na souřadný systém.\relax }}{48}{figure.caption.81}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Náklon trupu.\relax }}{51}{figure.caption.83}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Vliv frekvence snímků na detekci.\relax }}{52}{figure.caption.84}%
 \addvspace {10\p@ }

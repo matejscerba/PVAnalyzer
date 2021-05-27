@@ -100,27 +100,27 @@ public:
         } else if (filename == "data/16.MOV") {
             return person(0, cv::Rect(610, 297, 204, 289), fps);
         } else if (filename == "data/17.MOV") {
-            // return person(0, cv::Rect(679, 342, 81, 157), fps);
+            return person(0, cv::Rect(679, 342, 81, 157), fps);
         } else if (filename == "data/18.MOV") {
-            // return person(0, cv::Rect(684, 332, 105, 151), fps);
+            return person(0, cv::Rect(684, 332, 105, 151), fps);
         } else if (filename == "data/19.MOV") {
             return person(133, cv::Rect(690, 371, 116, 150), fps);
         } else if (filename == "data/20.MOV") {
             return person(0, cv::Rect(616, 347, 93, 155), fps);
         } else if (filename == "data/21.MOV") {
-            // return person(0, cv::Rect(669, 291, 118, 189), fps);
+            return person(0, cv::Rect(669, 291, 118, 189), fps);
         } else if (filename == "data/22.MOV") {
-            // return person(0, cv::Rect(613, 344, 136, 197), fps);
+            return person(0, cv::Rect(613, 344, 136, 197), fps);
         } else if (filename == "data/23.MOV") {
-            return person(0, cv::Rect(646, 303, 104, 189), fps);
+            // return person(0, cv::Rect(646, 303, 104, 189), fps);
             // return person(0, cv::Rect(646 - 26, 303, 104, 189), fps);
             // return person(0, cv::Rect(646, 303 - 47, 104, 189), fps);
             // return person(0, cv::Rect(646 + 26, 303, 104, 189), fps);
             // return person(0, cv::Rect(646, 303 + 47, 104, 189), fps);
             // return person(0, cv::Rect(633, 280, 130, 236), fps);
             // return person(0, cv::Rect(620, 256, 156, 283), fps);
-            // return person(0, cv::Rect(633, 280, 78, 142), fps);
-            // return person(0, cv::Rect(620, 256, 52, 95), fps);
+            // return person(0, cv::Rect(659, 326, 78, 142), fps);
+            // return person(0, cv::Rect(672, 349, 52, 95), fps);
         } else if (filename == "data/24.MOV") {
             return person(0, cv::Rect(581, 249, 76, 163), fps);
         } else if (filename == "data/25.MOV") {

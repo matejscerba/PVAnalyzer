@@ -4,7 +4,7 @@
 
 Funkčnost programu jsem průběžně ladil na několika videích z~mého archivu. Pro potřeby korektního otestování funkčnosti a~specifických vlastností programu jsem natočil další videa.
 
-Testovací videa obsahují $46$\,\rm videí, které zachycují závodní a~tréninkové skoky a~tréninkové nácviky skoků, videa jsou natočena zrůzných úhlů, stran a~vzdáleností. Na videích je zachyceno $5$\,\rm atletů ($3$\,\rm muži a $2$\,\rm ženy). K~natočení videí byly využity mobilní telefony Apple iPhone SE ($2020$) a~Samsung Galaxy S10+. Většina videí je natočena v~rozlišení Full HD ($1920\times 1080\,\rm px$), jedno z~videí je po komprimaci, která nastane při poslání videa přes aplikaci WhatsApp \citep{WhatsApp}. Videa natočená telefonem Apple iPhone SE ($2020$) mají frekvenci snímků $60$\,\rm fps, frekvence snímků videí natočených Samsungem Galaxy S10+ je $30$\,\rm fps. Vliv frekvence snímků videa při analýze je popsán v~sekci \ref{sec:frekvence}.
+Testovací videa obsahují $46$\,\rm videí, které zachycují závodní a~tréninkové skoky a~tréninkové nácviky skoků, videa jsou natočena z různých úhlů, stran a~vzdáleností. Na videích je zachyceno $5$\,\rm atletů ($3$\,\rm muži a $2$\,\rm ženy). K~natočení videí byly využity mobilní telefony Apple iPhone SE ($2020$) a~Samsung Galaxy S10+. Většina videí je natočena v~rozlišení Full HD ($1920\times 1080\,\rm px$), jedno z~videí je po komprimaci, která nastane při poslání videa přes aplikaci WhatsApp. Videa natočená telefonem Apple iPhone SE ($2020$) mají frekvenci snímků $60$\,\rm fps, frekvence snímků videí natočených Samsungem Galaxy S10+ je $30$\,\rm fps. Vliv frekvence snímků videa při analýze je popsán v~sekci \ref{sec:frekvence}.
 
 Seznam videí s~příslušnými vlastnostmi je popsán v~tabulce \ref{fig:videa}.
 
@@ -29,12 +29,12 @@ Seznam videí s~příslušnými vlastnostmi je popsán v~tabulce \ref{fig:videa}
     V~-~výška laťky~[cm], 
     DT~-~délka tyče~[cm], 
     VÚ~-~výška úchopu~[cm], 
-    O~-~vzdálenost místa odrazu od zadní hrany kastlíku~[cm], 
-    DR~-~délka rozběhu~[m], 
+    O~-~vzdálenost místa odrazu od zadní hrany zasouvací skříňky~[cm], 
+    DR~-~délka rozběhu od zadní hrany zasouvací skříňky~[m], 
     KR~-~počet kroků, 
     KV~-~počet kroků na videu, 
     D1~-~vzdálenost kamery od osy rozběžiště~[m], 
-    D2~-~vzdálenost kamery od zadní hrany kastlíku~[cm], 
+    D2~-~vzdálenost kamery od zadní hrany zasouvací skříňky~[cm], 
     VK~-~výška kamery nad zemí~[cm], 
     S~-~strana, ze které je video natočeno 
         (P~:~pravá, 
@@ -48,7 +48,9 @@ Seznam videí s~příslušnými vlastnostmi je popsán v~tabulce \ref{fig:videa}
 \end{figure}
 
 
-Hlavní část testovacích dat jsem pořídil na soustředění na ostrově Tenerife. Jedná se o~$32$\,\rm videí, která zachycují skoky tří atletů a~dvou atletek. Kromě samotných skoků jsou na videích zachyceny i~jiné tréninkové prostředky, mezi které patří rozběh s~naznačením odrazu (např. video \texttt{2.MOV}), průchod (pouhý odraz na tyč, tělo zůstává ve víceméně vzpřímené pozici) (např. video \texttt{1.MOV}) nebo náskok do ohybu (průchod, kdy se atlet vrací zpět na rozběh s~pomocí trenéra) (např. video \texttt{3.MOV}). Skoky jsem natáčel z~různých stran, úhlů a~vzdáleností.
+Hlavní část testovacích dat jsem pořídil na soustředění na ostrově Tenerife. Počasí bylo po celou dobu pobytu příznivé pro skok o~tyči, jelikož svítilo slunce. Z~hlediska testovacích dat to byla škoda, protože tato část testovacích dat neobsahuje videa v~různých světelných podmínkách.
+
+Jedná se o~$32$\,\rm videí, která zachycují skoky tří atletů a~dvou atletek. Kromě samotných skoků jsou na videích zachyceny i~jiné tréninkové prostředky, mezi které patří rozběh s~naznačením odrazu (např. video \texttt{2.MOV}), průchod (pouhý odraz na tyč, tělo zůstává ve víceméně vzpřímené pozici) (např. video \texttt{1.MOV}) nebo náskok do ohybu (průchod, kdy se atlet vrací zpět na rozběh s~pomocí trenéra) (např. video \texttt{3.MOV}). Skoky jsem natáčel z~různých stran, úhlů a~vzdáleností.
 
 Jak jsem popisoval v~sekci \ref{sec:vstup}, závodní skoky jsou typicky natáčeny z~mnohem větší vzdálenosti. Mobilní telefony nedisponují kvalitním přiblížením při natáčení videa, tudíž je atlet na videu mnohem menší. Navíc se na závodech pohybuje více atletů, než na tréninku, i z~tohoto důvodu jsem mezi testovací videa zahrnul mé závodní skoky - $1$\,\rm soutěžní skok z~Mistrovství České republiky mužů a~žen v~hale 2021 a $4$\,\rm rozcvičovací a $5$\,\rm soutěžních skoků ze Zlaté tretry 2021.
 
@@ -60,7 +62,11 @@ Mezi testovací videa jsem dále zahrnul $4$\,\rm tréninkové skoky z~atletick�
 
 \section{Hledání atleta ve videu}
 
-...
+Při spuštění automatického hledání atleta ve všech testovacích videích se atletovo tělo nepodařilo nalézt ve dvou videích (\texttt{5.MOV} a~\texttt{40.mp4}). V~jednom videu označil program za atleta osvětlení stadionu (video \texttt{11.MOV}) kvůli chybné analýze pohybu pozadí, které trasovalo postavu.
+
+Velikosti nalezených atletů se lišily. V~některých videích našel program jen část atletova těla - úvodní rámeček se nacházel jen na trupu, případně nohách atleta. V~některých videích se atletovo tělo detekovalo větší, než bylo třeba. Vliv velikosti úvodních rámečků rozebírám v~sekci \ref{ssec:velikost}.
+
+Atletovo tělo program po nalezení ztratil jen v~nepatrném množství případů. Dokonce ve videích, ve kterých kvůli nevhodnému pozadí selhávalo trasování atleta vybraného manuální cestou. Jelikož se pohyb nalezeného atleta trasuje, je značná šance, že při inicializaci postavy v~prvním snímku dojde k~chybě trasování a~začnou se hledat postavy nové. Problémem tohoto přístupu může být to, že atlet nebude trasován po celou dobu rozběhu, ale jen v~jeho konci.
 
 
 
@@ -68,15 +74,20 @@ Mezi testovací videa jsem dále zahrnul $4$\,\rm tréninkové skoky z~atletick�
 
 \subsection{Pozice ohraničujícího rámečku}
 
-...
+Pozice úvodního ohraničujícího rámečku nemá na detekci příliš velký vliv. Část mých testovacích dat je specifická tím, že na druhé straně rozběžiště stojí trenér a~při posunutí úvodního rámečku atleta směrem dozadu se okno pro detekci kostry posouvá více za atleta. Po odrazu, kdy se atletovy nohy pohybují dopředu, obsahuje okno z~větší části trenéra, čímž dochází k~nežádoucí detekci jeho těla. U~ostatních posunutí k~těmto nežádoucím detekcím dochází méně.
+
+Rámečky na těle atleta většinou neobsahují celé tělo, jelikož se atlet přibližuje a~jejich velikost se nemění. Nejčastěji jsou umístěny na atletově trupu a~při zvratu je jejich část pod trupem. Tento problém je možné vyřešit mírným posunutím úvodního rámečku směrem nad nebo před atletovo tělo. Tím se při zvratu atleta rámečky inicializují na části těla, která se pohybuje dopředu a~nahoru. Toto posunuté může ovšem zvýšit míru nežádoucích detekcí, které jsem popsal v~předchozím odstavci.
+
+Pohyb některých částí těla při posunutí úvodního rámečku je vidět na obrázku \ref{fig:posun}.
 
 
 
 \subsection{Velikost ohraničujícího rámečku}
+\label{ssec:velikost}
 
-Velikost úvodního ohraničujícího rámečku má na detekci značný vliv. Pokud uživatel zvolí příliš malý rámeček, nevejde se do okna určeného pro detekci celé tělo atleta.
+Velikost úvodního ohraničujícího rámečku má na detekci značný vliv. Pokud uživatel zvolí příliš malý rámeček, nemusí se do okna určeného pro detekci kostry vejít celé tělo atleta. Aktualizace velikosti detekčního okna probíhá pouze v~případě, že se detekuje celé tělo atleta. Snažím se tak omezit zbytečné zvětšování okna v~případech, kdy se detekuje více postav, které nejsou v~okně celé a~atlet není vidět příliš dobře.
 
-Atlet se v~průběhu videa typicky pčibližuje, tím pádem se jeho pozice ve videu zvětšuje, ale velikost mřížky zůstává stejná jako na začátku. To může zepříčinit jen částečné detekce atletova těla a~tedy se okno pro detekci nikdy nezvětší. Pokud se všechny klouby kostry ve snímku nadetekují, je to nejspíš chybná detekce, protože se celé tělo do okna pro detekci pravděpodobně nevejde. [OBRÁZEK]
+Atlet se v~průběhu videa typicky přibližuje, čímž se jeho pozice ve videu zvětšuje, ale velikost mřížky zůstává stejná jako na začátku. To může zapříčinit jen částečné detekce atletova těla a~tedy se okno pro detekci nikdy nezvětší.
 
 Pokud uživatel zvolí naopak větší rámeček, může se stát, že se trackery mřížky chytí ostatních objektů. Pokud je video pořízené dostatečný čas před začátkem atletova rozběhu, mohou se trackery pohybovat s~postavami v~pozadí a~ztratit tak atleta hned na začátku.
 
@@ -137,9 +148,9 @@ Parametry získané analýzou těchto videí tedy nemají vysokou vypovídajíc�
 
 \subsection{Směr rozběhu}
 
-Právě kvůli porovnání skoku z~různých stran jsem pořídil videa \texttt{27\_L.mp4} a~\texttt{27\_P.MOV}. Jedná se o~tentýž skok, který je natočený ze stejné vzdálenosti od rozběžiště a~velice podobné vzdálenosti od zadní hrany kastlíku. Videa mají rozdílnou frekvenci snímků, ale stejné rozlišení, tudíž je atlet na obou videích v~odpovídajících fázích skoku stejně veliký.
+Právě kvůli porovnání skoku z~různých stran jsem pořídil videa \texttt{27\_L.mp4} a~\texttt{27\_P.MOV}. Jedná se o~tentýž skok, který je natočený ze stejné vzdálenosti od rozběžiště a~velice podobné vzdálenosti od zadní hrany zasouvací skříňky. Videa mají rozdílnou frekvenci snímků, ale stejné rozlišení, tudíž je atlet na obou videích v~odpovídajících fázích skoku stejně veliký.
 
-Do grafů na obrázku \ref{fig:strany} jsem zakreslil pozice levé a~pravé kyčle. Pro lepší porovnání jsem posunul souřadné systémy podle přesného momentu odrazu. Ten nastává pro video \texttt{27\_L.mp4} na snímku číslo $101$ a~ve videu \texttt{27\_P.MOV} na snímku číslo $284$. Program určil odraz ve snímcích číslo $109$ a~$1$ (počítáno od $0$). Chybná detekce místa odrazu byla způsobena nepřesnou implementací filtrování kroků, vylepšení chybovosti navrhuji v~sekci \ref{sec:vylepseni}.
+Do grafů na obrázku \ref{fig:strany} jsem zakreslil pozice levé a~pravé kyčle. Pro lepší porovnání jsem posunul souřadné systémy podle přesného momentu odrazu. Ten nastává pro video \texttt{27\_L.mp4} na snímku číslo $101$ a~ve videu \texttt{27\_P.MOV} na snímku číslo $284$. Program určil odraz ve snímcích číslo $109$ a~$1$ (počítáno od $0$). Chybná detekce místa odrazu byla způsobena nepřesnou implementací filtrování kroků, vylepšení chybovosti navrhuji v~sekci \ref{ssec:vylepseni}.
 
 \begin{figure}[h]\centering
     \subfloat{
@@ -166,33 +177,58 @@ Tělo se při rozběhu na videu natočeném z~pravé strany podařilo detekovat 
 
 \subsection{Úhel záběru}
 
-...
-
-
-
-\subsection{Vzdálenost kamery}
-
-...
-
+[Porovnání skoku natočeného z jiných úhlů]
 
 
 
 \section{Další postavy ve videu}
 \label{sec:postavy}
 
-...
+Další postavy ve videu mají na detekci vliv, zvlášť když se nachází blízko atleta. Tato problematika je vidět na obrázku \ref{fig:spatnakostra}.
+
+Výsledné hodnoty parametrů detekce špatné kostry značně znehodnocuje.
 
 
 
 
-\section{Kontrast}
+\section{Splynutí s~pozadím}
+\label{sec:kontrast}
 
-...
+Pro trasování atleta a~detekci kostry je vhodné, aby byl atlet od pozadí dobře rozpoznatelný. Pokud atlet s~pozadím splývá, je pro tracker i~detektor částí těla složité správně určit jeho pozici. Tento problém je výborně vidět na obrázku \ref{fig:kontrast}.
+
+\begin{figure}[p]\centering
+    \subfloat{
+        \includegraphics[width=.45\textwidth]{kontrast_b1}
+    }
+    \subfloat{
+        \includegraphics[width=.45\textwidth]{kontrast_o1}
+    } \\
+    \subfloat{
+        \includegraphics[width=.45\textwidth]{kontrast_b2}
+    }
+    \subfloat{
+        \includegraphics[width=.45\textwidth]{kontrast_o2}
+    } \\
+    \subfloat{
+        \includegraphics[width=.45\textwidth]{kontrast_b3}
+    }
+    \subfloat{
+        \includegraphics[width=.45\textwidth]{kontrast_o3}
+    } \\
+    \small
+    Snímky znázorňují ztrátu atleta při jeho splynutí s~pozadím (vlevo) a~úspěšné trasování, pokud je atlet od pozadí dobře rozeznatelný (videa \texttt{36.mp4} a~\texttt{40.mp4}. 
+    \label{fig:kontrast}
+\end{figure}
+
+V~případě trackeru se jeho ohraničující rámeček v~některých případech chytí na pozadí videa a~tedy ztratí atleta.
+
+Detekce kostry má větší problém s~určením správné pozice kloubů těla, pokud je pozadí blízko atleta členité. Na obrázku \ref{fig:vlivpozadi} [doplním] je vidět několik příkladů tohoto chování detektoru.
 
 
 
 
 \section{Frekvence snímků}
+\label{sec:frekvence}
 
 Frekvence snímků videa (pokud se pohybuje v~rozumných hodnotách) má na výsledek detekce zanedbatelný vliv. Značný vliv může mít na přesnost výpočtu hodnot biomechanických parametrů skoku, jelikož na ní do jisté míry závisí.
 
@@ -202,7 +238,7 @@ Jelikož jsou mezi testovacími daty i~videa s~frekvencí snímků $30$\,\rm fps
 
 Problematičtější mohla být detekce kostry. S~některými fázemi skoku má detektor značné problémy, ty popisuji v~sekci \ref{sec:shrnuti}. Některé snímky se detektoru podaří detekovat, ale úspěšnost není vysoká. Může se tedy stát, že by korektní detekce proběhly ve vynechaných snímcích. Detekce kostry spoléhá na natočení okna, které určuje detekce předchozí kostry, což může být z~hlediska vynechání snímků, v~nichž by k~detekci došlo, velice problematické. Okno pro detekci se v~takovém případě neotočí, a~tedy nedetekuje postavu atleta správně.
 
-Video, které jsem zvolil pro porovnání je \texttt{23.MOV}. Toto video je pořízeno frekvencí $60$\,\rm fps, analýzu jsem spustil bez úprav a~poté jsem z~videa vynechal každý druhý snímek. Nižší frekvenci jsem netestoval, jelikož $30$\,\rm snímků za vteřinu je na spodní hranici přípustné frekvence pro analýzu videozáznamu skoku o~tyči, jelikož jsou pohyby při skoku velice rychlé.
+Video, které jsem zvolil pro porovnání, je \texttt{23.MOV}. Toto video je pořízeno frekvencí $60$\,\rm fps, analýzu jsem spustil bez úprav a~poté jsem z~videa vynechal každý druhý snímek. Nižší frekvenci jsem netestoval, jelikož $30$\,\rm snímků za vteřinu je na spodní hranici přípustné frekvence pro analýzu videozáznamu skoku o~tyči, jelikož jsou pohyby při skoku velice rychlé.
 
 Pozici atleta ve videu jsem vybral ručně v~prvním snímku, který byl zahrnutý v~obou videích, tedy inicializace atleta proběhla v~obou videích stejně.
 
@@ -237,7 +273,7 @@ Výsledky experimentu s~vynecháním snímků jsou zobrazené na obrázku \ref{f
     \label{fig:fps}
 \end{figure}
 
-Jelikož se jednalo o~stejné video se stejnou úvodní pozicí atleta, rozhodl jsem se počátek souřadného systému pro porovnání pozic jednotlivých částí těla nepřesouvat do pozice odrazového kotníku v~momentu odrazu, ale nechal jsem jej ve středu úvodního ohraničujícího rámečku. Posunby mohl být různý, pokud by se detekce lišily a~výsledné grafy by nemusely být tak přehledné.
+Jelikož se jednalo o~stejné video se stejnou úvodní pozicí atleta, rozhodl jsem se počátek souřadného systému pro porovnání pozic jednotlivých částí těla nepřesouvat do pozice odrazového kotníku v~momentu odrazu, ale nechal jsem jej ve středu úvodního ohraničujícího rámečku. Posun by mohl být různý, pokud by se detekce lišily a~výsledné grafy by nemusely být tak přehledné.
 
 [PARAMETRY]
 
@@ -248,3 +284,41 @@ Jelikož se jednalo o~stejné video se stejnou úvodní pozicí atleta, rozhodl 
 \label{sec:shrnuti}
 
 Shrnutí analýzy testovacích videí.
+
+
+
+\subsection{Navrhovaná vylepšení}
+
+Na závěr bych rád popsal, jakými způsoby by bylo možné funkcionalitu programu vylepšit.
+
+
+\subsubsection{Trasování těla}
+
+Úspěšnosti trasování těla atleta při skoku by mohlo pomoci její natáčení podle fáze, ve které se skokan nachází. Přesnějším způsobem trasování může být kombinace implementovaného přístupu s~využitím mřížky a~metody otáčení snímku, kterou program používal předtím. Mřížku by bylo možné otáčet podle úhlu naklonění trupu.
+
+
+\subsubsection{Detekce kostry}
+
+Ideálním přístupem k~detekci pozice těla pro takto specifické využití je natrénování detektoru na vhodné množině dat. K~detekci postavy pouze při skoku o~tyči by většinu takové množiny dat měly tvořit právě snímky zachycující skok o~tyči. Databáze MPII Human Pose dataset \citep{MPIIHPE}, na které je natrénovaný model, který aplikace nyní využívá obsahuje naprosté minimum dat týkajících se skoku o~tyči, aby dobře generalizoval. Pro účely mé aplikace není vysoká míra generalizace nutná, při detekci těla atleta, když se ve snímku poblíž nachází jiná postava přesnosti spíše škodí.
+
+Použití vhodné trénovací databáze by mohlo omezit potřebu určení pozice atleta ve videu pomocí trackerů.
+
+Kromě trénování specializovaného modelu by mohlo být užitečné zkoumat celý výstup sítě, která detekci zajišťuje. Tento způsob by mohl omezit případy, kdy se detekuje více postav najednou (viz sekce \ref{sec:postavy}), ale nepomohla by s~neúspěšnými detekcemi ve fázi skoku.
+
+Při popisu experimentu v~sekci \ref{ssec:velikost} jsem popsal problém s~volbou příliš malého úvodního rámečku atletova těla. Menší rámeček občas zvolí automatické hledání atleta, což může mít za důsledek neúplnou detekci kostry. Tento problém by se dal snadno vyřešit aktualizací velikosti detekčního okna bez ohledu na úspěšnost detekce. Při implementaci jsem dal přednost ošetření případu, který nastává velmi vzácně, na rozdíl od volby příliš malého ohraničujícího rámečku.
+
+Detekce kostry dosahuje horších výsledků z~důvodu zmenšení rozlišení okna použitého pro její detekci. Toto zmenšení má obrovský vliv na rychlost zpracování videa, tudíž jsem k~němu přistoupil. Ponechání původního rozlišení by tedy mělo přesnost detekce mírně zlepšit.
+
+
+\subsubsection{Časová náročnost}
+
+Rozdělení videa do několika částí a~jejch následné paralelní zpracování by časovou náročnost analýzy značně snížilo. Dalším přístupem by mohlo být rozdělení detekce kostry do více částí a~jejich paralelní zpracování.
+
+Kromě využití paralelismu by mohl pomoci specializovaný model pro detekci částí těla, jelikož nyní při neúspěšné detekci zkouším další natočení snímku, která v~určitých případech nepomohou. Tento model by žádné další natočení nepotřeboval, a~tudíž by se detekce spouštěla na menším množství vstupů.
+
+Časovou náročnost při detekci postav zbytečně zvyšuje množství instancí třídy \texttt{background\_tracker}, díky nimž určuji pohyb postav ve videu. Tyto trackery často trasují stejnou část pozadí, ale aktualizují se pro každou instanci. Původně jsem tracker pozadí implementoval v~závislosti na poloze příslušné postavy a~objektový návrh jsem poté nestihl změnit.
+
+
+\subsubsection{Analýza parametrů}
+
+Přesnost analýzy parametrů, ale také zanesení modelu atleta do souřadného systému, ovlivňuje rotace kamery. Stabilizaci této rotace by zajistila dvojice trackerů pozadí, jejichž vzdájemná pozice by dokázala určit míru rotace jednotlivých snímků. Díky této hodnotě bych snadno určil přesnou pozici atleta v~prostoru i~při rotaci kamery.

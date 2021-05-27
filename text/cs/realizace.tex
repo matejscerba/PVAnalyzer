@@ -5,7 +5,9 @@
 
 Pro potřeby analýzy videa jsem použil jazyk C++ a~knihovnu OpenCV. Jelikož je analýza výpočetně náročná, dal jsem z~rychlostních důvodů přednost jazyku C++ před jazykem Python. Také mám s~jazykem C++ více zkušeností.
 
-Tracker, který jsem zvolil pro trasování objektů je \texttt{cv\::TrackerCSRT}, jeho implementace je založena na využití Discriminative Correlation Filter with Channel and Spatial Reliability \citep{DCFwCaSR}. Trackery nejsou součástí samotné knihovny OpenCV, jejich implementace je obsažena v~modulu OpenCV-contrib.
+Tracker, který jsem zvolil pro trasování objektů je \texttt{cv\::TrackerCSRT}, jeho implementace je založena na využití Discriminative Correlation Filter with Channel and Spatial Reliability \citep{DCFwCaSR}. Tento tracker jsem zvolil na základě jeho vysoké úspěšnosti v~soutěži The Visual Object Tracking VOT2017 challenge \citep{VOT2017} a~jeho implementaci v~OpenCV. O~přesnosti trasování objektů, které ve videu rotují jsem bohužel nenašel dostatek informací, abych tento parametr při výbírání trackeru uvažoval.
+
+Trackery nejsou součástí samotné knihovny OpenCV, jejich implementace je obsažena v~modulu OpenCV-contrib.
 
 Pro zobrazení parametrů v~grafické podobě jsem se rozhodl využít Matplotlib. Pro využití této knihovny není potřeba znát speciální syntaxi, základní znalosti Pythonu jsou dostačující. Jelikož je knihovna Matplotlib určena pro Python, je snadné napsat skript, který nejen vygeneruje grafy, ale také zpracuje data, která se mají zobrazit.
 
@@ -36,8 +38,6 @@ Konverzi bodu kostry $(x',y')$ v~souřadném systému videa do prostoru lze repr
 \end{alignat*}
 $d$ značí pozici kotníku odrazové nohy při odrazu v~prostoru.
 
-Pozici kotníku odrazové nohy získám až po analýze parametrů, tudíž při analýze pracuji s~posunutým prostorem. Na vliv většiny parametrů to vliv nemá, některé poté musím spočítat znovu (například výšku boků).
-
 
 
 
@@ -49,11 +49,13 @@ O~nalezení atleta se stará třída \texttt{athlete\_finder}, ta po nalezení a
 
 Funkcionalitu týkající se detekcí kostry atleta zajišťuje třída \texttt{person}. Pohyb atleta zkoumá instance třídy \texttt{movement\_analyzer} ve spolupráci s~instancí třídy \texttt{background\_tracker}. O~detekci jednotlivých částí těla se stará instance třídy \texttt{parts\_detector}.
 
-Po detekování kostry těla kovertuje detekce do modelu atletova těla třída \texttt{model}, výsledek této detekce využívá pro určení parametrů instance třídy \texttt{vault\_analyzer}, která určí hodnoty biomechanických parametrů. Parametry reprezentují specializované struktury, které dědí vlastnosti struktury \texttt{parameter}. Struktura zobrazující hierarchii parametrů je na obrázku \ref{fig:parametry}. \texttt{vault\_analyzer} také zajišťuje ukládání parametrů do souboru.
+Po detekování kostry těla kovertuje detekované části těla do 3D modelu atletova těla třída \texttt{model}, výsledek této detekce využívá pro určení parametrů instance třídy \texttt{vault\_analyzer}, která určí hodnoty biomechanických parametrů. Parametry reprezentují specializované struktury, které dědí vlastnosti struktury \texttt{parameter}. Struktura zobrazující hierarchii parametrů je na obrázku \ref{fig:parametry}. \texttt{vault\_analyzer} také zajišťuje ukládání parametrů do souboru.
 
 Zobrazování výstupu má za úkol třída \texttt{viewer}.
 
 Konstanty, definice vlastních typů a~pomocné funkce jsou uloženy v~souborech \texttt{forward.cpp} a~\texttt{forward.hpp}.
+
+Jelikož nemusím vždy detekovat validní pozice všech kloubů těla ve snímku, zabalím body do struktury \texttt{std\::optional}.
 
 \begin{figure}[h]\centering
     \includegraphics[width=\textwidth]{uml}
@@ -71,9 +73,10 @@ Konstanty, definice vlastních typů a~pomocné funkce jsou uloženy v~souborech
 
 
 
+
 \section{Vstup programu}
 
-Programu jsou při jeho spuštění předány parametry. Parametry specifikují mód, ve kterém si uživatel přeje program spustit a~obsahují cesty k~souborům, které má program zpracovat.
+Programu jsou při jeho spuštění předány parametry. Parametry specifikují mód, ve kterém si uživatel přeje program spustit, a~obsahují cesty k~souborům, které má program zpracovat.
 
 O~zpracování parametrů se stará soubor \texttt{main.cpp}, který definuje vstupní bod aplikace a~volá metody třídy \texttt{video\_processor}, která zpracuje video, případně model, a~výsledek předá k~analýze.
 
@@ -88,7 +91,7 @@ Zpracování videa má na starosti třída \texttt{video\_processor}.
 
 Video načtu s~použitím třídy \texttt{cv\::VideoCapture}. Z~videa získám hodnotu frekvence snímků a~jednotlivé snímky videa uložím při průchodu do vektoru $3$-rozměrných matic \texttt{cv\::Mat}, které reprezentují snímky videa.
 
-Z~důvodu časové náročnosti videí s~velikým rozlišením zmenším každý snímek metodou \texttt{cv\::resize}. Výsledný snímek videa má rozlišení 720p. Při zpracování videa na šířku je výška videa 720\,\rm pixelů, šířka se změní, aby byl poměr stran snímku zachován. Při zpracování videa na výšku je šířka výsledného snímku 720\,\rm pixelů, výška se změní v~odpovídajícím poměru.
+Z~důvodu časové náročnosti videí s~velikým rozlišením zmenším každý snímek metodou \texttt{cv\::resize}. Výsledný snímek videa má rozlišení $1280\times 720\,\rm px$. Při zpracování videa na šířku je výška videa $720\,\rm px$, šířka se změní, aby byl poměr stran snímku zachován. Při zpracování videa na výšku je šířka výsledného snímku $720\,\rm px$, výška se změní v~odpovídajícím poměru.
 
 Vzorce pro změnu velikosti snímku videa s~rozlišením $x'\times y'$ na výsledné rozlišení $x\times y$, reprezentující 720p jsou následující:
 \begin{alignat*}{3}
@@ -105,7 +108,7 @@ Nalezení atleta jsem implementoval dvěma způsoby - manuálním a~automatický
 
 \subsubsection{Manuální způsob}
 
-Tímto způsobem určí uživatel pozici atleta ve snímku. Vybere snímek, ve kterém je atlet v~záběru a~následně ho uzavře do ohraničujícího rámečku. Tuto funkcionalitu v~grafickém rozhraní nabízí metoda \texttt{cv\::selectROI}.
+Tímto způsobem určí uživatel pozici atleta ve snímku. Vybere snímek, ve kterém je atlet v~záběru, a~následně ho uzavře do ohraničujícího rámečku. Tuto funkcionalitu v~grafickém rozhraní nabízí metoda \texttt{cv\::selectROI}.
 
 
 \subsubsection{Automatický způsob}
@@ -120,7 +123,7 @@ Postavy, jejichž trasování neselhalo, jsou celé uvnitř snímku a~pohybují 
 
 Za atleta zvolím postavu, pro kterou je určen směr pohybu. Směr pohybu určí třída \texttt{movement\_analyzer} jakmile se postava pohne alespoň o~šířku jejího ohraničujícího rámečku v~horizontálním směru.
 
-Oraničující rámečky postav vykreslím do snímku a~tyto snímky vrátím pro následné vytvoření videa.
+Ohraničující rámečky postav vykreslím do snímku a~tyto snímky vrátím pro následné vytvoření videa.
 
 \paragraph{Detekce postav ve snímku}
 
@@ -146,7 +149,16 @@ Detekci postav ve snímku provádí instance třídy \texttt{cv\::HOGDescriptor}
 
 \emph{Konečný práh} není v~knihovně dostatečně okomentován, proto jsem ponechal výchozí hodnotu $2$.
 
-\emph{Použití seskupovacího algoritmu} udává, zda se před vrácením ohraničujících rámečků postav má použít algoritmus pro jejich seskupení. Tento algoritmus nefungoval příliš dobře, proto seskupení rámečků implementuji sám. Používám modifikaci algoritmu non-maxima suppression \citep{NMS}. Algoritmus jsem implementoval stejně, jen jsem se rozhodl seřadit rámečky podle velikosti, nikoliv podle pozice jejich spodních stran. Důvodem pro tuto změnu byla skutečnost, že metoda detekovala postavu jen na části atletova těla, tudíž pro určení výsledné detekce dávám přednost větším rámečkům. [OBRÁZEK]
+\emph{Použití seskupovacího algoritmu} udává, zda se před vrácením ohraničujících rámečků postav má použít algoritmus pro jejich seskupení. Tento algoritmus nefungoval příliš dobře, proto seskupení rámečků implementuji sám. Používám modifikaci algoritmu non-maximum suppression \citep{NMS}. Algoritmus jsem implementoval stejně, jen jsem se rozhodl seřadit rámečky podle velikosti, nikoliv podle pozice jejich spodních stran. Důvodem pro tuto změnu byla skutečnost, že metoda detekovala postavu jen na části atletova těla, tudíž pro určení výsledné detekce dávám přednost větším rámečkům. Využití algoritmu non-maximum suppression je vidět na obrázku \ref{fig:nms}.
+
+\begin{figure}[h]\centering
+    \includegraphics[width=\textwidth]{nms}
+    \caption{
+        \centering\small
+        Výsledek aplikace algoritmu non-maximum suppression při detekování tváře. Implementace podle \citet{NMS} zvolila rámeček, který se na snímku nachází nejníž. Má implementace by dala přednost největšímu snímku. Převzato z~\url{https://www.pyimagesearch.com/2014/11/17/non-maximum-suppression-object-detection-python/} dne 26.~5.~2021.
+    }
+    \label{fig:nms}
+\end{figure}
 
 \paragraph{Analýza pohybu postav}
 
@@ -168,19 +180,19 @@ Pozice detekovaných kloubů atletova těla v~jednotlivých snímcích udržuje 
 
 \subsubsection{Trasování atleta}
 
-Jak jsem již popisoval v~sekci \ref{ssec:ndetekce}, bylo potřeba trasování atleta modifikovat, aby byla kvalita trasování při skoku dostatečná. Rozhodl jsem se pro rozdělení původního ohraničujícího rámečku atleta na mřížku $3\times 3$ menších rámečků. Chtěl jsem jedním z~menších rámečků pokrýt střed ohraničujícího rámečku, proto jsem se rozhodl pro tento počet. Každý rámeček v~mřížce trasuji samostatně, trackery jednotlicých rámečků jsou uloženy v~1D vektoru. Kvůli analýze pohybu rámečků při aktualizaci mřížky ukládám pozice rámečků do vektoru, který pro každý snímek obsahuje vektor pozic rámečků v~daném snímku.
+Jak jsem již popisoval v~sekci \ref{ssec:ndetekce}, bylo potřeba trasování atleta modifikovat, aby byla kvalita trasování při skoku dostatečná. Rozhodl jsem se pro rozdělení původního ohraničujícího rámečku atleta na mřížku $3\times 3$ menších rámečků. Chtěl jsem jedním z~menších rámečků pokrýt střed ohraničujícího rámečku, proto jsem se rozhodl pro tento počet. Každý rámeček v~mřížce trasuji samostatně, trackery jednotlivých rámečků jsou uloženy v~1D vektoru. Kvůli analýze pohybu rámečků při aktualizaci mřížky ukládám pozice rámečků do vektoru, který pro každý snímek obsahuje vektor pozic rámečků v~daném snímku.
 
-V~prvním snímku, kde jsem detekoval atleta inicializuji tracker pro každý rámeček mřížky.
+V~prvním snímku, kde jsem detekoval atleta, inicializuji tracker pro každý rámeček mřížky.
 
 Ihned po inicializaci a v~následujících snímcích určím pozici jednotlivých rámečků. Pokud trasování všech rámečků mřížky selže, ukončím trasování atleta a v~následujících snímcích kostru nedetekuji.
 
-Vzhledem k~tomu, že atleta trasuji po částech se může stát, že některé trackery začnou trasovat pozadí videa. Abych je přesunul na správné místo, zkoumám pohyb jednotlivých trackerů za poslední $2$\,\rm snímky.
+Vzhledem k~tomu, že atleta trasuji po částech, se může stát, že některé trackery začnou trasovat pozadí videa. Abych je přesunul na správné místo, zkoumám pohyb jednotlivých trackerů za poslední $2$\,\rm snímky.
 
-Vyberu rámeček, jehož pozice se za poslední $2$\,\rm snímky nejvíce změnila. Kontroluji, aby horizontální směr odpovídal směru rozběhu atleta. K~tomuto rámečku přesunu mřížku, aby v~ní byl nejvíce se pohybující se rámeček na původním místě. Musím také zajistit, aby byla mřížka uvnitř snímku. Mřížku opět rozdělím na menší rámečky a~inicializuji v~ní trackery, které atleta ztratily.
+Vyberu rámeček, jehož pozice se za poslední $2$\,\rm snímky nejvíce změnila. Kontroluji, aby horizontální směr odpovídal směru rozběhu atleta. K~tomuto rámečku přesunu mřížku, aby v~ní byl nejvíce se pohybující rámeček na původním místě. Musím také zajistit, aby byla mřížka uvnitř snímku. Mřížku opět rozdělím na menší rámečky a~inicializuji v~ní trackery, které atleta ztratily.
 
 Tyto trackery určím tak, že posun jejich rámečků je menší než $1/4$\,\rm posunu nejvíce se pohybujícího rámečku. Při skoku atlet švihá nohou směrem dopředu, pohyb této nohy vůči pozadí je přibližně dvojnásobný vůči pohybu trupu, tudíž jsem musel zvolit menší hodnotu než $1/2$, abych zamezil přesunu validních trackerů z~trupu na nohu.
 
-Po aktualizaci rámečků je $2$\,\rm snímky neaktualizuji, aby do jejich pohybu nebyla započítána jejich aktualizace.
+Pohyb aktualizovaných rámečků $2$\,\rm snímky neanalyzuji, aby do jejich pohybu nebylo započteno jejich posunutí při aktualizaci.
 
 Atletova pozice se v~průběhu videa mění, snažil jsem se implementovat i~změnu velikosti mřížky podle velikosti těla atleta, ale přesnost trasování se zhoršila, proto škálování mřížky neprovádím.
 
@@ -189,9 +201,9 @@ Atletova pozice se v~průběhu videa mění, snažil jsem se implementovat i~zm�
 
 Pro určení pozice atleta v~souřadném systému videa využívám třídu \texttt{movement\_analyzer} a~\texttt{background\_tracker}. Tato třída analyzuje také pohyb postav, každá instance analyzuje pohyb jediné postavy.
 
-Atlet je ve snímku reprezentován několika rámečky, postava jedním, ale ten zabalím do vektoru a~následný postup je pro oba případy stejný. Pozicí postavy ve snímku rozumím střed nejmenšího obdélníku, do něhož lze rámečky uzavřít. Rámečky ve snímku, snímek a~číslo snímku dostane analyzátor pobyhu na vstupu.
+Atlet je ve snímku reprezentován několika rámečky, postava jedním, ale ten zabalím do vektoru a~následný postup je pro oba případy stejný. Pozicí postavy ve snímku rozumím střed nejmenšího obdélníku, do něhož lze rámečky uzavřít. Rámečky ve snímku, snímek a~číslo snímku dostane analyzátor pohybu na vstupu.
 
-V~prvním snímku, ve kterém chci určit pozici atleta, inicializuji tracker pozadí. Část pozadí, kterou budu trasovat uzavřu do ohraničujícího rámečku, který má velikost $x/4\times y/2$, kde $x$ je šířka snímku, $y$ výška. Tento rámeček umístím k~levé nebo pravé straně snímku, podle toho na jaké straně je průnik atleta a~pozadí menší. Přednost má levá strana. Rámeček umístím tak, aby nad ním i~pod ním bylo stejně místa. Tím se vyvaruji trasování jednobarevného nebe, případně tartanu, pokud bych pozadí umístil nahoru, případně dolů.
+V~prvním snímku, ve kterém chci určit pozici atleta, inicializuji tracker pozadí. Část pozadí, kterou budu trasovat, uzavřu do ohraničujícího rámečku, který má velikost $x/4\times y/2$, kde $x$ je šířka snímku, $y$ výška. Tento rámeček umístím k~levé nebo pravé straně snímku, podle toho, na jaké straně je průnik atleta a~pozadí menší. Přednost má levá strana. Rámeček umístím tak, aby nad ním i~pod ním bylo stejně místa. Tím se vyvaruji trasování jednobarevného nebe, případně tartanu, pokud bych pozadí umístil nahoru, případně dolů.
 
 Při zpracování každého snímku zjistím pozici levého horního rohu snímku v~souřadném systému videa, díky čemuž snadno určím pozici libovolného objektu ve snímku.
 
@@ -199,9 +211,9 @@ Pozice pozadí ve videu je $d_0=b_0-p_0$, $b_0$ udává pozici středu pozadí v
 
 Při analýze dalšího snímku znám pozici atleta $p_1$ ve snímku. S~využitím trackeru určím pozici pozadí $b_1$ ve snímku a~jeho pozici $d_1=d_0$ ve videu. Ze znalosti pozice pozadí získám pozici levého horního rohu snímku $t_1=d_1-b_1$. Takto získám pozici levého horního rohu každého snímku.
 
-Jelikož se záběr kamery pohybuje, je potřeba pozadí aktualizovat, jakmile se dostane mimo záběr. S~touto aktualizací musím aktualizovat pozici nového pozadí ve videu. Mám tedy pozadí, které se dostalo mimo záběr. Jeho pozice ve videu je $d_i$, pozice ve snímku $b_i$. Inicializuji nové pozadí s~pozicí $n_i$ ve snímku. Pozice nového pozadí ve videu se určí jako $d_i+n_i-b_i$. Dále pracuji s~touto hodnotou místo $d_i$ a~novým pozadím videa. [OBRÁZEK]
+Jelikož se záběr kamery pohybuje, je potřeba pozadí aktualizovat, jakmile se dostane mimo záběr. S~touto aktualizací musím aktualizovat pozici nového pozadí ve videu. Mám tedy pozadí, které se dostalo mimo záběr. Jeho pozice ve videu je $d_i$, pozice ve snímku $b_i$. Inicializuji nové pozadí s~pozicí $n_i$ ve snímku. Pozice nového pozadí ve videu se určí jako $d_i+n_i-b_i$. Dále pracuji s~touto hodnotou místo $d_i$ a~novým pozadím videa.
 
-Pozadí přesunu také jakmile do oblasti pozadí vběhne atlet. Pokud pozadí bez průniku s~atletem nelze vytvořit, nezacyklím se, jen budu v~každém snímku vytvářet nové pozadí, aby byl průnik minimální.
+Tracker pozadí znovu inicializuji, jakmile do oblasti, která ho reprezentuje, vběhne atlet. Pokud pozadí bez průniku s~atletem nelze vytvořit, nezacyklím se, jen budu v~každém snímku vytvářet nové pozadí, aby byl průnik minimální.
 
 Podle pohybu atleta ve videu také určím směr jeho rozběhu pro následný převod kostry do 3D modelu. Směr rozběhu určím, jakmile se pozice atleta změní alespoň o~šířku jeho těla od první pozice, kde jsem atleta detekoval.
 
@@ -221,7 +233,7 @@ Klouby těla jsou určeny databází MPII Human Pose dataset \citep{MPIIHPE}. Je
     \item levé zápěstí,
     \item pravou kyčel,
     \item pravé koleno,
-    \item pravý kostník,
+    \item pravý kotník,
     \item levou kyčel,
     \item levé koleno,
     \item levý kotník a
@@ -230,9 +242,9 @@ Klouby těla jsou určeny databází MPII Human Pose dataset \citep{MPIIHPE}. Je
 
 O~detekci kloubů těla se stará třída \texttt{parts\_detector}. Ta dostane pro detekci snímek, rámečky atletova těla v~něm a~maximální vzdálenost, o~kterou může posunout střed okna od středu atletova těla, což je střed nejmenšího rámečku, do něhož se vejdou rámečky atletova těla. Maximální vzdálenost je určena průměrnou vzdáleností dvojic středů rámečků atleta.
 
-Detektor si pamatuje poslední velikost kostry, posun středu okna a~úhel naklonění trupu. Detekci zkouší na natočení proti poslednímu známemu úhlu trupu a~následnému natočení o~$20$\,\rm stupňů oběma směry. Tyto detekce probíhají postupně a~vybere se ta, která detekuje nejvíce kloubů těla. Pokud nějaká detekce uspěje na $100$\,\rm \%, další se nezkouší.
+Detektor si pamatuje poslední velikost kostry, posun středu okna a~úhel naklonění trupu. Detekci zkouší na natočení proti poslednímu známému úhlu trupu a~následnému natočení o~$20$\,\rm stupňů oběma směry. Tyto detekce probíhají postupně a~vybere se ta, která detekuje nejvíce kloubů těla. Pokud nějaká detekce uspěje na $100$\,\rm \%, další se nezkouší.
 
-Úhel naklonění trupu určuji jako úhel mezi úsečkou spojující střed kyčlí a~hlavu a~vertikálou, která prochází středem kyčlí. Úhel reprezentuje míru natočení trupu oproti vzpřímené pozici po směru hodinových ručiček. [OBRÁZEK] Hodnoty jsou v~rozmezí $[-180,180]$\,\rm stupňů. Metoda \texttt{cv\::rotate} otáčí snímek o~úhel proti směru hodinových ručiče, tudíž bude ve otočeném snímku atletův trup vzpřímený, když mu předám nezměněnou hodnotu úhlu naklonění trupu.
+Úhel naklonění trupu určuji jako úhel mezi úsečkou spojující střed kyčlí a~hlavu a~vertikálou, která prochází středem kyčlí. Úhel reprezentuje míru natočení trupu oproti vzpřímené pozici po směru hodinových ručiček, na rozdíl od analýzy parametru naklonění trupu, kde předklon znamená kladný úhel náklonu trupu. Hodnoty jsou v~rozmezí $[-180,180]$\,\rm stupňů. Metoda \texttt{cv\::rotate} otáčí snímek o~úhel proti směru hodinových ručiček, tudíž bude v~otočeném snímku atletův trup vzpřímený, když mu předám nezměněnou hodnotu úhlu naklonění trupu.
 
 Výpočet úhlu naklonění trupu provádím následující metodou:
 \begin{code}[fontsize=\footnotesize]
@@ -256,15 +268,15 @@ Prvním argumentem je pozice středu kyčlí, druhým pozice hlavy atleta. Pro v
 
 Pro detekci kloubů těla nejprve vyberu rámeček okna pro detekci. Jeho střed získám ze středu rámečků atleta a~posunu středu z~minulého snímku. Rámečky atleta aktualizuji každé $2$\,\rm snímky, tudíž jejich posunutí při aktualizaci není velké. [OBRÁZEK] Velikost jeho strany určím z~velikosti dosud největší detekované kostry, kterou zvětším koeficientem $1.3$. Pokud je velikost kostry dosud neznámá, zvětším $1.3$\,\rm krát nejmenší rámeček obsahující rámečky atletova těla. Škálování rámečků provádím tak, abych zachoval jejich střed a~aby se vešly do snímku.
 
-Následně kolem středu zvoleného rámečku okna otočím snímek proti poslednímu známému naklonění trupu, k~tomuto úhlu případně přičtu úhel dalšího naklonění, pokud se detekce nepodaří napoprvé. K~natočení snímku využiji metodu \texttt{cv\::rotate}. Z~natočeného snímku vyříznu část, která je určena oknem. Střed okna zůstal po rotaci na stejném místě, takže získám jen natočené okno. [OBRÁZEK] Toto okno zmenším na rozlišení, jehož menší strana má $150$\,\rm px, aby detekce probíhala rychleji. Toto zmenšení nemá příliš velký vliv na přesnost detekcí, ale značný vliv na rychlost analýzy videa [ODKAZ na experiment].
+Následně kolem středu zvoleného rámečku okna otočím snímek proti poslednímu známému naklonění trupu, k~tomuto úhlu případně přičtu úhel dalšího naklonění, pokud se detekce nepodaří napoprvé. K~natočení snímku využiji metodu \texttt{cv\::rotate}. Z~natočeného snímku vyříznu část, která je určena oknem. Střed okna zůstal po rotaci na stejném místě, takže získám jen natočené okno. [OBRÁZEK] Toto okno zmenším na rozlišení, jehož menší strana má $150$\,\rm px, aby detekce probíhala rychleji.
 
 Zmenšené okno předám jako vstup konvoluční sítě a~spustím detekci. Z~výsledku detekce extrahuji klouby těla do nezmenšeného okna, ty podle jeho pozice a~naklonění posunu na správnou pozici do snímku.
 
-Nakonec aktualizuji velikost dosud největší detekované kostry, pokud detekuji všechny části těla a~tato kostra je největší. Také aktualizuji posun středu okna oproti středu rámečku ohraničujícího atleta. Tento posun zmenším, pokud je větší, než maximální vzdálenost. Jako poslední aktualizuji úhel naklonění trupu, pokud se od posledního známého liší o~míň, než $30$\,\rm stupňů. Tento úhel určuje střed kyčlí a~hlava atleta vůči vertikále, pokud byly tyto části těla v~předchozím snímku detekovány, jinak úhel neaktualizuji.
+Nakonec aktualizuji velikost dosud největší detekované kostry, pokud detekuji všechny části těla a~tato kostra je největší. Také aktualizuji posun středu okna oproti středu rámečku ohraničujícího atleta. Tento posun zmenším, pokud je větší než maximální vzdálenost. Jako poslední aktualizuji úhel naklonění trupu, pokud se od posledního známého liší o~méně než $30$\,\rm stupňů. Tento úhel určuje střed kyčlí a~hlava atleta vůči vertikále, pokud byly tyto části těla v~předchozím snímku detekovány, jinak úhel neaktualizuji.
 
 \paragraph{Síť}
 
-K~detekci kloubů těla používám konvoluční síť, která je implementovaná ve frameworku Caffe \citep{Caffe}. Tuto síť načtu ze souborů metodou \texttt{cv\::dnn\::readNet}. Váhy sítě a~její parametry jsem použil z~projektu OpenPose \citep{OpenPose}. Vstupem této sítě může být libovolně velký obrázek. Výstupem sítě je $4$-dimenzionální matice \texttt{cv\::Mat}, dimenze popisují
+K~detekci kloubů těla používám konvoluční síť, která je implementovaná ve frameworku Caffe \citep{Caffe}. Tuto síť načtu ze souborů metodou \texttt{cv\::dnn\::readNet}. Váhy sítě a~její parametry jsem použil z~projektu OpenPose \citep{OpenPose}. Vstupem této sítě může být soubor libovolně velkých obrázků. Výstupem sítě je $4$-dimenzionální matice \texttt{cv\::Mat}, dimenze popisují
 \begin{itemize}
     \item číslo snímku,
     \item číslo výstupní vlastnosti,
@@ -274,7 +286,7 @@ K~detekci kloubů těla používám konvoluční síť, která je implementovan�
 
 \paragraph{Extrakce kloubů z~výstupu}
 
-Číslo snímku je irelevantní, jelikož předávám síti vždy jen jeden snímek. Výstupních vlastností je pro MPII model $44$, ale používám jen prvních $15$, které reprezentují klouby těla. Pro lepší přesnost detekce by bylo vhodné využít i~zbylé vlastnosti. Z~výstupu dostanu matici pravděpodobností kloubu $n$ konstruktorem \texttt{cv\::Mat}, kterému dám výšku, šířku, typ prvků a~ukazatel na výslednou matici, který dostanu z~výstupu sítě. Ze získané matice vyberu pozici prvku, který má maximální pravděpodobnost. Pokud je tato pravděpodobnost větší než $0.1$, určím přeškálováním pozice bodu ve výstupu poměrem velikosti nezmenšeného vstupu a~výstupu sítě pozici bodu ve vstupu. Výslednou pozici určím výpočtem $(x,y)=(x_{out}\cdot w_{in}/w_{out}, y_{out}\cdot h_{in}/h_{out})$. $(x_{out},y_{out})$ je pozice na výstupu, $(w_{in},h_{in})$ velikost vstupu a~$(w_{out},h_{out})$ velikost výstupu.
+Číslo snímku je irelevantní, jelikož předávám síti vždy jen jeden snímek. Výstupních vlastností je pro MPII model $44$, ale používám jen prvních $15$, které reprezentují klouby těla. Z~výstupu dostanu matici pravděpodobností kloubu $n$ konstruktorem \texttt{cv\::Mat}, kterému dám výšku, šířku, typ prvků a~ukazatel na výslednou matici, který dostanu z~výstupu sítě. Ze získané matice vyberu pozici prvku, který má maximální pravděpodobnost. Pokud je tato pravděpodobnost větší než $0.1$, převedu pozici tohoto bodu ve výstupu na odpovídající pozici ve vstupu. Pokud jsou pravděpodobnosti ve všech místech výstupu nanejvýš $0.1$, nastavím detekovanému bodu nedefinovanou pozici. Výslednou pozici určím výpočtem $(x,y)=(x_{out}\cdot w_{in}/w_{out}, y_{out}\cdot h_{in}/h_{out})$. $(x_{out},y_{out})$ je pozice na výstupu, $(w_{in},h_{in})$ velikost vstupu a~$(w_{out},h_{out})$ velikost výstupu.
 
 Podle pozice a~natočení okna ve snímku určím pozici výsledných bodů ve snímku. Bod posunu o~levý horní roh okna, tím získám pozici bodu v~otočeném snímku. Otočením bodu podle středu okna o~úhel natočení okna zpět získám pozici bodu v~nerotovaném snímku. Pro otočení bodu využiji metodu \texttt{cv\::transform}. [OBRÁZEK]
 
@@ -296,7 +308,7 @@ Posunutí počátku systému do pozice kotníku odrazové nohy v~momentu odrazu 
 
 \subsection{Analýza parametrů}
 
-Pro analýzu parametrů skoku používám pozice kloubů těla v~každém snímku. Tyto hodnoy mám uložené ve vektoru vektorů, jehož prvky jsou instance \texttt{std\::optional<cv\::Point3d>}. První dimenze určuje číslo snímku, druhá číslo kloubu. I~když atleta nedetekuji v~celém videu, mám pro každý snímek uloženy pozice kloubů. Pokud jsem v~daném snímku kloub nedetkoval, je jedo hodnota nedefinovaná (\texttt{std\::nullopt}).
+Pro analýzu parametrů skoku používám pozice kloubů těla v~každém snímku. Tyto hodnoy mám uložené ve vektoru vektorů, jehož prvky jsou instance \texttt{std\::optional<cv\::Point3d>}. První dimenze určuje číslo snímku, druhá číslo kloubu. I~když atleta nedetekuji v~celém videu, mám pro každý snímek uloženy pozice kloubů. Pokud jsem v~daném snímku kloub nedetkoval, je jeho hodnota nedefinovaná (\texttt{std\::nullopt}).
 
 Detekce kloubů těla není úplně přesná, často při detekci prohodí levá a~pravá noha, tuto chybu je potřeba brát při analýze parametrů v~potaz. [GRAF levého kotníku, pravého kotníku a~nižšího kotníku]
 
@@ -348,7 +360,7 @@ Pro určení doby trvání kroků je potřeba určit specifický moment každéh
 
 Jelikož si nemohu být jistý pozicí levé a~pravé nohy, musím zkoumat pozici nižšího kotníku. Postupně procházím pozice nižšího kotníku v~jednotlivých snímcích videa. Určím momenty, ve kterých nižší kotník opouští lokální minimum.
 
-Jelikož detekce nemusí být vždy přesná, musím určit práh, jehož překonání znamená verikální posunutí kloubu kostry. Velikost tohoto prahu musí záviset na velikosti těla atleta a~frekvenci snímků videa. Velikost prahu určuji takto: $x\cdot s/fps$, kde $s$ je vzdálenost dvou nejvzdálenějších kloubů těla atleta, $fps$ frekvence snímků videa a~$x$ vhodná hodnota. Po analýze vertikálních pohybů nižšího kotníku v~momentech odrazů jednotlivých kroků několika videí, jejichž frekvence snímků byla $60$\,\rm fps, jsem hodnotu $x$ nastavil na $0.023\cdot 60=1.38$. Zvolil jsem nejmenší vertikální posun v~momentech odrazů jednotlivých kroků v~analyzovaných videích. Jednalo se o~videa \texttt{1.MOV}, \texttt{8.MOV} a~\texttt{12.MOV}.
+Jelikož detekce nemusí být vždy přesná, musím určit práh, jehož překonání znamená verikální posunutí kloubu kostry. Velikost tohoto prahu musí záviset na velikosti těla atleta a~frekvenci snímků videa. Velikost prahu určuji takto: $x\cdot s/fps$, kde $s$ je vzdálenost dvou nejvzdálenějších kloubů těla atleta, $fps$ frekvence snímků videa a~$x$ vhodná hodnota. Po analýze vertikálních pohybů nižšího kotníku v~momentech odrazů jednotlivých kroků několika videí, jejichž frekvence snímků byla $60$\,\rm fps, jsem hodnotu $x$ nastavil na $0.023\cdot 60=1.38$. Zvolil jsem nejmenší vertikální posun v~momentech odrazů jednotlivých kroků v~analyzovaných videích. Jednalo se o~videa \texttt{1.MOV}, \texttt{8.MOV} a~\texttt{12.MOV} (viz tabulka \ref{fig:videa}).
 
 Možným vylepšením by bylo zkoumání levé a~pravé nohy a~jejich vzájemné pozice - která je vepředu a~která vzadu - ale jelikož není detekce levé a~pravé nohy občas správná, musel jsem se rozhodnout pro výše popsanou implementaci.
 
@@ -372,7 +384,7 @@ Pokud hodnotu výrazu nelze spočítat, má tento parametr nedefinovanou hodnotu
 
 \subsubsection{Výška boků}
 
-V~průběhu celého videa určuji výšku boků. Pro každý snímek uložím hodnotu průměru výšky levé a~pravé kyčle. Pokud se ve snímku podařilo detekovat jen jednu kyčli, uložím výšku detekované, pokud se nepodaří detekovat ani jednu kyčel ve snímku, je hodnota výšky boků v~tomto snímku nedefinovaná.
+V~průběhu celého videa určuji výšku boků. Pro každý snímek uložím hodnotu průměru výšky levé a~pravé kyčle. Pokud se ve snímku podařilo detekovat jen jednu, uložím výšku detekované, pokud se nepodaří detekovat ani jednu kyčel ve snímku, je hodnota výšky boků v~tomto snímku nedefinovaná.
 
 
 \subsubsection{Úhel odrazu}
@@ -403,7 +415,7 @@ Hodnota naklonění trupu se pohybuje v~rozmezí $-180$ až $180$\,\rm stupňů.
 
 \section{Analýza modelu}
 
-O~načtení modelu ze souboru se stará třída \texttt{model}, podle uložených pozic kloubů kostry vůči levému hornímu rohu snímku a~posunu snímku ve videu se klouby převedou do 3D modelu. Tento postup je stejný jako při převodu detekované kostry do 3D modelu. Tento model je narozdíl od konverze z~detekované kostry posunut, aby byl počátek systému v~místě kotníku odrazové nohy v~momentu odrazu.
+O~načtení modelu ze souboru se stará třída \texttt{model}, podle uložených pozic kloubů kostry vůči levému hornímu rohu snímku a~posunu snímku ve videu se klouby převedou do 3D modelu. Tento postup je stejný jako při převodu detekované kostry do 3D modelu. Tento model je na rozdíl od konverze z~detekované kostry posunut, aby byl počátek systému v~místě kotníku odrazové nohy v~momentu odrazu.
 
 Pro následnou analýzu parametrů se využívá model ve 3D souřadném systému stejným způsobem, jako při analýze videa.
 
@@ -417,7 +429,7 @@ Výstup ukládám do textových souborů, které jsou uloženy ve složce \textt
 
 Uložení parametrů provádí třída \texttt{vault\_analyzer}, uložení modelu má na starosti třída \texttt{model}. Pro vypisování hodnot do souboru používám \texttt{std\::ofstream}.
 
-Struktura těchto souborů je popsaný v~sekci \ref{ssec:ulozeni}.
+Struktura těchto souborů je popsaná v~sekci \ref{ssec:ulozeni}.
 
 Kromě těchto textových souborů generuje program trojici videí, kterou uloží do stejné složky jako textové soubory.
 
@@ -431,7 +443,7 @@ Třetí video obsahuje zakreslenou kostru, rámečky těla atleta a~pozici traso
 
 \subsection{Zobrazení výstupu uživateli}
 
-O~funkcionalitu zobrazení výstupu uživateli se stará třída \texttt{viewer}. Ta nejprve otevře prohlížeč snímků videa a~následně zobrazí grafy obsahující hodnoty parametrů.
+O~funkcionalitu zobrazení výstupu uživateli se stará třída \texttt{viewer}. Ta otevře prohlížeč snímků videa, zobrazí důležité momenty skoku a~následně zobrazí grafy obsahující hodnoty parametrů.
 
 
 \subsubsection{Prohlížeč snímků}
@@ -446,7 +458,7 @@ Snímek zobrazím metodou \texttt{cv\::imshow}, která vytvoří okno a v~něm z
 
 Spolu se zobrazením snímku vypíše program do konzole číslo snímku, dobu snímku vůči odrazu a~hodnoty parametrů, které s~daným snímkem souvisí. [TABULKA]
 
-Následně se čeká na vstup uživatele s~využitím metody \texttt{cv\::waitKey}. Tato metoda vrací kód klávesy, kterou uživatel stiskl a~čeká na vstup uživatel neomezeně dlouhou dobu.
+Následně se čeká na vstup uživatele s~využitím metody \texttt{cv\::waitKey}. Tato metoda vrací kód klávesy, kterou uživatel stiskl, a~čeká na vstup uživatele neomezeně dlouhou dobu.
 
 Levou a~pravou šipkou se uživatel pohybuje mezi snímky videa dopředu, případně dozadu, mezerníkem uživatel zobrazí a~opět skryje zakreslené detekce kostry atletova těla. Stiskem klávesy \texttt{esc} se zobrazí grafy s~hodnotami parametrů a~ukončí se prohlížení snímků videa přerušením smyčky.
 
@@ -478,6 +490,11 @@ void show_parameters() const noexcept {
 }
 \end{code}
 
+Kromě vygenerování grafů programem je možné skript pro zanesení parametrů do grafu spustit zvlášť. Skript očekává jediný argument \texttt{--file}, který následuje cesta k~souboru obsahujícímu detekované hodnoty parametrů.
+
+Pro podrobnější analýzu je možné využít pouze funkci \texttt{read\_file} ve vlastním skriptu. Tato funkce dostane na vstupu parametr určující cestu k~souboru s~detekovanými parametry a~vrací název analyzovaného videa, názvy parametrů, jednotky parametrů a~hodnoty parametrů.
+
+Názvy a~jednotky parametrů jsou uloženy jako seznamy řetězců, hodnoty jako seznam seznamů čísel. První rozměr hodnot určuje parametr, druhý pořadové číslo hodnoty příslušného parametru (například číslo snímku nebo číslo kroku). Prvním parametrem, který funkce vrátí je relativní čas vůči odrazu v~sekundách.
 
 
 

@@ -12,48 +12,47 @@ A level-1 auxiliary file: literatura.aux
 The style file: czplainnat.bst
 Database file #1: literatura.bib
 Warning--I didn't find a database entry for ""
-Warning--I didn't find a database entry for "WhatsApp"
 Warning--empty chapter and pages in SIFT
 Warning--empty publisher in SIFT
-You've used 16 entries,
+You've used 27 entries,
             2828 wiz_defined-function locations,
-            735 strings with 10045 characters,
-and the built_in function-call counts, 12401 in all, are:
-= -- 952
-> -- 1321
-< -- 13
-+ -- 445
-- -- 429
-* -- 1227
-:= -- 2047
-add.period$ -- 62
-call.type$ -- 16
-change.case$ -- 189
-chr.to.int$ -- 16
-cite$ -- 34
-duplicate$ -- 320
-empty$ -- 601
-format.name$ -- 449
-if$ -- 2451
+            798 strings with 12169 characters,
+and the built_in function-call counts, 17306 in all, are:
+= -- 1386
+> -- 1618
+< -- 21
++ -- 546
+- -- 519
+* -- 1621
+:= -- 2798
+add.period$ -- 101
+call.type$ -- 27
+change.case$ -- 252
+chr.to.int$ -- 27
+cite$ -- 56
+duplicate$ -- 522
+empty$ -- 997
+format.name$ -- 556
+if$ -- 3497
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 13
-newline$ -- 102
-num.names$ -- 64
-pop$ -- 404
+missing$ -- 17
+newline$ -- 163
+num.names$ -- 108
+pop$ -- 555
 preamble$ -- 1
-purify$ -- 175
+purify$ -- 227
 quote$ -- 0
-skip$ -- 332
+skip$ -- 504
 stack$ -- 0
-substring$ -- 209
-swap$ -- 61
-text.length$ -- 4
+substring$ -- 309
+swap$ -- 102
+text.length$ -- 6
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 166
+type$ -- 287
 warning$ -- 2
-while$ -- 58
+while$ -- 96
 width$ -- 0
-write$ -- 236
-(There were 4 warnings)
+write$ -- 383
+(There were 3 warnings)
