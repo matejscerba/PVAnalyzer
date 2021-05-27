@@ -64,18 +64,6 @@ public:
             if (!end && track(frame, frame_no)) {
                 draw(frame, frame_no);
             }
-            // if (frame_no >= first_frame) {
-            //     if (frame_no == first_frame)
-            //         my_tracker->init(frame, first_bbox);
-            //         cv::Rect bbox;
-            //     if (my_tracker->update(frame, bbox)) {
-            //         cv::rectangle(frame, bbox.tl(), bbox.br(), cv::Scalar(255, 0, 0), 2);
-            //     }
-            // }
-            // cv::imshow("frame", frame);
-            // cv::waitKey(1);
-            // if (cv::waitKey() == 27)
-            //     cv::imwrite("img.png", frame);
 
             // Save current modified frame.
             frames.push_back(frame);
@@ -345,7 +333,6 @@ private:
             std::size_t i = 0;
             for (const auto &bbox : bboxes[frame_no]) {
                 cv::rectangle(frame, bbox.tl(), bbox.br(), cv::Scalar(255, 0, 0), 2);
-                // cv::rectangle(frame, bbox.tl(), bbox.br(), cv::Scalar(i * 30, i * 30, i * 30), 1);
                 ++i;
             }
         }

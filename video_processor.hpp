@@ -49,7 +49,7 @@ public:
         if (find)
             athlete = finder.find_athlete(raw_frames, found_frames);
         else
-            athlete = finder.select_athlete(raw_frames, fps, filename);
+            athlete = finder.select_athlete(raw_frames, fps);
         if (!athlete) {
             std::cout << "Athlete could not be found in video " << filename << std::endl;
             return;
@@ -148,16 +148,6 @@ private:
 
             // Resize and save current frame.
             frames.push_back(resize(frame));
-
-            // cv::imshow("frame", frame);
-            // if (cv::waitKey() == 27)
-            //     cv::imwrite("frame.png", frame);
-
-            // Skip frames of tested 120-fps video for efficiency reasons.
-            // TODO: remove
-            if (filename.find("kolin2.MOV") != std::string::npos) {
-                video >> frame; video >> frame; video >> frame;
-            }
         }
         video.release();
 

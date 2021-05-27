@@ -75,7 +75,6 @@ public:
                     return;
                 case 32:
                     // Space key pressed.
-                    cv::imwrite("spatnakostra.png", frames[frame_no]);
                     drawing = !drawing;
                     break;
             }

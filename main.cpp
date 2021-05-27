@@ -13,7 +13,8 @@
  */
 void write_usage_msg(char *name) {
     std::cout <<
-    "usage: " << name << " " << "--help | vid1 ... | -m mod1 ..." << std::endl <<
+    "usage: " << name << " " << "--help | [-f] vid1 ... | -m mod1 ..." << std::endl <<
+    "  -f: if automatic athlete detection should be performed" << std::endl <<
     "  vid1: path to video" << std::endl <<
     "  mod1: path to model file" << std::endl;
 }

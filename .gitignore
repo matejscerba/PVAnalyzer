@@ -4,6 +4,8 @@ pose/mpi/*.caffemodel
 build/
 data/
 outputs/*/*.avi
+outputs_automatic/
+outputs_manual/
 opencv/
 text/img/
 text/tex/
@@ -11,3 +13,4 @@ docs/
 images/
 outputs/
 plot_cz.py
+test.py

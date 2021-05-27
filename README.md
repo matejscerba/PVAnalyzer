@@ -10,12 +10,16 @@
 Project is created with:
 * OpenCV version: 4.5.1
 * OpenCV_contrib modules version: 4.5.1
+* ffmpeg version: 4.3.1 (older versions should work as well)
+* gtk+ version: 2.24.32_3 (older versions should work as well)
 * cmake version: 3.1 or later
 * python version: 3.8.2 (older versions should work as well)
 * matplotlib version: 3.3.2 (older versions should work as well)
 * argparse version: 1.1 (older versions should work as well)
 
 To install OpenCV and OpenCV_contrib, run script `install_opencv.sh`. The library will be installed to `~/.local`.
+
+Note that `ffmpeg` and `gtk+` must be installed before OpenCV is installed.
 
 Correct functionality requires trained models for body parts detections. You can download them running script `models.sh`.
 
@@ -45,6 +49,8 @@ To analyze videos, pass videos' paths as command line arguments:
 ```
 $ ./build/PVAnalyzer vid1 vid2 vid3
 ```
+
+You can specify flag `-f` before first video to perform automatic athete's detection.
 
 Command above analyzes videos `vid1`, `vid2` and `vid3`. You can pas any number of videos to be analyzed sequentially.
 Video analyzer mode creates output files in folder `outputs/X/`, where `X` is name of analyzed video (without path and extension).
