@@ -146,6 +146,10 @@ private:
             // Video ended.
             if (frame.empty()) break;
 
+            cv::imshow("frame", frame);
+            if (cv::waitKey() == 27)
+                cv::imwrite("img.png", frame);
+
             // Resize and save current frame.
             frames.push_back(resize(frame));
         }
