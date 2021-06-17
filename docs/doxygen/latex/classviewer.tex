@@ -1,0 +1,51 @@
+\hypertarget{classviewer}{}\doxysection{viewer Class Reference}
+\label{classviewer}\index{viewer@{viewer}}
+
+
+Shows user frames of video and parameters\textquotesingle{} values for each frame.  
+
+
+
+
+{\ttfamily \#include $<$viewer.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classviewer_ae2487d90ef15c5d969c5f597b8359b2c}\label{classviewer_ae2487d90ef15c5d969c5f597b8359b2c}} 
+\mbox{\hyperlink{classviewer_ae2487d90ef15c5d969c5f597b8359b2c}{viewer}} () noexcept
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classviewer_ad18dd453a0a8570e6d65ab6c3b399d42}{show}} (const std\+::vector$<$ cv\+::\+Mat $>$ \&frames, const std\+::vector$<$ cv\+::\+Mat $>$ \&raw\+\_\+frames, const \mbox{\hyperlink{classvault__analyzer}{vault\+\_\+analyzer}} \&analyzer) noexcept
+\begin{DoxyCompactList}\small\item\em Show current frame of video. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Shows user frames of video and parameters\textquotesingle{} values for each frame. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classviewer_ad18dd453a0a8570e6d65ab6c3b399d42}\label{classviewer_ad18dd453a0a8570e6d65ab6c3b399d42}} 
+\index{viewer@{viewer}!show@{show}}
+\index{show@{show}!viewer@{viewer}}
+\doxysubsubsection{\texorpdfstring{show()}{show()}}
+{\footnotesize\ttfamily void viewer\+::show (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ cv\+::\+Mat $>$ \&}]{frames,  }\item[{const std\+::vector$<$ cv\+::\+Mat $>$ \&}]{raw\+\_\+frames,  }\item[{const \mbox{\hyperlink{classvault__analyzer}{vault\+\_\+analyzer}} \&}]{analyzer }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Show current frame of video. 
+
+Handle user inputs\+: left arrow shows previous frame, right arrow shows the next one, space bar toggles whether to show detections drawings, escape key closes window and ends.
+
+
+\begin{DoxyParams}{Parameters}
+{\em frames} & Frames with detections\textquotesingle{} drawings. \\
+\hline
+{\em raw\+\_\+frames} & Unmodified frames of processed video. \\
+\hline
+{\em analyzer} & Analyzer after analyzing athlete\textquotesingle{}s movement. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+viewer.\+hpp\end{DoxyCompactItemize}

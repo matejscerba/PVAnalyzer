@@ -1,0 +1,142 @@
+\hypertarget{structmodel}{}\doxysection{model Struct Reference}
+\label{structmodel}\index{model@{model}}
+
+
+Struct representing detected athlete in during whole vault.  
+
+
+
+
+{\ttfamily \#include $<$model.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structmodel_a259661593160675068d15bcbbf6d7bd6}{model}} (const \mbox{\hyperlink{classperson}{person}} \&athlete, const std\+::string \&video\+\_\+filename) noexcept
+\begin{DoxyCompactList}\small\item\em Constructor used after detection in video. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structmodel_a93e032553481306d3c65c516c20e8270}{model}} (const std\+::string \&filename) noexcept
+\begin{DoxyCompactList}\small\item\em Constructor used for loading model from file. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{structmodel_a6548457d6fc20e3e1d0af2f9bd64a8fc}{save}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Save this model to file. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structmodel_a7f12c0c75855ce1553ce4ad58b9c93b9}\label{structmodel_a7f12c0c75855ce1553ce4ad58b9c93b9}} 
+model\+\_\+video\+\_\+points \mbox{\hyperlink{structmodel_a7f12c0c75855ce1553ce4ad58b9c93b9}{get\+\_\+frame\+\_\+points}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get points in frame coordinates. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structmodel_abd1dc543c0997dadc4056b67884e8e8a}\label{structmodel_abd1dc543c0997dadc4056b67884e8e8a}} 
+model\+\_\+video\+\_\+points \mbox{\hyperlink{structmodel_abd1dc543c0997dadc4056b67884e8e8a}{get\+\_\+real\+\_\+points}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get points in real-\/life coordinates. \end{DoxyCompactList}\item 
+direction \mbox{\hyperlink{structmodel_aec1561436367189982e4b6f17a355425}{get\+\_\+direction}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get direction of athlete\textquotesingle{}s runup. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{structmodel_af8352aaba0ba9e9e9aaf0b245ea82b05}{load}} (std\+::string \&video\+\_\+fn) noexcept
+\begin{DoxyCompactList}\small\item\em Load model from file. \end{DoxyCompactList}\item 
+std\+::vector$<$ cv\+::\+Mat $>$ \mbox{\hyperlink{structmodel_afccbfad3ecb8a328fd6f3b4162dc9966}{draw}} (const std\+::vector$<$ cv\+::\+Mat $>$ \&frames) const noexcept
+\begin{DoxyCompactList}\small\item\em Draw model\textquotesingle{}s points to given frames. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Struct representing detected athlete in during whole vault. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structmodel_a259661593160675068d15bcbbf6d7bd6}\label{structmodel_a259661593160675068d15bcbbf6d7bd6}} 
+\index{model@{model}!model@{model}}
+\index{model@{model}!model@{model}}
+\doxysubsubsection{\texorpdfstring{model()}{model()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily model\+::model (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{classperson}{person}} \&}]{athlete,  }\item[{const std\+::string \&}]{video\+\_\+filename }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Constructor used after detection in video. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em athlete} & Athlete whose model should be created. \\
+\hline
+{\em video\+\_\+filename} & Path to video from which this model is created. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{structmodel_a93e032553481306d3c65c516c20e8270}\label{structmodel_a93e032553481306d3c65c516c20e8270}} 
+\index{model@{model}!model@{model}}
+\index{model@{model}!model@{model}}
+\doxysubsubsection{\texorpdfstring{model()}{model()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily model\+::model (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Constructor used for loading model from file. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & Path to file containing saved model. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structmodel_afccbfad3ecb8a328fd6f3b4162dc9966}\label{structmodel_afccbfad3ecb8a328fd6f3b4162dc9966}} 
+\index{model@{model}!draw@{draw}}
+\index{draw@{draw}!model@{model}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily std\+::vector$<$cv\+::\+Mat$>$ model\+::draw (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ cv\+::\+Mat $>$ \&}]{frames }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Draw model\textquotesingle{}s points to given frames. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em frames} & Frames in which model should be drawn. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+frames with drawed model. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structmodel_aec1561436367189982e4b6f17a355425}\label{structmodel_aec1561436367189982e4b6f17a355425}} 
+\index{model@{model}!get\_direction@{get\_direction}}
+\index{get\_direction@{get\_direction}!model@{model}}
+\doxysubsubsection{\texorpdfstring{get\_direction()}{get\_direction()}}
+{\footnotesize\ttfamily direction model\+::get\+\_\+direction (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Get direction of athlete\textquotesingle{}s runup. 
+
+Compare x coordinate of first and last offset of frame.
+
+\begin{DoxyReturn}{Returns}
+direction of camera\textquotesingle{}s movement direction.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+Camera\textquotesingle{}s movement direction corresponds to athlete\textquotesingle{}s movement direction. 
+\end{DoxyNote}
+\mbox{\Hypertarget{structmodel_af8352aaba0ba9e9e9aaf0b245ea82b05}\label{structmodel_af8352aaba0ba9e9e9aaf0b245ea82b05}} 
+\index{model@{model}!load@{load}}
+\index{load@{load}!model@{model}}
+\doxysubsubsection{\texorpdfstring{load()}{load()}}
+{\footnotesize\ttfamily bool model\+::load (\begin{DoxyParamCaption}\item[{std\+::string \&}]{video\+\_\+fn }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Load model from file. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em video\+\_\+filename} & Path to video from which model was created. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if model was loaded correctly. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structmodel_a6548457d6fc20e3e1d0af2f9bd64a8fc}\label{structmodel_a6548457d6fc20e3e1d0af2f9bd64a8fc}} 
+\index{model@{model}!save@{save}}
+\index{save@{save}!model@{model}}
+\doxysubsubsection{\texorpdfstring{save()}{save()}}
+{\footnotesize\ttfamily void model\+::save (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Save this model to file. 
+
+Create file and save this model to it. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+model.\+hpp\end{DoxyCompactItemize}

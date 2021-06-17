@@ -1,0 +1,67 @@
+\hypertarget{md__r_e_a_d_m_e_autotoc_md1}{}\doxysection{Table of contents}\label{md__r_e_a_d_m_e_autotoc_md1}
+
+\begin{DoxyItemize}
+\item \href{\#technologies}{\texttt{ Technologies}}
+\item \href{\#technologies}{\texttt{ Setup}}
+\item \href{\#usage}{\texttt{ Usage}}
+\item \href{\#plotting}{\texttt{ Plotting}}
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md2}{}\doxysection{Technologies}\label{md__r_e_a_d_m_e_autotoc_md2}
+Project is created with\+:
+\begin{DoxyItemize}
+\item Open\+CV version\+: 4.\+5.\+1
+\item Open\+CV\+\_\+contrib modules version\+: 4.\+5.\+1
+\item cmake version\+: 3.\+1 or later
+\item python version\+: 3.\+8.\+2 (older versions should work as well)
+\item matplotlib version\+: 3.\+3.\+2 (older versions should work as well)
+\item argparse version\+: 1.\+1 (older versions should work as well)
+\end{DoxyItemize}
+
+To install Open\+CV and Open\+CV\+\_\+contrib, run script {\ttfamily install\+\_\+opencv.\+sh}. The library will be installed to {\ttfamily $\sim$/.local}.
+
+Correct functionality requires trained models for body parts detections. You can download them running script {\ttfamily models.\+sh}.
+
+Note that {\ttfamily models.\+sh} and {\ttfamily install\+\_\+opencv.\+sh} uses {\ttfamily wget} package.\hypertarget{md__r_e_a_d_m_e_autotoc_md3}{}\doxysection{Setup}\label{md__r_e_a_d_m_e_autotoc_md3}
+To run this project, install it by running script {\ttfamily install.\+sh}.
+
+This creates executable file {\ttfamily build/\+PVAnalyzer}.\hypertarget{md__r_e_a_d_m_e_autotoc_md4}{}\doxysection{Usage}\label{md__r_e_a_d_m_e_autotoc_md4}
+Program can be run in two modes\+:
+\begin{DoxyItemize}
+\item Video analyzer
+\item Model analyzer
+\end{DoxyItemize}
+
+After video or model is analyzed, you will be able to view all video frames with detections drawed in them. Navigate through frames using left and right arrows, parameters for each frame will be written to console. Note that only parameters valid for viewed frame will be written, for example velocity losses computed during takeoff will be written only in frame showing sthlete\textquotesingle{}s takeoff. You can turn detections drawings off/on by pressing space bar. To end viewer, pres escape key.
+
+To show help, use single argument {\ttfamily -\/-\/help}.\hypertarget{md__r_e_a_d_m_e_autotoc_md5}{}\doxysubsection{Video analyzer}\label{md__r_e_a_d_m_e_autotoc_md5}
+To analyze videos, pass videos\textquotesingle{} paths as command line arguments\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\$ ./build/PVAnalyzer vid1 vid2 vid3}
+
+\end{DoxyCode}
+
+
+Command above analyzes videos {\ttfamily vid1}, {\ttfamily vid2} and {\ttfamily vid3}. You can pas any number of videos to be analyzed sequentially. Video analyzer mode creates output files in folder {\ttfamily outputs/\+X/}, where {\ttfamily X} is name of analyzed video (without path and extension).\hypertarget{md__r_e_a_d_m_e_autotoc_md6}{}\doxysubsection{Model analyzer}\label{md__r_e_a_d_m_e_autotoc_md6}
+To analyze saved models, pass models\textquotesingle{} paths as command line arguments\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\$ ./build/PVAnalyzer -\/m mod1 mod2 mod3}
+
+\end{DoxyCode}
+
+
+Command above analyzes models {\ttfamily mod1}, {\ttfamily mod2} and {\ttfamily mod3}. You can pas any number of models to be analyzed sequentially. Model analyzer mode does not create any output files.\hypertarget{md__r_e_a_d_m_e_autotoc_md7}{}\doxysection{Plotting}\label{md__r_e_a_d_m_e_autotoc_md7}
+Output parameters can be ploted as graphs using {\ttfamily plot\+\_\+params.\+py} script.
+
+To plot parameters saved to file {\ttfamily output.\+csv}, run the following command\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\$ python3 plot\_params.py -\/-\/file output.csv}
+
+\end{DoxyCode}
+
+
+This script will show graphs of all parameters stored in file {\ttfamily output.\+csv}. 

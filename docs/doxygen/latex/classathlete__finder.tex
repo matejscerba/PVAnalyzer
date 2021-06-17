@@ -1,0 +1,91 @@
+\hypertarget{classathlete__finder}{}\doxysection{athlete\+\_\+finder Class Reference}
+\label{classathlete__finder}\index{athlete\_finder@{athlete\_finder}}
+
+
+Detects athlete in video.  
+
+
+
+
+{\ttfamily \#include $<$body\+\_\+detector.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classathlete__finder_a6c9b54d168b43bdc8f4cdc6d3d310a2d}{athlete\+\_\+finder}} (double fps) noexcept
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+std\+::optional$<$ \mbox{\hyperlink{classperson}{person}} $>$ \mbox{\hyperlink{classathlete__finder_a5e697d9e72b9c31c4e222f158fff5a84}{find\+\_\+athlete}} (const std\+::vector$<$ cv\+::\+Mat $>$ \&raw\+\_\+frames, std\+::vector$<$ cv\+::\+Mat $>$ \&found\+\_\+frames) noexcept
+\begin{DoxyCompactList}\small\item\em Find athlete in video given by frames. \end{DoxyCompactList}\item 
+std\+::optional$<$ \mbox{\hyperlink{classperson}{person}} $>$ \mbox{\hyperlink{classathlete__finder_ae5ac8a7b257cbd8989b5ddb054160fe4}{select\+\_\+athlete}} (const std\+::vector$<$ cv\+::\+Mat $>$ \&frames, double fps, const std\+::string \&filename) const noexcept
+\begin{DoxyCompactList}\small\item\em Let user select athlete\textquotesingle{}s bounding box in video. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Detects athlete in video. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classathlete__finder_a6c9b54d168b43bdc8f4cdc6d3d310a2d}\label{classathlete__finder_a6c9b54d168b43bdc8f4cdc6d3d310a2d}} 
+\index{athlete\_finder@{athlete\_finder}!athlete\_finder@{athlete\_finder}}
+\index{athlete\_finder@{athlete\_finder}!athlete\_finder@{athlete\_finder}}
+\doxysubsubsection{\texorpdfstring{athlete\_finder()}{athlete\_finder()}}
+{\footnotesize\ttfamily athlete\+\_\+finder\+::athlete\+\_\+finder (\begin{DoxyParamCaption}\item[{double}]{fps }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Default constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fps} & Frame rate of processed video. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classathlete__finder_a5e697d9e72b9c31c4e222f158fff5a84}\label{classathlete__finder_a5e697d9e72b9c31c4e222f158fff5a84}} 
+\index{athlete\_finder@{athlete\_finder}!find\_athlete@{find\_athlete}}
+\index{find\_athlete@{find\_athlete}!athlete\_finder@{athlete\_finder}}
+\doxysubsubsection{\texorpdfstring{find\_athlete()}{find\_athlete()}}
+{\footnotesize\ttfamily std\+::optional$<$\mbox{\hyperlink{classperson}{person}}$>$ athlete\+\_\+finder\+::find\+\_\+athlete (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ cv\+::\+Mat $>$ \&}]{raw\+\_\+frames,  }\item[{std\+::vector$<$ cv\+::\+Mat $>$ \&}]{found\+\_\+frames }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Find athlete in video given by frames. 
+
+Find athlete in {\ttfamily raw\+\_\+frames}, draw detections to {\ttfamily found\+\_\+frames}.
+
+
+\begin{DoxyParams}[1]{Parameters}
+ & {\em raw\+\_\+frames} & Frames representing video to be processed. \\
+\hline
+\mbox{\texttt{ out}}  & {\em found\+\_\+frames} & Modified frames will be written here. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+person representing athlete or invalid value if athlete could not be found. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classathlete__finder_ae5ac8a7b257cbd8989b5ddb054160fe4}\label{classathlete__finder_ae5ac8a7b257cbd8989b5ddb054160fe4}} 
+\index{athlete\_finder@{athlete\_finder}!select\_athlete@{select\_athlete}}
+\index{select\_athlete@{select\_athlete}!athlete\_finder@{athlete\_finder}}
+\doxysubsubsection{\texorpdfstring{select\_athlete()}{select\_athlete()}}
+{\footnotesize\ttfamily std\+::optional$<$\mbox{\hyperlink{classperson}{person}}$>$ athlete\+\_\+finder\+::select\+\_\+athlete (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ cv\+::\+Mat $>$ \&}]{frames,  }\item[{double}]{fps,  }\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Let user select athlete\textquotesingle{}s bounding box in video. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em frames} & Frames of video to select athlete from. \\
+\hline
+{\em fps} & Frame rate of processed video. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+athlete if user selected valid bounding box. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+body\+\_\+detector.\+hpp\end{DoxyCompactItemize}

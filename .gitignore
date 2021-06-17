@@ -9,7 +9,6 @@ outputs_manual/
 opencv/
 text/img/
 text/tex/
-docs/
 images/
 outputs/
 plot_cz.py

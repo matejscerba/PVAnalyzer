@@ -1,0 +1,150 @@
+\hypertarget{classmovement__analyzer}{}\doxysection{movement\+\_\+analyzer Class Reference}
+\label{classmovement__analyzer}\index{movement\_analyzer@{movement\_analyzer}}
+
+
+Analyzes movement of person\textquotesingle{}s bounding box.  
+
+
+
+
+{\ttfamily \#include $<$movement\+\_\+analyzer.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classmovement__analyzer_ade640b436e9000d00f3267e20e8db381}{movement\+\_\+analyzer}} (std\+::size\+\_\+t frame\+\_\+no, const cv\+::\+Mat \&frame, const std\+::vector$<$ cv\+::\+Rect $>$ \&bboxes, double fps) noexcept
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classmovement__analyzer_a7e93099acbc3b5cc4799cd26db316e0d}{update}} (const cv\+::\+Mat \&frame, const std\+::vector$<$ cv\+::\+Rect $>$ \&bboxes, std\+::size\+\_\+t frame\+\_\+no) noexcept
+\begin{DoxyCompactList}\small\item\em Process given frame. \end{DoxyCompactList}\item 
+direction \mbox{\hyperlink{classmovement__analyzer_af420e64f9f6356662631a4711884cc87}{get\+\_\+direction}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get detected direction. \end{DoxyCompactList}\item 
+std\+::vector$<$ frame\+\_\+points $>$ \mbox{\hyperlink{classmovement__analyzer_a7d59f9ae7e1a2a6d24fad5e0375880cd}{get\+\_\+person\+\_\+offsets}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get person\textquotesingle{}s offsets. \end{DoxyCompactList}\item 
+std\+::optional$<$ cv\+::\+Point2d $>$ \mbox{\hyperlink{classmovement__analyzer_aa888d04b8794af369f176e2c5f35e0d0}{frame\+\_\+offset}} (std\+::size\+\_\+t frame\+\_\+no, bool real=true) const noexcept
+\begin{DoxyCompactList}\small\item\em Get offset of frame specified by its number. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classmovement__analyzer_a1e78ed224e2f2830bfd80c498f912995}{draw}} (cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no) const
+\begin{DoxyCompactList}\small\item\em Draw bounding boxes of currently tracked background part. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Analyzes movement of person\textquotesingle{}s bounding box. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classmovement__analyzer_ade640b436e9000d00f3267e20e8db381}\label{classmovement__analyzer_ade640b436e9000d00f3267e20e8db381}} 
+\index{movement\_analyzer@{movement\_analyzer}!movement\_analyzer@{movement\_analyzer}}
+\index{movement\_analyzer@{movement\_analyzer}!movement\_analyzer@{movement\_analyzer}}
+\doxysubsubsection{\texorpdfstring{movement\_analyzer()}{movement\_analyzer()}}
+{\footnotesize\ttfamily movement\+\_\+analyzer\+::movement\+\_\+analyzer (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no,  }\item[{const cv\+::\+Mat \&}]{frame,  }\item[{const std\+::vector$<$ cv\+::\+Rect $>$ \&}]{bboxes,  }\item[{double}]{fps }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Default constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame} & First frame, where person was detected. \\
+\hline
+{\em bbox} & Bounding box of person in {\ttfamily frame}. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classmovement__analyzer_a1e78ed224e2f2830bfd80c498f912995}\label{classmovement__analyzer_a1e78ed224e2f2830bfd80c498f912995}} 
+\index{movement\_analyzer@{movement\_analyzer}!draw@{draw}}
+\index{draw@{draw}!movement\_analyzer@{movement\_analyzer}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily void movement\+\_\+analyzer\+::draw (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Draw bounding boxes of currently tracked background part. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame} & Frame in which bounding box should be drawn. \\
+\hline
+{\em frame\+\_\+no} & Number of given frame. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classmovement__analyzer_aa888d04b8794af369f176e2c5f35e0d0}\label{classmovement__analyzer_aa888d04b8794af369f176e2c5f35e0d0}} 
+\index{movement\_analyzer@{movement\_analyzer}!frame\_offset@{frame\_offset}}
+\index{frame\_offset@{frame\_offset}!movement\_analyzer@{movement\_analyzer}}
+\doxysubsubsection{\texorpdfstring{frame\_offset()}{frame\_offset()}}
+{\footnotesize\ttfamily std\+::optional$<$cv\+::\+Point2d$>$ movement\+\_\+analyzer\+::frame\+\_\+offset (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no,  }\item[{bool}]{real = {\ttfamily true} }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Get offset of frame specified by its number. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame\+\_\+no} & Number of frame which offset should be computed. \\
+\hline
+{\em real} & Returns valid offset if true, zero offset otherwise. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+offset of specified frame, invalid value if offset could not be computed.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+If real is false, frame offset is irrelevant, only frame coordinates are considered.
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classbackground__tracker_ab7bbe170f46e14458286db7bd1ab0143}{background\+\_\+tracker\+::frame\+\_\+offset}}. 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classmovement__analyzer_af420e64f9f6356662631a4711884cc87}\label{classmovement__analyzer_af420e64f9f6356662631a4711884cc87}} 
+\index{movement\_analyzer@{movement\_analyzer}!get\_direction@{get\_direction}}
+\index{get\_direction@{get\_direction}!movement\_analyzer@{movement\_analyzer}}
+\doxysubsubsection{\texorpdfstring{get\_direction()}{get\_direction()}}
+{\footnotesize\ttfamily direction movement\+\_\+analyzer\+::get\+\_\+direction (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Get detected direction. 
+
+\begin{DoxyReturn}{Returns}
+detected direction. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classmovement__analyzer_a7d59f9ae7e1a2a6d24fad5e0375880cd}\label{classmovement__analyzer_a7d59f9ae7e1a2a6d24fad5e0375880cd}} 
+\index{movement\_analyzer@{movement\_analyzer}!get\_person\_offsets@{get\_person\_offsets}}
+\index{get\_person\_offsets@{get\_person\_offsets}!movement\_analyzer@{movement\_analyzer}}
+\doxysubsubsection{\texorpdfstring{get\_person\_offsets()}{get\_person\_offsets()}}
+{\footnotesize\ttfamily std\+::vector$<$frame\+\_\+points$>$ movement\+\_\+analyzer\+::get\+\_\+person\+\_\+offsets (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Get person\textquotesingle{}s offsets. 
+
+\begin{DoxyReturn}{Returns}
+person\textquotesingle{}s offsets. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classmovement__analyzer_a7e93099acbc3b5cc4799cd26db316e0d}\label{classmovement__analyzer_a7e93099acbc3b5cc4799cd26db316e0d}} 
+\index{movement\_analyzer@{movement\_analyzer}!update@{update}}
+\index{update@{update}!movement\_analyzer@{movement\_analyzer}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily bool movement\+\_\+analyzer\+::update (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{frame,  }\item[{const std\+::vector$<$ cv\+::\+Rect $>$ \&}]{bboxes,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Process given frame. 
+
+Update background tracker and update direction.
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame} & Frame to be processed. \\
+\hline
+{\em bboxes} & Person\textquotesingle{}s bounding boxes in given frame. \\
+\hline
+{\em frame\+\_\+no} & Number of processed frame. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+false if both trackers failed (unable to determine person\textquotesingle{}s movement direction), true if tracking of at least one background tracker is OK. 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+movement\+\_\+analyzer.\+hpp\end{DoxyCompactItemize}

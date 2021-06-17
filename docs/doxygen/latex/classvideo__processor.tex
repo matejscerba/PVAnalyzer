@@ -1,0 +1,67 @@
+\hypertarget{classvideo__processor}{}\doxysection{video\+\_\+processor Class Reference}
+\label{classvideo__processor}\index{video\_processor@{video\_processor}}
+
+
+Wrapper of whole program\textquotesingle{}s functionality.  
+
+
+
+
+{\ttfamily \#include $<$video\+\_\+processor.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classvideo__processor_a1cfea5d8d047bb5413ec671a70ae86c3}{process\+\_\+video}} (const std\+::string \&filename, bool find) const noexcept
+\begin{DoxyCompactList}\small\item\em Process video at given path frame by frame. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classvideo__processor_a21a4dadb9ea9defa22155789bf70a36d}{process\+\_\+model}} (const std\+::string \&filename) const noexcept
+\begin{DoxyCompactList}\small\item\em Process model of athlete\textquotesingle{}s movement given by path. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Wrapper of whole program\textquotesingle{}s functionality. 
+
+This class is intented to be used for default functionality. It processes the video or model and passes individual frames to other parts of the program. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classvideo__processor_a21a4dadb9ea9defa22155789bf70a36d}\label{classvideo__processor_a21a4dadb9ea9defa22155789bf70a36d}} 
+\index{video\_processor@{video\_processor}!process\_model@{process\_model}}
+\index{process\_model@{process\_model}!video\_processor@{video\_processor}}
+\doxysubsubsection{\texorpdfstring{process\_model()}{process\_model()}}
+{\footnotesize\ttfamily void video\+\_\+processor\+::process\+\_\+model (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Process model of athlete\textquotesingle{}s movement given by path. 
+
+Load model, extract frames of video which was used to create model, draw athlete in frames, analyze athlete\textquotesingle{}s movements.
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & Path to model to be processed. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classvideo__processor_a1cfea5d8d047bb5413ec671a70ae86c3}\label{classvideo__processor_a1cfea5d8d047bb5413ec671a70ae86c3}} 
+\index{video\_processor@{video\_processor}!process\_video@{process\_video}}
+\index{process\_video@{process\_video}!video\_processor@{video\_processor}}
+\doxysubsubsection{\texorpdfstring{process\_video()}{process\_video()}}
+{\footnotesize\ttfamily void video\+\_\+processor\+::process\+\_\+video (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{filename,  }\item[{bool}]{find }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Process video at given path frame by frame. 
+
+Extract frames, find athlete, detect athlete\textquotesingle{}s body and analyze movements. Write output.
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & Path to video file to be processed. \\
+\hline
+{\em find} & Find athlete automatically if true, let user select athlete manually if false. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+video\+\_\+processor.\+hpp\end{DoxyCompactItemize}

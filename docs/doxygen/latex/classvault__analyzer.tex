@@ -1,0 +1,67 @@
+\hypertarget{classvault__analyzer}{}\doxysection{vault\+\_\+analyzer Class Reference}
+\label{classvault__analyzer}\index{vault\_analyzer@{vault\_analyzer}}
+
+
+Analyzes detections made when processing video.  
+
+
+
+
+{\ttfamily \#include $<$vault\+\_\+analyzer.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classvault__analyzer_a0037fcf7147db04de86a1921abb08747}{analyze}} (const \mbox{\hyperlink{structmodel}{model}} \&athlete, const std\+::string \&filename, double fps) noexcept
+\begin{DoxyCompactList}\small\item\em Analyze athlete\textquotesingle{}s movements in processed video. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classvault__analyzer_abfea5f5b1f4d5169f737bf0e29ad0638}\label{classvault__analyzer_abfea5f5b1f4d5169f737bf0e29ad0638}} 
+std\+::vector$<$ std\+::shared\+\_\+ptr$<$ \mbox{\hyperlink{structparameter}{parameter}} $>$ $>$ \mbox{\hyperlink{classvault__analyzer_abfea5f5b1f4d5169f737bf0e29ad0638}{get\+\_\+parameters}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get parameters including their values. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classvault__analyzer_ae6b46497b74d3fa8af334190e626cdf7}\label{classvault__analyzer_ae6b46497b74d3fa8af334190e626cdf7}} 
+std\+::size\+\_\+t \mbox{\hyperlink{classvault__analyzer_ae6b46497b74d3fa8af334190e626cdf7}{get\+\_\+start}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get number of frame in which attempt begins. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classvault__analyzer_a44fe92a464511b1f99cdb71f738bda28}\label{classvault__analyzer_a44fe92a464511b1f99cdb71f738bda28}} 
+std\+::size\+\_\+t \mbox{\hyperlink{classvault__analyzer_a44fe92a464511b1f99cdb71f738bda28}{get\+\_\+takeoff}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get number of frame in which athlete takes off. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classvault__analyzer_a6fedffe0171d76526a44dfa645b50c44}\label{classvault__analyzer_a6fedffe0171d76526a44dfa645b50c44}} 
+std\+::size\+\_\+t \mbox{\hyperlink{classvault__analyzer_a6fedffe0171d76526a44dfa645b50c44}{get\+\_\+culmination}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get number of frame in which athlete\textquotesingle{}s hips are highest. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classvault__analyzer_a5e192d8d12f8b7d8e392a7b1355f1972}\label{classvault__analyzer_a5e192d8d12f8b7d8e392a7b1355f1972}} 
+std\+::string {\bfseries get\+\_\+params\+\_\+filename} () const noexcept
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Analyzes detections made when processing video. 
+
+Holds detected athlete\textquotesingle{}s body parts and values of corresponding parameters. 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classvault__analyzer_a0037fcf7147db04de86a1921abb08747}\label{classvault__analyzer_a0037fcf7147db04de86a1921abb08747}} 
+\index{vault\_analyzer@{vault\_analyzer}!analyze@{analyze}}
+\index{analyze@{analyze}!vault\_analyzer@{vault\_analyzer}}
+\doxysubsubsection{\texorpdfstring{analyze()}{analyze()}}
+{\footnotesize\ttfamily void vault\+\_\+analyzer\+::analyze (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{structmodel}{model}} \&}]{athlete,  }\item[{const std\+::string \&}]{filename,  }\item[{double}]{fps }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Analyze athlete\textquotesingle{}s movements in processed video. 
+
+Get detected body parts of athlete in whole video (not only in the part where athlete was detected) and use these detections to compute parameters\textquotesingle{} values.
+
+
+\begin{DoxyParams}{Parameters}
+{\em athlete} & Athlete to be analyzed. \\
+\hline
+{\em filename} & Path to analyzed video. \\
+\hline
+{\em frames} & Number of frames in video. \\
+\hline
+{\em fps} & Frame rate of processed video. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+vault\+\_\+analyzer.\+hpp\end{DoxyCompactItemize}

@@ -1,0 +1,142 @@
+\hypertarget{classbackground__tracker}{}\doxysection{background\+\_\+tracker Class Reference}
+\label{classbackground__tracker}\index{background\_tracker@{background\_tracker}}
+
+
+Handles background tracking used to determine person\textquotesingle{}s movements.  
+
+
+
+
+{\ttfamily \#include $<$background\+\_\+tracker.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classbackground__tracker_a465d9e55de219194d24eec0d7dedc36e}{background\+\_\+tracker}} (const cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no, const std\+::vector$<$ cv\+::\+Rect $>$ \&bboxes) noexcept
+\begin{DoxyCompactList}\small\item\em Default contructor. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classbackground__tracker_abce71a4fe5a838e9b1f3d450dfb763e1}{update}} (const cv\+::\+Mat \&frame, const std\+::vector$<$ cv\+::\+Rect $>$ \&bboxes) noexcept
+\begin{DoxyCompactList}\small\item\em Track background in given frame and update properties. \end{DoxyCompactList}\item 
+frame\+\_\+point \mbox{\hyperlink{classbackground__tracker_ab86b962fb106a722f5f7d07d9dcbd9c6}{get\+\_\+person\+\_\+offset}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get last offset of person. \end{DoxyCompactList}\item 
+std\+::vector$<$ frame\+\_\+points $>$ \mbox{\hyperlink{classbackground__tracker_a85ae88cfe0d01a1570d2d87240a2ac35}{get\+\_\+person\+\_\+offsets}} () const noexcept
+\begin{DoxyCompactList}\small\item\em Get offsets of all person\textquotesingle{}s bounding boxes. \end{DoxyCompactList}\item 
+std\+::optional$<$ cv\+::\+Point2d $>$ \mbox{\hyperlink{classbackground__tracker_ab7bbe170f46e14458286db7bd1ab0143}{frame\+\_\+offset}} (std\+::size\+\_\+t frame\+\_\+no) const noexcept
+\begin{DoxyCompactList}\small\item\em Get offset of frame specified by its number. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classbackground__tracker_a3d6af6267c7271eb12bbfa42bd72d31f}{draw}} (cv\+::\+Mat \&frame, std\+::size\+\_\+t frame\+\_\+no) const noexcept
+\begin{DoxyCompactList}\small\item\em Draw bounding box of currently tracked background part. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Handles background tracking used to determine person\textquotesingle{}s movements. 
+
+Tracks part of background on one side of person and determines if person is moving away from tracked part of background. Determines whether a vault has begun. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classbackground__tracker_a465d9e55de219194d24eec0d7dedc36e}\label{classbackground__tracker_a465d9e55de219194d24eec0d7dedc36e}} 
+\index{background\_tracker@{background\_tracker}!background\_tracker@{background\_tracker}}
+\index{background\_tracker@{background\_tracker}!background\_tracker@{background\_tracker}}
+\doxysubsubsection{\texorpdfstring{background\_tracker()}{background\_tracker()}}
+{\footnotesize\ttfamily background\+\_\+tracker\+::background\+\_\+tracker (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no,  }\item[{const std\+::vector$<$ cv\+::\+Rect $>$ \&}]{bboxes }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Default contructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame} & Frame in which person was detected. \\
+\hline
+{\em frame\+\_\+no} & Number of frame in which person was detected. \\
+\hline
+{\em bbox} & Bounding box of person in {\ttfamily frame}. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classbackground__tracker_a3d6af6267c7271eb12bbfa42bd72d31f}\label{classbackground__tracker_a3d6af6267c7271eb12bbfa42bd72d31f}} 
+\index{background\_tracker@{background\_tracker}!draw@{draw}}
+\index{draw@{draw}!background\_tracker@{background\_tracker}}
+\doxysubsubsection{\texorpdfstring{draw()}{draw()}}
+{\footnotesize\ttfamily void background\+\_\+tracker\+::draw (\begin{DoxyParamCaption}\item[{cv\+::\+Mat \&}]{frame,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Draw bounding box of currently tracked background part. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame} & Frame in which bounding box should be drawn. \\
+\hline
+{\em frame\+\_\+no} & Number of given frame. \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classbackground__tracker_ab7bbe170f46e14458286db7bd1ab0143}\label{classbackground__tracker_ab7bbe170f46e14458286db7bd1ab0143}} 
+\index{background\_tracker@{background\_tracker}!frame\_offset@{frame\_offset}}
+\index{frame\_offset@{frame\_offset}!background\_tracker@{background\_tracker}}
+\doxysubsubsection{\texorpdfstring{frame\_offset()}{frame\_offset()}}
+{\footnotesize\ttfamily std\+::optional$<$cv\+::\+Point2d$>$ background\+\_\+tracker\+::frame\+\_\+offset (\begin{DoxyParamCaption}\item[{std\+::size\+\_\+t}]{frame\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Get offset of frame specified by its number. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame\+\_\+no} & Number of frame which offset should be computed. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+offset of specified frame, invalid value if offset could not be computed.
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{classmovement__analyzer_aa888d04b8794af369f176e2c5f35e0d0}{movement\+\_\+analyzer\+::frame\+\_\+offset}}. 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{classbackground__tracker_ab86b962fb106a722f5f7d07d9dcbd9c6}\label{classbackground__tracker_ab86b962fb106a722f5f7d07d9dcbd9c6}} 
+\index{background\_tracker@{background\_tracker}!get\_person\_offset@{get\_person\_offset}}
+\index{get\_person\_offset@{get\_person\_offset}!background\_tracker@{background\_tracker}}
+\doxysubsubsection{\texorpdfstring{get\_person\_offset()}{get\_person\_offset()}}
+{\footnotesize\ttfamily frame\+\_\+point background\+\_\+tracker\+::get\+\_\+person\+\_\+offset (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Get last offset of person. 
+
+\begin{DoxyReturn}{Returns}
+maximal offset of all bounding boxes. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classbackground__tracker_a85ae88cfe0d01a1570d2d87240a2ac35}\label{classbackground__tracker_a85ae88cfe0d01a1570d2d87240a2ac35}} 
+\index{background\_tracker@{background\_tracker}!get\_person\_offsets@{get\_person\_offsets}}
+\index{get\_person\_offsets@{get\_person\_offsets}!background\_tracker@{background\_tracker}}
+\doxysubsubsection{\texorpdfstring{get\_person\_offsets()}{get\_person\_offsets()}}
+{\footnotesize\ttfamily std\+::vector$<$frame\+\_\+points$>$ background\+\_\+tracker\+::get\+\_\+person\+\_\+offsets (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Get offsets of all person\textquotesingle{}s bounding boxes. 
+
+\begin{DoxyReturn}{Returns}
+offsets of all person\textquotesingle{}s bounding boxes. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classbackground__tracker_abce71a4fe5a838e9b1f3d450dfb763e1}\label{classbackground__tracker_abce71a4fe5a838e9b1f3d450dfb763e1}} 
+\index{background\_tracker@{background\_tracker}!update@{update}}
+\index{update@{update}!background\_tracker@{background\_tracker}}
+\doxysubsubsection{\texorpdfstring{update()}{update()}}
+{\footnotesize\ttfamily bool background\+\_\+tracker\+::update (\begin{DoxyParamCaption}\item[{const cv\+::\+Mat \&}]{frame,  }\item[{const std\+::vector$<$ cv\+::\+Rect $>$ \&}]{bboxes }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Track background in given frame and update properties. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em frame} & Frame in which to track background. \\
+\hline
+{\em bbox} & Person\textquotesingle{}s bounding box in {\ttfamily frame}. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+background\+\_\+tracker.\+hpp\end{DoxyCompactItemize}

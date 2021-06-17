@@ -1,0 +1,131 @@
+\hypertarget{structframe__wise__parameter}{}\doxysection{frame\+\_\+wise\+\_\+parameter Struct Reference}
+\label{structframe__wise__parameter}\index{frame\_wise\_parameter@{frame\_wise\_parameter}}
+
+
+Represents frame-\/wise parameter, e.\+g. position of left ankle throughout whole processed video.  
+
+
+
+
+{\ttfamily \#include $<$parameters.\+hpp$>$}
+
+Inheritance diagram for frame\+\_\+wise\+\_\+parameter\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{structframe__wise__parameter}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \mbox{\hyperlink{structframe__wise__parameter_ac4cc3a67ebc9a14637c605ec47ed1ff6}{compute}} (const model\+\_\+video\+\_\+points \&points) noexcept
+\begin{DoxyCompactList}\small\item\em Compute this parameter\textquotesingle{}s value for each frame and save them into {\ttfamily values}. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{structframe__wise__parameter_a5a90c0c9975eb325c986713b12724ec3}{write\+\_\+value}} (std\+::ostream \&os, std\+::size\+\_\+t frame\+\_\+no, bool write\+\_\+unit) const noexcept
+\begin{DoxyCompactList}\small\item\em Write parameter\textquotesingle{}s value for given frame number. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structframe__wise__parameter_ae9a7f9eb60d811076ed8f774ab790b61}{frame\+\_\+wise\+\_\+parameter}} (const std\+::string \mbox{\hyperlink{structparameter_a5c825fcc566d22739856395927f7eee2}{name}}, const std\+::string \&\&\mbox{\hyperlink{structparameter_a74ed8a5aa34fd12979f6447519e41ca8}{unit}}) noexcept
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+virtual std\+::optional$<$ double $>$ \mbox{\hyperlink{structframe__wise__parameter_a342bb82387494b5dd8ecaa79f261565e}{extract\+\_\+value}} (const model\+\_\+points \&body) const noexcept=0
+\begin{DoxyCompactList}\small\item\em Extract value from detected body parts in a single frame. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+Represents frame-\/wise parameter, e.\+g. position of left ankle throughout whole processed video. 
+
+Holds this parameter\textquotesingle{}s value for each frame. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structframe__wise__parameter_ae9a7f9eb60d811076ed8f774ab790b61}\label{structframe__wise__parameter_ae9a7f9eb60d811076ed8f774ab790b61}} 
+\index{frame\_wise\_parameter@{frame\_wise\_parameter}!frame\_wise\_parameter@{frame\_wise\_parameter}}
+\index{frame\_wise\_parameter@{frame\_wise\_parameter}!frame\_wise\_parameter@{frame\_wise\_parameter}}
+\doxysubsubsection{\texorpdfstring{frame\_wise\_parameter()}{frame\_wise\_parameter()}}
+{\footnotesize\ttfamily frame\+\_\+wise\+\_\+parameter\+::frame\+\_\+wise\+\_\+parameter (\begin{DoxyParamCaption}\item[{const std\+::string}]{name,  }\item[{const std\+::string \&\&}]{unit }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}, {\ttfamily [noexcept]}}
+
+
+
+Default constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & Name of this parameter. \\
+\hline
+{\em unit} & String representation of this parameter\textquotesingle{}s unit.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+This constructor can be called by derived structs only. 
+\end{DoxyNote}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structframe__wise__parameter_ac4cc3a67ebc9a14637c605ec47ed1ff6}\label{structframe__wise__parameter_ac4cc3a67ebc9a14637c605ec47ed1ff6}} 
+\index{frame\_wise\_parameter@{frame\_wise\_parameter}!compute@{compute}}
+\index{compute@{compute}!frame\_wise\_parameter@{frame\_wise\_parameter}}
+\doxysubsubsection{\texorpdfstring{compute()}{compute()}}
+{\footnotesize\ttfamily virtual void frame\+\_\+wise\+\_\+parameter\+::compute (\begin{DoxyParamCaption}\item[{const model\+\_\+video\+\_\+points \&}]{points }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Compute this parameter\textquotesingle{}s value for each frame and save them into {\ttfamily values}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em points} & Detected body parts to be processed. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{structparameter_af81fba5cdce8980aacea81026c274ee1}{parameter}}.
+
+\mbox{\Hypertarget{structframe__wise__parameter_a342bb82387494b5dd8ecaa79f261565e}\label{structframe__wise__parameter_a342bb82387494b5dd8ecaa79f261565e}} 
+\index{frame\_wise\_parameter@{frame\_wise\_parameter}!extract\_value@{extract\_value}}
+\index{extract\_value@{extract\_value}!frame\_wise\_parameter@{frame\_wise\_parameter}}
+\doxysubsubsection{\texorpdfstring{extract\_value()}{extract\_value()}}
+{\footnotesize\ttfamily virtual std\+::optional$<$double$>$ frame\+\_\+wise\+\_\+parameter\+::extract\+\_\+value (\begin{DoxyParamCaption}\item[{const model\+\_\+points \&}]{body }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [pure virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Extract value from detected body parts in a single frame. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em body} & Detected body parts in a singe frame. \\
+\hline
+\end{DoxyParams}
+
+
+Implemented in \mbox{\hyperlink{structvertical__tilt_a4cff7182bf42ea370df98ecc7513b934}{vertical\+\_\+tilt}}.
+
+\mbox{\Hypertarget{structframe__wise__parameter_a5a90c0c9975eb325c986713b12724ec3}\label{structframe__wise__parameter_a5a90c0c9975eb325c986713b12724ec3}} 
+\index{frame\_wise\_parameter@{frame\_wise\_parameter}!write\_value@{write\_value}}
+\index{write\_value@{write\_value}!frame\_wise\_parameter@{frame\_wise\_parameter}}
+\doxysubsubsection{\texorpdfstring{write\_value()}{write\_value()}}
+{\footnotesize\ttfamily virtual void frame\+\_\+wise\+\_\+parameter\+::write\+\_\+value (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no,  }\item[{bool}]{write\+\_\+unit }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Write parameter\textquotesingle{}s value for given frame number. 
+
+If value is valid, write it to output stream followed by unit if it is supposed to be written. Write nothing if unit is not supposed to be written and value is invalid. Write question mark followed by unit if unit is supposed to be written and value is invalid.
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em os} & Output stream. \\
+\hline
+ & {\em frame\+\_\+no} & Number of frame for which this parameter\textquotesingle{}s value should be written. \\
+\hline
+ & {\em write\+\_\+unit} & True if unit is supposed to be written as well, false otherwise. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{structparameter_aac09ad3208582cc6c999fbab9628dd02}{parameter}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+parameters.\+hpp\end{DoxyCompactItemize}

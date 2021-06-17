@@ -1,0 +1,102 @@
+\hypertarget{structsteps__duration}{}\doxysection{steps\+\_\+duration Struct Reference}
+\label{structsteps__duration}\index{steps\_duration@{steps\_duration}}
+
+
+Duration of each step in seconds.  
+
+
+
+
+{\ttfamily \#include $<$parameters.\+hpp$>$}
+
+Inheritance diagram for steps\+\_\+duration\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=4.000000cm]{structsteps__duration}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structsteps__duration_aaeac2f73846b0999e26de0e66b953a41}{steps\+\_\+duration}} (double \mbox{\hyperlink{structsteps__parameter_a65628f64af60cc138d8aeae8bb6d78b8}{fps}}) noexcept
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{structsteps__duration_aa18b76112732a270991e4a4706b4e060}{compute}} (const model\+\_\+video\+\_\+points \&points) noexcept
+\begin{DoxyCompactList}\small\item\em Compute duration of each step based on detected body parts in whole video. \end{DoxyCompactList}\item 
+virtual void \mbox{\hyperlink{structsteps__duration_ae8c734aeae19e6e0e3ca2438269f5487}{write\+\_\+value}} (std\+::ostream \&os, std\+::size\+\_\+t frame\+\_\+no, bool write\+\_\+unit) const noexcept
+\begin{DoxyCompactList}\small\item\em Write duration of step happening during frame {\ttfamily frame\+\_\+no}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+Duration of each step in seconds. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structsteps__duration_aaeac2f73846b0999e26de0e66b953a41}\label{structsteps__duration_aaeac2f73846b0999e26de0e66b953a41}} 
+\index{steps\_duration@{steps\_duration}!steps\_duration@{steps\_duration}}
+\index{steps\_duration@{steps\_duration}!steps\_duration@{steps\_duration}}
+\doxysubsubsection{\texorpdfstring{steps\_duration()}{steps\_duration()}}
+{\footnotesize\ttfamily steps\+\_\+duration\+::steps\+\_\+duration (\begin{DoxyParamCaption}\item[{double}]{fps }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Default constructor. 
+
+Specifies parameter\textquotesingle{}s name, vault part and unit as well as frame rate of processed video.
+
+
+\begin{DoxyParams}{Parameters}
+{\em fps} & Frame rate of processed video. \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structsteps__duration_aa18b76112732a270991e4a4706b4e060}\label{structsteps__duration_aa18b76112732a270991e4a4706b4e060}} 
+\index{steps\_duration@{steps\_duration}!compute@{compute}}
+\index{compute@{compute}!steps\_duration@{steps\_duration}}
+\doxysubsubsection{\texorpdfstring{compute()}{compute()}}
+{\footnotesize\ttfamily virtual void steps\+\_\+duration\+::compute (\begin{DoxyParamCaption}\item[{const model\+\_\+video\+\_\+points \&}]{points }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Compute duration of each step based on detected body parts in whole video. 
+
+Compute duration between subsequent low points based on their frame numbers and frame rate of processed video.
+
+
+\begin{DoxyParams}{Parameters}
+{\em points} & Athlete\textquotesingle{}s body parts detected in the whole video. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{structparameter_af81fba5cdce8980aacea81026c274ee1}{parameter}}.
+
+\mbox{\Hypertarget{structsteps__duration_ae8c734aeae19e6e0e3ca2438269f5487}\label{structsteps__duration_ae8c734aeae19e6e0e3ca2438269f5487}} 
+\index{steps\_duration@{steps\_duration}!write\_value@{write\_value}}
+\index{write\_value@{write\_value}!steps\_duration@{steps\_duration}}
+\doxysubsubsection{\texorpdfstring{write\_value()}{write\_value()}}
+{\footnotesize\ttfamily virtual void steps\+\_\+duration\+::write\+\_\+value (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{std\+::size\+\_\+t}]{frame\+\_\+no,  }\item[{bool}]{write\+\_\+unit }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+
+
+Write duration of step happening during frame {\ttfamily frame\+\_\+no}. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em os} & Output stream. \\
+\hline
+ & {\em frame\+\_\+no} & Number of frame for which this parameter\textquotesingle{}s value should be written. \\
+\hline
+ & {\em write\+\_\+unit} & True if unit is supposed to be written as well, false otherwise. \\
+\hline
+\end{DoxyParams}
+
+
+Implements \mbox{\hyperlink{structparameter_aac09ad3208582cc6c999fbab9628dd02}{parameter}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+parameters.\+hpp\end{DoxyCompactItemize}

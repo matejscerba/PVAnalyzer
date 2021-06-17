@@ -1,0 +1,100 @@
+\hypertarget{structmultiple__values__parameter}{}\doxysection{multiple\+\_\+values\+\_\+parameter Struct Reference}
+\label{structmultiple__values__parameter}\index{multiple\_values\_parameter@{multiple\_values\_parameter}}
+
+
+Represents multiple-\/valued parameter, e.\+g. length of each step during runup.  
+
+
+
+
+{\ttfamily \#include $<$parameters.\+hpp$>$}
+
+Inheritance diagram for multiple\+\_\+values\+\_\+parameter\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.635294cm]{structmultiple__values__parameter}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual std\+::size\+\_\+t \mbox{\hyperlink{structmultiple__values__parameter_add193ee8e7d35c53863acf9a2d3928b3}{size}} () const noexcept
+\item 
+virtual void \mbox{\hyperlink{structmultiple__values__parameter_ad4c7eeced8b519b10f88197fa41942ad}{write\+\_\+param}} (std\+::ostream \&os, std\+::size\+\_\+t value\+\_\+no) const noexcept
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structmultiple__values__parameter_a87c56179055472ad0b0462d811cf75bd}{multiple\+\_\+values\+\_\+parameter}} (const std\+::string \mbox{\hyperlink{structparameter_a5c825fcc566d22739856395927f7eee2}{name}}, const vault\+\_\+part \mbox{\hyperlink{structparameter_a2faab1d32b7c1f9138b746966e56bfd4}{part}}, const std\+::string \&\&\mbox{\hyperlink{structparameter_a74ed8a5aa34fd12979f6447519e41ca8}{unit}}) noexcept
+\begin{DoxyCompactList}\small\item\em Default constructor. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structmultiple__values__parameter_a74ed1c0beacf0c2f10154a406acc03a0}\label{structmultiple__values__parameter_a74ed1c0beacf0c2f10154a406acc03a0}} 
+std\+::vector$<$ std\+::optional$<$ double $>$ $>$ \mbox{\hyperlink{structmultiple__values__parameter_a74ed1c0beacf0c2f10154a406acc03a0}{values}}
+\begin{DoxyCompactList}\small\item\em Values of this parameter. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Additional Inherited Members}
+
+
+\doxysubsection{Detailed Description}
+Represents multiple-\/valued parameter, e.\+g. length of each step during runup. 
+
+Does not represent parameter computed for each frame of video. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structmultiple__values__parameter_a87c56179055472ad0b0462d811cf75bd}\label{structmultiple__values__parameter_a87c56179055472ad0b0462d811cf75bd}} 
+\index{multiple\_values\_parameter@{multiple\_values\_parameter}!multiple\_values\_parameter@{multiple\_values\_parameter}}
+\index{multiple\_values\_parameter@{multiple\_values\_parameter}!multiple\_values\_parameter@{multiple\_values\_parameter}}
+\doxysubsubsection{\texorpdfstring{multiple\_values\_parameter()}{multiple\_values\_parameter()}}
+{\footnotesize\ttfamily multiple\+\_\+values\+\_\+parameter\+::multiple\+\_\+values\+\_\+parameter (\begin{DoxyParamCaption}\item[{const std\+::string}]{name,  }\item[{const vault\+\_\+part}]{part,  }\item[{const std\+::string \&\&}]{unit }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}, {\ttfamily [noexcept]}}
+
+
+
+Default constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & Name of this parameter. \\
+\hline
+{\em part} & Part of vault for which this parameter is designated. \\
+\hline
+{\em unit} & String representation of this parameter\textquotesingle{}s unit.\\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+This constructor can be called by derived structs only. 
+\end{DoxyNote}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structmultiple__values__parameter_add193ee8e7d35c53863acf9a2d3928b3}\label{structmultiple__values__parameter_add193ee8e7d35c53863acf9a2d3928b3}} 
+\index{multiple\_values\_parameter@{multiple\_values\_parameter}!size@{size}}
+\index{size@{size}!multiple\_values\_parameter@{multiple\_values\_parameter}}
+\doxysubsubsection{\texorpdfstring{size()}{size()}}
+{\footnotesize\ttfamily virtual std\+::size\+\_\+t multiple\+\_\+values\+\_\+parameter\+::size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{structparameter_ad3acf012ae8ffada5951c058db90e1ef}{parameter\+::size}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{structparameter_ad3acf012ae8ffada5951c058db90e1ef}{parameter}}.
+
+\mbox{\Hypertarget{structmultiple__values__parameter_ad4c7eeced8b519b10f88197fa41942ad}\label{structmultiple__values__parameter_ad4c7eeced8b519b10f88197fa41942ad}} 
+\index{multiple\_values\_parameter@{multiple\_values\_parameter}!write\_param@{write\_param}}
+\index{write\_param@{write\_param}!multiple\_values\_parameter@{multiple\_values\_parameter}}
+\doxysubsubsection{\texorpdfstring{write\_param()}{write\_param()}}
+{\footnotesize\ttfamily virtual void multiple\+\_\+values\+\_\+parameter\+::write\+\_\+param (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{os,  }\item[{std\+::size\+\_\+t}]{value\+\_\+no }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}, {\ttfamily [noexcept]}}
+
+\begin{DoxySeeAlso}{See also}
+\mbox{\hyperlink{structparameter_ad6574f99744b6517a140f3a3e3837b8c}{parameter\+::write\+\_\+param}} 
+\end{DoxySeeAlso}
+
+
+Implements \mbox{\hyperlink{structparameter_ad6574f99744b6517a140f3a3e3837b8c}{parameter}}.
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+parameters.\+hpp\end{DoxyCompactItemize}
